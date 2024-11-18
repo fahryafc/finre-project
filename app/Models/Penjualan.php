@@ -24,6 +24,7 @@ class Penjualan extends Model
         'diskon',
         'pajak',
         'piutang',
+        'ongkir',
         'pembayaran',
         'total_pemasukan',
         'tgl_jatuh_tempo'

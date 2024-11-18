@@ -7,6 +7,7 @@ use App\Models\Pengeluaran;
 use App\Models\Kasdanbank;
 use App\Models\Arusuang;
 use App\Models\Kontak;
+use App\Models\Pajak;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -135,6 +136,19 @@ class PengeluaranController extends Controller
                     'tgl_jatuh_tempo'    => $data_pengeluaran->tgl_jatuh_tempo,
                 ]);
             }
+        }
+
+        // added data pajak jika ada
+        if($data_pengeluaran->pajak != NULL || $data->pajak != ''){
+            // Masukkan data ke tabel pajak
+            DB::table('pajak_ppn')->insert([
+                'jenis_transaksi'   => 'Pembelian',
+                'keterangan'        => $data_pengeluaran->nm_pengeluaran,
+                'nilai_transaksi'   => $data_pengeluaran->biaya,
+                'persen_pajak'      => $data_pengeluaran->pajak_persen,
+                'jenis_pajak'       => 'Pajak Masukan',
+                'saldo_pajak'       => $data_pengeluaran->pajak_dibayarkan,
+            ]);
         }
 
         // Tampilkan notifikasi sukses

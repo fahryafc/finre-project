@@ -10,6 +10,7 @@ use App\Http\Controllers\KasdanbankController;
 use App\Http\Controllers\HutangpiutangController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\KontakController;
+use App\Http\Controllers\PajakController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +50,11 @@ Route::resource('/kasdanbank', KasdanbankController::class);
 Route::get('/get-kategori-kasbank', [KasdanbankController::class, 'getKategoriAkun'])->name('get-kategori-kasbank');
 Route::get('/get-subakun-kasbank', [KasdanbankController::class, 'getSubAkunByKategori'])->name('get-subakun-kasbank');
 
-Route::resource('/pajak', \App\Http\Controllers\PajakController::class);
+Route::get('/pajak/ppn', [PajakController::class, 'ppn'])->name('pajak.ppn');
+Route::get('/pajak/pph', [PajakController::class, 'pph'])->name('pajak.pph');
+Route::get('/pajak/ppnbm', [PajakController::class, 'ppnbm'])->name('pajak.ppnbm');
+Route::resource('/pajak', PajakController::class);
+
 Route::resource('/produkdaninventori', \App\Http\Controllers\ProdukdaninventoriController::class);
 
 Route::resource('/asset', AssetController::class);

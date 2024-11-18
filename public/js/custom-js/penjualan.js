@@ -19,13 +19,16 @@ if (document.getElementById("penjualan-table") && typeof simpleDatatables.DataTa
 
 function togglePiutangInput() {
     const piutangInputContainer = document.getElementById('piutangInputContainer');
+    const tglJatuhTempoContainer = document.getElementById('tglJatuhTempoContainer');
     const piutangSwitch = document.getElementById('piutangSwitch');
 
     // Toggle visibility based on switch state
     if (piutangSwitch.checked) {
         piutangInputContainer.classList.remove('hidden');
+        tglJatuhTempoContainer.classList.remove('hidden');
     } else {
         piutangInputContainer.classList.add('hidden');
+        tglJatuhTempoContainer.classList.add('hidden');
     }
 }
 
@@ -36,8 +39,10 @@ function togglePiutangEdit(idPenjualan) {
     // Toggle visibility based on switch state
     if (piutangSwitch.checked) {
         piutangInputContainer.classList.remove('hidden');
+        tglJatuhTempoContainer.classList.remove('hidden');
     } else {
         piutangInputContainer.classList.add('hidden');
+        tglJatuhTempoContainer.classList.add('hidden');
     }
 }
 
@@ -81,6 +86,7 @@ function formatRupiah(value) {
 // Fungsi untuk perhitungan diskon dan pajak otomatis
 function calculateTotal() {
     const harga = parseFloat(document.getElementById("harga").value.replace(/\D/g, '')) || 0;
+    const ongkir = parseFloat(document.getElementById("ongkir").value.replace(/\D/g, '')) || 0;
     const kuantitas = parseFloat(document.getElementById("kuantitas").value) || 0;
     const diskonInput = parseFloat(document.getElementById("diskon").value) || 0;
     const pajakInput = parseFloat(document.getElementById("pajak").value) || 0;
@@ -98,7 +104,7 @@ function calculateTotal() {
     const pajak = (totalHargaDiskon * pajakInput) / 100;
     document.querySelector(".pajak-output").value = `Rp ${pajak ? pajak.toLocaleString('id-ID') : '0'}`;
 
-    const total_pemasukan = totalHargaDiskon - piutang;
+    const total_pemasukan = totalHargaDiskon - piutang + ongkir;
     document.getElementById("total_pemasukan").value = formatRupiah(total_pemasukan);
 
     // Check jika input tidak terisi atau bernilai 0, maka tampilkan Rp 0
@@ -110,12 +116,18 @@ function calculateTotal() {
         document.querySelector(".pajak-output").value = "Rp 0";
     }
 }
+
 // Event listener untuk memanggil fungsi saat input berubah
 document.getElementById("harga").addEventListener("input", calculateTotal);
 document.getElementById("kuantitas").addEventListener("input", calculateTotal);
 document.getElementById("diskon").addEventListener("input", calculateTotal);
 document.getElementById("pajak").addEventListener("input", calculateTotal);
 // Event listener untuk input harga, kuantitas, diskon, dan pajak
+document.getElementById("ongkir").addEventListener("input", function (e) {
+    e.target.value = formatRupiah(e.target.value.replace(/[^,\d]/g, ''));
+    calculateTotal();
+});
+
 document.getElementById("harga").addEventListener("input", function (e) {
     e.target.value = formatRupiah(e.target.value.replace(/[^,\d]/g, ''));
     calculateTotal();
@@ -136,6 +148,7 @@ document.getElementById("pajak").addEventListener("input", function () {
 
 function calculateTotalEdit(idPenjualan) {
     const harga = parseRupiahToNumber(document.getElementById(`hargaEdit${idPenjualan}`).value);
+    const ongkir = parseRupiahToNumber(document.getElementById(`ongkirEdit${idPenjualan}`).value);
     const kuantitas = parseFloat(document.getElementById(`kuantitasEdit${idPenjualan}`).value) || 0;
     const diskon = parseFloat(document.getElementById(`diskonEdit${idPenjualan}`).value) || 0;
     const pajak = parseFloat(document.getElementById(`pajakEdit${idPenjualan}`).value) || 0;
@@ -161,7 +174,7 @@ function calculateTotalEdit(idPenjualan) {
 
     // Hitung Total Pemasukan
     const totalSetelahDiskon = hargaDiskon; // harga setelah diskon (belum termasuk pajak)
-    const totalPemasukan = totalSetelahDiskon - piutang;
+    const totalPemasukan = totalSetelahDiskon - piutang + ongkir;
 
     // Update field total pemasukan
     const totalPemasukanElement = document.getElementById(`total_pemasukan_edit${idPenjualan}`);
@@ -175,6 +188,20 @@ function openEditPenjualan(button) {
     const hargaInput = document.getElementById(`hargaEdit${idPenjualan}`);
     if (hargaInput && !hargaInput.hasAttribute("data-listener-added")) {
         hargaInput.addEventListener("input", function (e) {
+            const parsedValue = parseRupiahToNumber(e.target.value);
+            e.target.value = `Rp ${formatRupiah(parsedValue)}`;
+            calculateTotalEdit(idPenjualan);
+        });
+        hargaInput.setAttribute("data-listener-added", "true");
+    }
+    // document.getElementById("ongkiredit").addEventListener("input", function (e) {
+    //     e.target.value = formatRupiah(e.target.value.replace(/[^,\d]/g, ''));
+    //     calculateTotal();
+    // });
+
+    const ongkirInput = document.getElementById(`ongkirEdit${idPenjualan}`);
+    if (ongkirInput && !ongkirInput.hasAttribute("data-listener-added")) {
+        ongkirInput.addEventListener("input", function (e) {
             const parsedValue = parseRupiahToNumber(e.target.value);
             e.target.value = `Rp ${formatRupiah(parsedValue)}`;
             calculateTotalEdit(idPenjualan);
@@ -217,6 +244,7 @@ function openEditPenjualan(button) {
 
 function prepareForSubmit() {
     const harga = document.getElementById('harga');
+    const ongkir = document.getElementById('ongkir');
     const piutang = document.getElementById('piutang');
     const total_pemasukan = document.getElementById('total_pemasukan');
 
@@ -226,6 +254,9 @@ function prepareForSubmit() {
     }
     if (piutang) {
         piutang.value = parseRupiahToNumber(piutang.value);
+    }
+    if (ongkir) {
+        ongkir.value = parseRupiahToNumber(ongkir.value);
     }
     if (total_pemasukan) {
         total_pemasukan.value = parseRupiahToNumber(total_pemasukan.value);

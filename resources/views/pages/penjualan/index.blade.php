@@ -190,7 +190,7 @@
                 </div>
                 <hr class="border-2 border-gray-300 my-2">
                 <!-- col 3 -->
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                     <div class="mb-3">
                         <label for="diskon" class="text-gray-800 text-sm font-medium inline-block mb-2">Diskon</label>
                         <div class="flex w-full">
@@ -208,6 +208,10 @@
                         </div>
                     </div>
                     <div class="mb-3">
+                        <label for="ongkir" class="text-gray-800 text-sm font-medium inline-block mb-2">Biaya Pengiriman</label>
+                        <input type="text" class="form-input" id="ongkir" name="ongkir" aria-describedby="ongkir" placeholder="Masukan Ongkir">
+                    </div>
+                    <div class="mb-3">
                         <div class="flex items-center">
                             <label for="piutangSwitch" class="text-gray-800 text-sm font-medium">Piutang</label>
                             <label class="inline-flex items-center ml-2">
@@ -220,7 +224,7 @@
                             <input type="text" class="form-input w-full" id="piutang" name="piutang" aria-describedby="piutang" placeholder="Masukan Piutang">
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 hidden" id="tglJatuhTempoContainer">
                         <label for="tgl_jatuh_tempo" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Jatuh Tempo</label>
                         <input type="text" class="form-input" name="tgl_jatuh_tempo" id="datepicker-basic">
                     </div>
@@ -333,7 +337,7 @@
                 </div>
                 <hr class="border-2 border-gray-300 my-2">
                 <!-- col 3 -->
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                     <div class="mb-3">
                         <label for="diskon" class="text-gray-800 text-sm font-medium inline-block mb-2">Diskon</label>
                         <div class="flex w-full">
@@ -353,6 +357,10 @@
                         </div>
                     </div>
                     <div class="mb-3">
+                        <label for="ongkir" class="text-gray-800 text-sm font-medium inline-block mb-2">Biaya Pengiriman</label>
+                        <input type="text" class="form-input" id="ongkirEdit{{$pnj->id_penjualan}}" name="ongkir" aria-describedby="ongkir" placeholder="Masukan Ongkir">
+                    </div>
+                    <div class="mb-3">
                         <div class="flex items-center">
                             <label for="piutangSwitch" class="text-gray-800 text-sm font-medium">Piutang</label>
                             <label class="inline-flex items-center ml-2">
@@ -367,7 +375,7 @@
                             value="{{ old('piutang','Rp '.number_format($pnj->nominal_piutang, 0, '.', '.')) }}">
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 hidden" id="tglJatuhTempoContainer">
                         <label for="tgl_jatuh_tempo" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Jatuh Tempo</label>
                         <input type="text" class="form-input" name="tgl_jatuh_tempo" id="datepicker-basic">
                     </div>

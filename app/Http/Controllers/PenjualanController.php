@@ -129,12 +129,13 @@ class PenjualanController extends Controller
         // added data pajak jika ada
         if($data->pajak != NULL || $data->pajak != ''){
             // Masukkan data ke tabel pajak
-            DB::table('pajak')->insert([
-                'nama_produk'     => $data->produk,
-                'gol_pajak'       => 'PPN',
-                'persen_pajak'    => $data->pajak,
-                'nominal_pajak'   => $data->total_pemasukan * ($data->pajak / 100),
-                'total_pajak'     => $data->total_pemasukan,
+            DB::table('pajak_ppn')->insert([
+                'jenis_transaksi'   => 'penjualan',
+                'keterangan'        => $data->produk,
+                'nilai_transaksi'   => $data->harga * $data->kuantitas,
+                'persen_pajak'      => $data->pajak,
+                'jenis_pajak'       => 'Pajak Keluaran',
+                'saldo_pajak'       => $data->total_pemasukan * ($data->pajak / 100),
             ]);
         }
 
