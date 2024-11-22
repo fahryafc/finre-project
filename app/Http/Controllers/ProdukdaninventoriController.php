@@ -59,13 +59,11 @@ class ProdukdaninventoriController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $pemasok = Kontak::where('id_kontak', $request->id_kontak)->first();
         try {
-            Produk::create([
-                'pemasok'           => $request->pemasok,
-                'no_hp'             => $request->no_hp,
-                'nm_perusahaan'     => $request->nm_perusahaan,
-                'email'             => $request->email,
-                'alamat'            => $request->alamat,
+            $data = Produk::create([
+                'pemasok'           => $pemasok->nama_kontak,
+                'id_kontak'         => $request->id_kontak,
                 'nama_produk'       => $request->nama_produk,
                 'satuan'            => $request->satuan,
                 'kategori'          => $request->kategori,
@@ -76,7 +74,22 @@ class ProdukdaninventoriController extends Controller
                 'harga_jual'        => $request->harga_jual,
                 'akun_pembayaran'   => $request->akun_pembayaran,
                 'masuk_akun'        => $request->masuk_akun,
+                'jns_pajak'         => $request->jns_pajak,
+                'persen_pajak'	    => $request->persen_pajak,
+                'nominal_pajak'     => $request->nominal_pajak,
             ]);
+
+            if($data->nominal_pajak != NULL || $data->nominal_pajak != ''){
+            // Masukkan data ke tabel pajak
+                DB::table('pajak_ppn')->insert([
+                    'jenis_transaksi'   => 'penjualan',
+                    'keterangan'        => $data->nama_produk,
+                    'nilai_transaksi'   => $data->harga_beli * $data->kuantitas,
+                    'persen_pajak'      => $data->persen_pajak,
+                    'jenis_pajak'       => 'Pajak Masukan',
+                    'saldo_pajak'       => $data->nominal_pajak,
+                ]);
+            }
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('produkdaninventori.index');
         } catch (\Exception $e) {

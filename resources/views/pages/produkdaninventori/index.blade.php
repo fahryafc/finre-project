@@ -256,7 +256,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="kuantitas" class="text-gray-800 text-sm font-medium inline-block mb-2">Kuantitas</label>
-                        <input type="number" class="form-input" id="kuantitas" name="kuantitas" aria-describedby="Kuantitas" placeholder="Masukan Kuantitas">
+                        <input type="number" class="form-input" id="kuantitas" name="kuantitas" placeholder="Masukan Kuantitas" oninput="hitungTotal()">
                     </div>
                     <div class="mb-3">
                         <label for="kode_sku" class="text-gray-800 text-sm font-medium inline-block mb-2">Kode/SKU</label>
@@ -272,12 +272,32 @@
                     </div>
                     <div class="mb-3">
                         <label for="harga_beli" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga Beli</label>
-                        <input type="number" class="form-input" id="harga_beli" name="harga_beli" aria-describedby="harga_beli" placeholder="Masukan Harga Beli">
+                        <input type="text" class="form-input" id="harga_beli_input" name="harga_beli" placeholder="Masukan Harga Beli" oninput="hitungTotal()">
                     </div>
                     <div class="mb-3">
                         <label for="harga_jual" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga Jual</label>
-                        <input type="number" class="form-input" id="harga_jual" name="harga_jual" aria-describedby="harga_jual" placeholder="Masukan Harga Jual">
+                        <input type="text" class="form-input" id="harga_jual_input" name="harga_jual" placeholder="Masukan Harga Jual">
                     </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-2">
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Jenis Pajak</label>
+                        <input type="text" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400" id="jns_pajak" name="jns_pajak" disabled="" value="PPN">
+                    </div>
+                    <div class="mb-3">
+                        <label for="persen_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Persen Pajak (%)</label>
+                        <input type="text" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400" id="persen_pajak" name="persen_pajak" disabled="" value="11 %">
+                    </div>
+                    <div class="mb-3">
+                        <label for="nominal_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Nominal Pajak</label>
+                        <input type="text" class="form-input bg-gray-300 text-gray-500" id="nominal_pajak" name="nominal_pajak" readonly>
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-2">
+
+                <div class="grid grid-cols-3 gap-4">
                     <div class="mb-3">
                         <label for="akun_pembayaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
                         <select id="akun_pembayaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pembayaran">
@@ -297,6 +317,17 @@
                     <div class="mb-3">
                         <label for="tgl_jatuh_tempo" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Jatuh Tempo</label>
                         <input type="text" class="form-input" name="tgl_jatuh_tempo" id="datepicker-basic">
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-2">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="mb-3"></div>
+                    <div class="mb-3">
+                        <div class="flex w-full">
+                            <label for="total_pemasukan" class="text-gray-800 text-sm font-medium inline-block mb-2">Total Transaksi</label>
+                            <input type="text" class="form-input ltr:rounded-r-none rtl:rounded-l-none bg-[#307487]" style="color: white;" id="total_pemasukan" name="total_pemasukan" readonly>
+                        </div>
                     </div>
                 </div>
 
@@ -353,4 +384,5 @@
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
+<script src="{{ asset('js/custom-js/produk.js') }}" defer></script>
 @endsection

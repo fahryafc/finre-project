@@ -503,114 +503,102 @@
             @csrf
             <div class="px-4 py-4 overflow-y-auto max-h-[60vh]">
                 <!-- row pertama -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <!-- Kolom 1 -->
-                    <div>
-                        <div class="mb-3">
-                            <label for="pemasok" class="text-gray-800 text-sm font-medium inline-block mb-2">Pemasok</label>
-                            <input type="text" class="form-input" id="pemasok" name="pemasok" aria-describedby="pemasok" placeholder="Masukan Nama Pemasok">
-                        </div>
-                        <div class="mb-3">
-                            <label for="no_hp" class="text-gray-800 text-sm font-medium inline-block mb-2">No Handphone</label>
-                            <input type="number" class="form-input" id="no_hp" name="no_hp" aria-describedby="no_hp" placeholder="Masukan No Handphone">
-                        </div>
-                        <div class="mb-3">
-                            <label for="nm_perusahaan" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Perusahaan</label>
-                            <input type="text" class="form-input" id="nm_perusahaan" name="nm_perusahaan" aria-describedby="nm_perusahaan" placeholder="Masukan Nama Perusahaan">
-                        </div>
-                        <div class="mb-e">
-                            <label for="email" class="text-gray-800 text-sm font-medium inline-block mb-2">Email</label>
-                            <input type="email" class="form-input" id="email" name="email" aria-describedby="email" placeholder="Masukan Email">
-                        </div>
-                        <div class="mb-3">
-                            <label for="alamat" name="alamat" class="text-gray-800 text-sm font-medium inline-block mb-2">Alamat</label>
-                            <textarea id="alamat" name="alamat" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Masukan Alamat"></textarea>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="pemasok" class="text-gray-800 text-sm font-medium inline-block mb-2">Pemasok</label>
+                        <select id="pemasok" name="pemasok" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" selected>-- Pilih Pemasok --</option>
+                            @foreach ( $pemasoks as $pemasok)
+                            <option value="{{ $pemasok->nama_kontak }}">{{ $pemasok->nama_kontak }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-4">
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Pembelian</label>
+                        <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
+                    </div>
+                    <div class="mb-3">
+                        <label for="nm_aset" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Asset</label>
+                        <input type="text" class="form-input" id="nm_aset" name="nm_aset" aria-describedby="nm_aset" placeholder="Masukan Nama Asset">
+                    </div>
+                    <div class="mb-3">
+                        <label for="satuan" class="text-gray-800 text-sm font-medium inline-block mb-2">Satuan</label>
+                        <select id="satuan" name="satuan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" selected>-- Pilih Jenis Satuan --</option>
+                            @foreach ($satuan as $satuans)
+                            <option value="{{ $satuans->nama_satuan }}">{{ $satuans->nama_satuan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kategori" class="text-gray-800 text-sm font-medium inline-block mb-2">Kategori</label>
+                        <select id="kategori" name="satuan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" selected>-- Pilih Kategori --</option>
+                            @foreach ($kategori as $ktg)
+                            <option value="{{ $ktg->nama_kategori }}">{{ $ktg->nama_kategori }}</option>
+                            @endforeach
+                            <option value="tambahKategori">+ Tambah Kategori</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kuantitas" class="text-gray-800 text-sm font-medium inline-block mb-2">Kuantitas</label>
+                        <input type="number" class="form-input" id="kuantitas" name="kuantitas" aria-describedby="kuantitas" placeholder="Masukan Kuantitas">
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-4">
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="kode_sku" class="text-gray-800 text-sm font-medium inline-block mb-2">Kode/SKU</label>
+                        <input type="text" class="form-input" id="kode_sku" name="kode_sku" aria-describedby="kode_sku" placeholder="Masukan Kode/SKU">
+                    </div>
+                    <div class="mb-3">
+                        <label for="harga_beli" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga Beli</label>
+                        <input type="text" class="form-input" id="harga_beli" name="harga_beli" aria-describedby="harga_beli" placeholder="Masukan Harga Beli">
+                    </div>
+                    <div class="mb-3">
+                        <label for="akun_pembayaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
+                        <select id="akun_pembayaran" name="akun_pembayaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" selected>-- Pilih Pembayaran --</option>
+                            @foreach ( $kasdanbank as $kasbank )
+                            <option value="{{ $kasbank->kode_akun }}">
+                                <span class="flex justify-between w-full">
+                                    <span>{{ $kasbank->nama_akun }}</span>
+                                    <span> - </span>
+                                    <span>{{ $kasbank->kode_akun }}</span>
+                                </span>
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="akun_aset" class="text-gray-800 text-sm font-medium inline-block mb-2">Akun Aset</label>
+                        <select id="akun_aset" name="akun_aset" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" selected>-- Pilih Akun Asset --</option>
+                            @foreach ( $akun as $akuns )
+                            <option value="{{ $akuns->kode_akun }}">
+                                <span class="flex justify-between w-full">
+                                    <span>{{ $akuns->nama_akun }}</span>
+                                </span>
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="penyusutan" name="penyusutan" class="form-switch text-primary" value="1" onchange="toggleCollapseWithSwitch()">
+                            <label for="penyusutan" class="ms-1.5">Penyusutan</label>
                         </div>
                     </div>
-                    <!-- Kolom 2 -->
-                    <div>
-                        <div class="mb-3">
-                            <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Pembelian</label>
-                            <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
-                        </div>
-                        <div class="mb-3">
-                            <label for="nm_aset" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Asset</label>
-                            <input type="text" class="form-input" id="nm_aset" name="nm_aset" aria-describedby="nm_aset" placeholder="Masukan Nama Asset">
-                        </div>
-                        <div class="mb-3">
-                            <label for="satuan" class="text-gray-800 text-sm font-medium inline-block mb-2">Satuan</label>
-                            <select id="satuan" name="satuan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option value="" selected>-- Pilih Jenis Satuan --</option>
-                                @foreach ($satuan as $satuans)
-                                <option value="{{ $satuans->nama_satuan }}">{{ $satuans->nama_satuan }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="kategori" class="text-gray-800 text-sm font-medium inline-block mb-2">Kategori</label>
-                            <select id="kategori" name="satuan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option value="" selected>-- Pilih Kategori --</option>
-                                @foreach ($kategori as $ktg)
-                                <option value="{{ $ktg->nama_kategori }}">{{ $ktg->nama_kategori }}</option>
-                                @endforeach
-                                <option value="tambahKategori">+ Tambah Kategori</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="kuantitas" class="text-gray-800 text-sm font-medium inline-block mb-2">Kuantitas</label>
-                            <input type="number" class="form-input" id="kuantitas" name="kuantitas" aria-describedby="kuantitas" placeholder="Masukan Kuantitas">
-                        </div>
-                    </div>
-                    <!-- kolom 3 -->
-                    <div>
-                        <div class="mb-3">
-                            <label for="kode_sku" class="text-gray-800 text-sm font-medium inline-block mb-2">Kode/SKU</label>
-                            <input type="text" class="form-input" id="kode_sku" name="kode_sku" aria-describedby="kode_sku" placeholder="Masukan Kode/SKU">
-                        </div>
-                        <div class="mb-3">
-                            <label for="harga_beli" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga Beli</label>
-                            <input type="text" class="form-input" id="harga_beli" name="harga_beli" aria-describedby="harga_beli" placeholder="Masukan Harga Beli">
-                        </div>
-                        <div class="mb-3">
-                            <label for="akun_pembayaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
-                            <select id="akun_pembayaran" name="akun_pembayaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option value="" selected>-- Pilih Pembayaran --</option>
-                                @foreach ( $kasdanbank as $kasbank )
-                                <option value="{{ $kasbank->kode_akun }}">
-                                    <span class="flex justify-between w-full">
-                                        <span>{{ $kasbank->nama_akun }}</span>
-                                        <span> - </span>
-                                        <span>{{ $kasbank->kode_akun }}</span>
-                                    </span>
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="akun_aset" class="text-gray-800 text-sm font-medium inline-block mb-2">Akun Aset</label>
-                            <select id="akun_aset" name="akun_aset" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option value="" selected>-- Pilih Akun Asset --</option>
-                                @foreach ( $akun as $akuns )
-                                <option value="{{ $akuns->kode_akun }}">
-                                    <span class="flex justify-between w-full">
-                                        <span>{{ $akuns->nama_akun }}</span>
-                                    </span>
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div class="mb-3">
                         <div class="mb-3">
                             <div class="flex items-center">
-                                <input type="checkbox" id="penyusutan" name="penyusutan" class="form-switch text-primary" value="1" onchange="toggleCollapseWithSwitch()">
-                                <label for="penyusutan" class="ms-1.5">Penyusutan</label>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <div class="mb-3">
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="pajakButton" name="pajakButton" class="form-switch text-primary" value="1" onchange="toggleCollapsePajak()">
-                                    <label for="pajakButton" class="ms-1.5">Pajak</label>
-                                </div>
+                                <input type="checkbox" id="pajakButton" name="pajakButton" class="form-switch text-primary" value="1" onchange="toggleCollapsePajak()">
+                                <label for="pajakButton" class="ms-1.5">Pajak</label>
                             </div>
                         </div>
                     </div>
@@ -1277,7 +1265,7 @@
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
-@vite(['resources/js/custom-js/assets.js'])
+<!-- <script src="{{ asset('js/custom-js/assets.js') }}" defer></script> -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function toggleCollapseWithSwitch1() {

@@ -10,6 +10,7 @@ use App\Models\Assetpenyusutan;
 use App\Models\Satuan;
 use App\Models\Akun;
 use App\Models\Produk;
+use App\Models\Kontak;
 use App\Models\PenjualanAsset;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -102,6 +103,7 @@ class AssetController extends Controller
                 ->value('total_nilai_asset');
             $totalTersedia = Aset::sum('kuantitas');
             $totalTerjual = PenjualanAsset::sum('kuantitas');
+            $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
 
 
             // dd($assetTerjual);
@@ -112,6 +114,7 @@ class AssetController extends Controller
                 'assetTerjual' => $assetTerjual,
                 'satuan' => $satuan,
                 'akun' => $akun,
+                'pemasoks' => $pemasoks,
                 'kasdanbank' => $kasdanbank,
                 'akun_penyusutan' => $akun_penyusutan,
                 'total_nilai_asset' => $total_nilai_asset,

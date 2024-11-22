@@ -15,10 +15,7 @@ class Produk extends Model
 
     protected $fillable = [
         'pemasok',
-        'no_hp',
-        'nm_perusahaan',
-        'email',
-        'alamat',
+        'id_kontak',
         'nama_produk',
         'satuan',
         'kategori',
@@ -29,5 +26,8 @@ class Produk extends Model
         'harga_jual',
         'akun_pembayaran',
         'masuk_akun',
+        'jns_pajak',
+        'persen_pajak',	
+        'nominal_pajak'
     ];
 }
