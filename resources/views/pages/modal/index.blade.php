@@ -188,11 +188,16 @@
                         </div>
                         <div class="mb-3">
                             <label for="nama_badan" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama/Badan</label>
-                            <input type="text" class="form-input" id="nama_badan" name="nama_badan" aria-describedby="nama_badan" placeholder="Masukan Nama Badan">
+                            <select id="nama_badan" name="nama_badan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="" selected>-- Pilih Nama/Badan --</option>
+                                @foreach ( $pemodal as $investor)
+                                <option value="{{ $investor->nama_kontak }}">{{ $investor->nama_kontak }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="nominal" class="text-gray-800 text-sm font-medium inline-block mb-2">Jumlah / Nominal Modal</label>
-                            <input type="number" class="form-input" id="nominal" name="nominal" aria-describedby="nama_badan" placeholder="Masukan Nominal Modal">
+                            <input type="number" class="form-input" id="nominal" name="nominal" aria-describedby="nominal" placeholder="Masukan Nominal Modal">
                         </div>
                     </div>
                     <!-- Kolom 2 -->

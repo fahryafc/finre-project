@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Modal;
+use App\Models\Kontak;
 use App\Models\Kasdanbank;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -21,9 +22,11 @@ class ModalController extends Controller
 
         $modal = Modal::paginate(5);
         $kasdanbank = DB::table('kas_bank')->get();
+        $pemodal = DB::table('kontak')->where('jenis_kontak', '=', 'investor')->get();
         return view('pages.modal.index', [
             'modal' => $modal,
-            'kas_bank' => $kasdanbank
+            'kas_bank' => $kasdanbank,
+            'pemodal' => $pemodal,
         ]);
     }
 
