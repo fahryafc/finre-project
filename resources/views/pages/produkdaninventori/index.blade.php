@@ -230,6 +230,10 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal</label>
+                        <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
+                    </div>
                 </div>
                 <hr class="border-2 border-gray-300 my-2">
 
@@ -266,10 +270,6 @@
                 <hr class="border-2 border-gray-300 my-2">
 
                 <div class="grid grid-cols-3 gap-4">
-                    <div class="mb-3">
-                        <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal</label>
-                        <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
-                    </div>
                     <div class="mb-3">
                         <label for="harga_beli" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga Beli</label>
                         <input type="text" class="form-input" id="harga_beli_input" name="harga_beli" placeholder="Masukan Harga Beli" oninput="hitungTotal()">
@@ -313,10 +313,6 @@
                             <option value="{{ $key->nama_akun }}">{{ $key->nama_akun }}</option>
                             @endforeach
                         </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="tgl_jatuh_tempo" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Jatuh Tempo</label>
-                        <input type="text" class="form-input" name="tgl_jatuh_tempo" id="datepicker-basic">
                     </div>
                 </div>
                 <hr class="border-2 border-gray-300 my-2">
