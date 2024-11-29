@@ -1,8 +1,18 @@
-@extends('layouts.vertical', ['title' => 'Pajak PPNBM', 'sub_title' => 'Pages', 'mode' => $mode ?? '', 'demo' => $demo ?? ''])
+@extends('layouts.vertical', ['title' => 'Pajak PPnBM', 'mode' => $mode ?? '', 'demo' => $demo ?? ''])
 
 @section('css')
 <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+@vite(['node_modules/gridjs/dist/theme/mermaid.min.css'])
+@vite(['node_modules/nice-select2/dist/css/nice-select2.css'])
+@vite([
+'node_modules/flatpickr/dist/flatpickr.min.css',
+'node_modules/@simonwep/pickr/dist/themes/classic.min.css',
+'node_modules/@simonwep/pickr/dist/themes/monolith.min.css',
+'node_modules/@simonwep/pickr/dist/themes/nano.min.css',
+])
+@vite(['node_modules/sweetalert2/dist/sweetalert2.min.css'])
 @endsection
+
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div class="card-wrapper">
@@ -45,72 +55,58 @@
     </div>
 </div>
 
-
-<!-- table pajak -->
-<div class="card mt-10 p-5">
-    <div class="card-header mb-5">
-        <h4 class="card-title">Data Pajak</h4>
-    </div>
-    <div class="card-body">
-        <div class="overflow-x-auto mt-5">
-            <div class="min-w-full inline-block align-middle">
-                <div class="border rounded-lg divide-y divide-gray-200 dark:border-gray-700 dark:divide-gray-700">
-                    <div class="overflow-hidden p-5">              
-                        <table id="search-table">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <span class="flex items-center"> No </span>
-                                    </th>
-                                    <th>
-                                        <span class="flex items-center"> Nama Produk </span>
-                                    </th>
-                                    <th>
-                                        <span class="flex items-center"> Golongan Pajak </span>
-                                    </th>
-                                    <th>
-                                        <span class="flex items-center"> Pajak </span>
-                                    </th>
-                                    <th>
-                                        <span class="flex items-center"> Nominal Pajak </span>
-                                    </th>
-                                    <th>
-                                        <span class="flex items-center"> Total </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @php $counter = 1; @endphp
-                                @foreach($pajak as $pjk)
-                                <tr>
-                                    <td class="font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ $counter++ }}</td>
-                                    <td>{{ $pjk->nama_produk }}</td>
-                                    <td>{{ $pjk->gol_pajak }}</td>
-                                    <td>{{ $pjk->persen_pajak }}%</td>
-                                    <td>{{ "Rp. ".number_format($pjk->nominal_pajak, 0, ".", ".") }}</td>
-                                    <td>{{ "Rp. ".number_format($pjk->total_pajak, 0, ".", ".") }}</td>
-                                </tr>
-                                @php $counter++; @endphp
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="py-1 px-4">
-                        <nav class="flex items-center space-x-2">
-                        </nav>
-                    </div>
-                </div>
+<div class="grid lg grid-cols-1 gap-6">
+    <div class="card mt-10 p-5">
+        <div class="card-header mb-5">
+            <div class="flex justify-between items-center">
+                <h4 class="card-title">Data Pajak PPnBM</h4>
+                <!-- <button class="btn bg-[#307487] text-white" data-fc-target="modalTambahAkun" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
+                    Tambah Data
+                </button> -->
             </div>
+        </div>
+        <div class="card-body">
+            <table id="penjualan-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">No</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Deskripsi Barang Mewah</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Harga Barang</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Tarif PPNBM</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">PPNBM yang Dikenakan</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Tanggal Transaksi</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $counter = 1; @endphp
+                    @foreach($pajak_ppnbm as $ppnbm)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $counter + ($pajak_ppnbm->currentPage() - 1) * $pajak_ppnbm->perPage() }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ $ppnbm->deskripsi_barang }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($ppnbm->harga_barang, 0, ".", ".") }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ $ppnbm->tarif_ppnbm }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($ppnbm->ppnbm_dikenakan, 0, ".", ".") }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ \Carbon\Carbon::parse($ppnbm->tgl_transaksi)->format('d-m-Y') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ $ppnbm->keterangan }}</td>
+                    </tr>
+                    @php $counter++; @endphp
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-<!-- end table -->
 @endsection
 
 @section('script')
 @vite('resources/js/pages/charts-apex.js')
+@vite(['resources/js/pages/table-gridjs.js'])
+@vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
+@vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
+@vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-<script src="{{ asset('js/custom-js/pajak.js') }}" defer></script>
+<script src="{{ asset('js/custom-js/penjualan.js') }}" defer></script>
 @endsection

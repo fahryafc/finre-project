@@ -8,16 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Pajak_ppnbm extends Model
 {
     use HasFactory;
-    protected $table = 'Pajak';
-    protected $primaryKey = 'id_pajak';
+    protected $table = 'Pajak_ppnbm';
+    protected $primaryKey = 'id_ppnbm';
 
     public $incrementing = false;
 
     protected $fillable = [
-        'nama_produk',
-        'gol_pajak',
-        'total_pajak',
-        'persen_pajak',
-        'nominal_pajak'
+        'deskripsi_barang',
+        'harga_barang',
+        'tarif_ppnbm',
+        'ppnbm_dikenakan',
+        'tgl_transaksi',
+        'keterangan'
     ];
 }

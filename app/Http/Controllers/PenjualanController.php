@@ -139,6 +139,18 @@ class PenjualanController extends Controller
             ]);
         }
 
+        if($data->pajak != NULL || $data->pajak != ''){
+            // Masukkan data ke tabel pajak
+            DB::table('pajak_ppnbm')->insert([
+                'deskripsi_barang'      => $data,
+                'harga_barang'          => $data,
+                'tarif_ppnbm'           => $data,
+                'ppnbm_dikenakan'       => $data,
+                'tgl_transaksi'         => $data,
+                'keterangan'            => $data
+            ]);
+        }
+
         Alert::success('Data Added!', 'Data Created Successfully');
         return redirect()->route('penjualan.index');
         } catch (\Exception $e) {

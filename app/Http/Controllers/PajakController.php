@@ -62,13 +62,14 @@ class PajakController extends Controller
         }
     }
 
-    public function ppnbm(): View
+    public function ppnbm(): view
     {
-        try {
-            $pajak = DB::table('pajak')->get();
+
+        try {    
+            $pajak_ppnbm = DB::table('pajak_ppnbm')->paginate(5);
 
             return view('pages.pajak.pajak_ppnbm', [
-                'pajak' => $pajak
+                'pajak_ppnbm' => $pajak_ppnbm
             ]);
         } catch (\Exception $e) {
             return response()->json([

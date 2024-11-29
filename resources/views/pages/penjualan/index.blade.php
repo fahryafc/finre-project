@@ -235,7 +235,7 @@
                     <div class="mb-3"></div>
                     <div class="mb-3">
                         <div class="flex w-full">
-                            <label class="text-gray-800 text-sm font-medium inline-blockpajak-output p-2 w-1/3">
+                            <label class="text-gray-800 text-sm font-medium inline-block pajak-output p-2 w-1/3">
                                 Total Pemasukan
                             </label>
                             <input type="text" id="total_pemasukan" name="total_pemasukan" class="form-input ltr:rounded-r-none rtl:rounded-l-none bg-[#307487] flex-1" value="Total Pemasukan" style="color: white;" readonly/>

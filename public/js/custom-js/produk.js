@@ -1,3 +1,8 @@
+flatpickr("#datepicker-basic", {
+    dateFormat: "d-m-Y",
+    defaultDate: "today"
+});
+
 function formatRupiah(angka, prefix = "Rp ") {
     return prefix + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
@@ -32,9 +37,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // Daftarkan event listener pada input harga beli dan harga jual
     const hargaBeliInput = document.querySelector("#harga_beli_input");
     const hargaJualInput = document.querySelector("#harga_jual_input");
-
     if (hargaBeliInput) hargaBeliInput.addEventListener("input", handleInput);
     if (hargaJualInput) hargaJualInput.addEventListener("input", handleInput);
+    // untuk modal edit
+    // const hargaBeliEdit = document.querySelector("#harga_beli_Edit");
+    // const hargaJualEdit = document.querySelector("#harga_jual_Edit");
+    // if (hargaBeliEdit) hargaBeliEdit.addEventListener("input", handleInput);
+    // if (hargaJualEdit) hargaJualEdit.addEventListener("input", handleInput);
+
+
 });
 
 function hitungTotal() {
@@ -42,7 +53,7 @@ function hitungTotal() {
     const hargaBeliInput = document.getElementById("harga_beli_input");
     const kuantitasInput = document.getElementById("kuantitas");
     const nominalPajakInput = document.getElementById("nominal_pajak");
-    const totalPemasukanInput = document.getElementById("total_pemasukan");
+    const totalPemasukanInput = document.getElementById("total_transaksi");
 
     // Bersihkan format rupiah untuk perhitungan
     const hargaBeli = parseFloat(cleanRupiah(hargaBeliInput.value)) || 0;
@@ -62,9 +73,59 @@ function hitungTotal() {
 document.querySelector("form").addEventListener("submit", function (e) {
     const hargaBeliInput = document.getElementById("harga_beli_input");
     const hargaJualInput = document.getElementById("harga_jual_input");
-    const totalPemasukanInput = document.getElementById("total_pemasukan");
+    const totalPemasukanInput = document.getElementById("total_transaksi");
+    const nominalPajak = document.getElementById("nominal_pajak");
 
     hargaBeliInput.value = cleanRupiah(hargaBeliInput.value);
     hargaJualInput.value = cleanRupiah(hargaJualInput.value);
     totalPemasukanInput.value = cleanRupiah(totalPemasukanInput.value);
+    nominalPajak.value = cleanRupiah(nominalPajak.value);
 });
+
+function hitungTotalEdit(idProduk) {
+    // Ambil elemen input
+    const hargaBeliEdit = cleanRupiah(document.getElementById(`harga_beli_edit${idProduk}`).value);
+    const kuantitasEdit = parseInt(document.getElementById(`kuantitasEdit${idProduk}`).value || 0);
+    const nominalPajakEdit = document.getElementById(`nominal_pajak_edit${idProduk}`);
+    const totalPemasukanEdit = document.getElementById(`total_transaksi_edit${idProduk}`);
+
+    // Hitung pajak dan total pemasukan
+    const pajakPersen = 11 / 100; // 11%
+    const nominalPajak = hargaBeliEdit * kuantitasEdit * pajakPersen;
+    const totalPemasukan = hargaBeliEdit * kuantitasEdit;
+
+    // Tampilkan hasil dengan format rupiah
+    nominalPajakEdit.value = formatRupiah(nominalPajak.toFixed(0));
+    totalPemasukanEdit.value = formatRupiah(totalPemasukan.toFixed(0));
+}
+
+function openEditProduk(button) {
+    const idProduk = button.getAttribute('data-id-produk');
+
+    const hargaBeliEdit = document.getElementById(`harga_beli_edit${idProduk}`);
+    if (hargaBeliEdit && !hargaBeliEdit.hasAttribute("data-listener-added")) {
+        hargaBeliEdit.addEventListener("input", function (e) {
+            const parsedValue = cleanRupiah(e.target.value);
+            e.target.value = `${formatRupiah(parsedValue)}`;
+            hitungTotalEdit(idProduk);
+        });
+        hargaBeliEdit.setAttribute("data-listener-added", "true");
+    }
+
+    const hargaJualEdit = document.getElementById(`harga_jual_edit${idProduk}`);
+    if (hargaJualEdit && !hargaJualEdit.hasAttribute("data-listener-added")) {
+        hargaJualEdit.addEventListener("input", function (e) {
+            const parsedValue = cleanRupiah(e.target.value);
+            e.target.value = `${formatRupiah(parsedValue)}`;
+        });
+        hargaJualEdit.setAttribute("data-listener-added", "true");
+    }
+
+    const KuantitasEdit = document.getElementById(`kuantitasEdit${idProduk}`);
+    if (KuantitasEdit && !KuantitasEdit.hasAttribute("data-listener-added")) {
+        KuantitasEdit.addEventListener("input", () => hitungTotalEdit(idProduk));
+        KuantitasEdit.setAttribute("data-listener-added", "true");
+    }
+
+    hitungTotalEdit(idProduk);
+}

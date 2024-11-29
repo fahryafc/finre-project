@@ -28,6 +28,7 @@ class Produk extends Model
         'masuk_akun',
         'jns_pajak',
         'persen_pajak',	
-        'nominal_pajak'
+        'nominal_pajak',
+        'total_transaksi'
     ];
 }
