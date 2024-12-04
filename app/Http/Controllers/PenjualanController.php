@@ -81,7 +81,10 @@ class PenjualanController extends Controller
             'harga'             => $request->harga,
             'kuantitas'         => $request->kuantitas,
             'diskon'            => $request->diskon,
-            'pajak'             => $request->pajak,
+            'pajak'             => '1',
+            'jns_pajak'         => $request->jns_pajak,
+            'persen_pajak'      => $request->persen_pajak,
+            'nominal_pajak'     => $request->nominal_pajak,
             'piutang'           => $request->piutangSwitch ? 1 : 0, // Jika checked, isi dengan 1,
             'pembayaran'        => $request->pembayaran,
             'total_pemasukan'   => $request->total_pemasukan,
@@ -127,27 +130,27 @@ class PenjualanController extends Controller
         }
 
         // added data pajak jika ada
-        if($data->pajak != NULL || $data->pajak != ''){
+        if($data->pajak == '1' && $data->pajak == 'ppn'){
             // Masukkan data ke tabel pajak
             DB::table('pajak_ppn')->insert([
                 'jenis_transaksi'   => 'penjualan',
                 'keterangan'        => $data->produk,
                 'nilai_transaksi'   => $data->harga * $data->kuantitas,
-                'persen_pajak'      => $data->pajak,
+                'persen_pajak'      => $data->persen_pajak,
                 'jenis_pajak'       => 'Pajak Keluaran',
-                'saldo_pajak'       => $data->total_pemasukan * ($data->pajak / 100),
+                'saldo_pajak'       => $data->total_pemasukan * ($data->persen_pajak / 100),
             ]);
         }
 
-        if($data->pajak != NULL || $data->pajak != ''){
+        if($data->pajak == '1' && $data->pajak == 'ppnbm'){
             // Masukkan data ke tabel pajak
             DB::table('pajak_ppnbm')->insert([
-                'deskripsi_barang'      => $data,
-                'harga_barang'          => $data,
-                'tarif_ppnbm'           => $data,
+                'deskripsi_barang'      => $data->produk,
+                'harga_barang'          => $data->harga,
+                'tarif_ppnbm'           => $data->pajak,
                 'ppnbm_dikenakan'       => $data,
-                'tgl_transaksi'         => $data,
-                'keterangan'            => $data
+                'jenis_pajak'           => "Pajak Keluaran",
+                'tgl_transaksi'         => $data->tanggal
             ]);
         }
 

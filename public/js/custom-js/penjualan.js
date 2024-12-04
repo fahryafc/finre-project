@@ -89,7 +89,7 @@ function calculateTotal() {
     const ongkir = parseFloat(document.getElementById("ongkir").value.replace(/\D/g, '')) || 0;
     const kuantitas = parseFloat(document.getElementById("kuantitas").value) || 0;
     const diskonInput = parseFloat(document.getElementById("diskon").value) || 0;
-    const pajakInput = parseFloat(document.getElementById("pajak").value) || 0;
+    const pajakInput = parseFloat(document.getElementById("persen_pajak").value) || 0;
     const piutang = parseRupiahToNumber(document.getElementById("piutang").value) || 0;
 
     // Perhitungan total harga
@@ -121,7 +121,7 @@ function calculateTotal() {
 document.getElementById("harga").addEventListener("input", calculateTotal);
 document.getElementById("kuantitas").addEventListener("input", calculateTotal);
 document.getElementById("diskon").addEventListener("input", calculateTotal);
-document.getElementById("pajak").addEventListener("input", calculateTotal);
+document.getElementById("persen_pajak").addEventListener("input", calculateTotal);
 // Event listener untuk input harga, kuantitas, diskon, dan pajak
 document.getElementById("ongkir").addEventListener("input", function (e) {
     e.target.value = formatRupiah(e.target.value.replace(/[^,\d]/g, ''));
@@ -142,7 +142,7 @@ document.getElementById("kuantitas").addEventListener("input", function () {
 document.getElementById("diskon").addEventListener("input", function () {
     calculateTotal();
 });
-document.getElementById("pajak").addEventListener("input", function () {
+document.getElementById("persen_pajak").addEventListener("input", function () {
     calculateTotal();
 });
 
@@ -269,4 +269,20 @@ document.querySelector('form').addEventListener('submit', prepareForSubmit);
 // Event listener untuk memastikan perhitungan diupdate saat halaman di-load
 document.addEventListener("DOMContentLoaded", function () {
     calculateTotal();
+});
+
+document.getElementById('jns_pajak').addEventListener('change', function () {
+    const jenisPajak = this.value;
+    const persenPajakInput = document.getElementById('persen_pajak');
+
+    if (jenisPajak === 'ppn') {
+        persenPajakInput.value = '11'; // Set default value to 11%
+        persenPajakInput.setAttribute('disabled', 'disabled'); // Disable input
+    } else if (jenisPajak === 'ppnbm') {
+        persenPajakInput.value = ''; // Clear value
+        persenPajakInput.removeAttribute('disabled'); // Enable input
+    } else {
+        persenPajakInput.value = ''; // Clear value
+        persenPajakInput.setAttribute('disabled', 'disabled'); // Keep disabled
+    }
 });

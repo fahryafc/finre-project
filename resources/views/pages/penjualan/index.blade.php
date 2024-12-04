@@ -128,7 +128,7 @@
                         <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
                     </div>
                 </div>
-                <hr class="border-2 border-gray-300 my-2">
+                <hr class="border-1 border-gray-300 my-1">
                 <div class="grid grid-cols-2 gap-4">
                     <!-- col 1 -->
                     <div class="mb-3">
@@ -141,7 +141,7 @@
                         </select>
                     </div>
                 </div>
-                <hr class="border-2 border-gray-300 my-2">
+                <hr class="border-1 border-gray-300 my-1">
                 <!-- col 2 -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="mb-3">
@@ -188,9 +188,28 @@
                         </select>
                     </div>
                 </div>
-                <hr class="border-2 border-gray-300 my-2">
-                <!-- col 3 -->
-                <div class="grid grid-cols-3 gap-4">
+                <hr class="border-1 border-gray-300 my-2">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="mb-3">
+                        <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2"> Jenis Pajak </label>
+                        <select id="jns_pajak" name="jns_pajak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" selected>-- Jenis Pajak --</option>
+                            <option value="ppn">PPN</option>
+                            <option value="ppnbm">PPnBM</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="persen_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak (%)</label>
+                        <div class="flex w-full">
+                            <input type="text" id="persen_pajak" name="persen_pajak" placeholder="Masukan Pajak (%)" class="form-input ltr:rounded-r-none rtl:rounded-l-none  w-1/3"/>
+                            <input type="text" id="nominal_pajak" name="nominal_pajak" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 pajak-output flex-1" value="" disabled>
+                        </div>
+                    </div>
+                </div>
+                <hr class="border-1 border-gray-300 my-1">
+
+                <div class="grid grid-cols-2 gap-4">
                     <div class="mb-3">
                         <label for="diskon" class="text-gray-800 text-sm font-medium inline-block mb-2">Diskon</label>
                         <div class="flex w-full">
@@ -198,13 +217,6 @@
                             <div class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 diskon-output flex-1">
                                 Rp. 0
                             </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak</label>
-                        <div class="flex w-full">
-                            <input type="text" id="pajak" name="pajak" placeholder="Masukan Pajak" class="form-input ltr:rounded-r-none rtl:rounded-l-none  w-1/3" />
-                            <input type="text" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 pajak-output flex-1" value="" disabled>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -229,7 +241,7 @@
                         <input type="text" class="form-input" name="tgl_jatuh_tempo" id="datepicker-basic">
                     </div>
                 </div>
-                <hr class="border-2 border-gray-300 my-2">
+                <hr class="border-1 border-gray-300 my-2">
                 <!-- col 4 -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="mb-3"></div>
@@ -275,7 +287,7 @@
                         <input type="text" class="form-input" name="tanggal" id="datepicker-basic" value="{{ old('tanggal', $pnj->tanggal) }}">
                     </div>
                 </div>
-                <hr class="border-2 border-gray-300 my-2">
+                <hr class="border-1 border-gray-300 my-1">
                 <div class="grid grid-cols-2 gap-4">
                     <!-- col 1 -->
                     <div class="mb-3">
@@ -288,7 +300,7 @@
                         </select>
                     </div>
                 </div>
-                <hr class="border-2 border-gray-300 my-2">
+                <hr class="border-1 border-gray-300 my-1">
                 <!-- col 2 -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="mb-3">
@@ -335,7 +347,7 @@
                         </select>
                     </div>
                 </div>
-                <hr class="border-2 border-gray-300 my-2">
+                <hr class="border-1 border-gray-300 my-1">
                 <!-- col 3 -->
                 <div class="grid grid-cols-3 gap-4">
                     <div class="mb-3">
@@ -381,7 +393,7 @@
                     </div>
                 </div>
 
-                <hr class="border-2 border-gray-300 my-2">
+                <hr class="border-1 border-gray-300 my-1">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="mb-3"></div>
                     <div class="mb-3">

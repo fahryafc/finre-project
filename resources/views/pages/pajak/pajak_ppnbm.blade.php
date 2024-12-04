@@ -75,7 +75,6 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Tarif PPNBM</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">PPNBM yang Dikenakan</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Tanggal Transaksi</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Keterangan</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,7 +87,6 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ $ppnbm->tarif_ppnbm }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($ppnbm->ppnbm_dikenakan, 0, ".", ".") }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ \Carbon\Carbon::parse($ppnbm->tgl_transaksi)->format('d-m-Y') }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ $ppnbm->keterangan }}</td>
                     </tr>
                     @php $counter++; @endphp
                     @endforeach
