@@ -68,6 +68,45 @@ class PenjualanController extends Controller
         }
     }
 
+    public function create(){
+        try {
+            $penjualan = Penjualan::leftJoin('hutangpiutang', 'penjualan.id_kontak', '=', 'hutangpiutang.id_kontak')
+                ->select('penjualan.*', 'hutangpiutang.nominal as nominal_piutang', 'hutangpiutang.jenis')
+                ->groupBy('penjualan.id_penjualan')
+                ->paginate(5);
+
+            $akun = DB::table('akun')->where('kategori_akun', '=', 'Aset/Harta')->get();
+            $kasdanbank = DB::table('kas_bank')->get();
+            $satuan = DB::table('satuan')->get();
+            $produk = DB::table('produk')->get();
+            $kategori = DB::table('kategori')->get();
+            $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
+            $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
+            $pelanggan = DB::table('kontak')->where('jenis_kontak', '=', 'pelanggan')->get();
+
+            // $data_penjualan = response()->json($penjualan);
+            // dd($akun);
+
+            return view('pages.penjualan.create', [
+                'penjualan' => $penjualan,
+                'akun' => $akun,
+                'kas_bank' => $kasdanbank,
+                'satuan' => $satuan,
+                'produk' => $produk,
+                'kategori' => $kategori,
+                'karyawanKontak' => $karyawanKontak,
+                'vendorKontak' => $vendorKontak,
+                'pelanggan' => $pelanggan
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Get all datas penjualan failed',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function store(Request $request): RedirectResponse
     {
         // find kategori produk
