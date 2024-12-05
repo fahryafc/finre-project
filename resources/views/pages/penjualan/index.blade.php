@@ -80,8 +80,8 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">0</td>
                         @endif
 
-                        @if (!empty($p->pajak))
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$p->pajak}}%</td>
+                        @if (!empty($p->persen_pajak))
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$p->persen_pajak}}%</td>
                         @else
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">0</td>
                         @endif
@@ -194,7 +194,7 @@
                     <div class="mb-3">
                         <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2"> Jenis Pajak </label>
                         <select id="jns_pajak" name="jns_pajak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option value="" selected>-- Jenis Pajak --</option>
+                            <option value="jns_pajak" selected>-- Jenis Pajak --</option>
                             <option value="ppn">PPN</option>
                             <option value="ppnbm">PPnBM</option>
                         </select>
@@ -202,7 +202,7 @@
                     <div class="mb-3">
                         <label for="persen_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak (%)</label>
                         <div class="flex w-full">
-                            <input type="text" id="persen_pajak" name="persen_pajak" placeholder="Masukan Pajak (%)" class="form-input ltr:rounded-r-none rtl:rounded-l-none  w-1/3"/>
+                            <input type="text" id="persen_pajak" name="persen_pajak" placeholder="Masukan Pajak (%)" class="form-input ltr:rounded-r-none rtl:rounded-l-none  w-1/3" disabled/>
                             <input type="text" id="nominal_pajak" name="nominal_pajak" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 pajak-output flex-1" value="" disabled>
                         </div>
                     </div>

@@ -286,3 +286,4 @@ document.getElementById('jns_pajak').addEventListener('change', function () {
         persenPajakInput.setAttribute('disabled', 'disabled'); // Keep disabled
     }
 });
+document.getElementById('persen_pajak').setAttribute('disabled', 'disabled');

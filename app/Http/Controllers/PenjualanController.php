@@ -8,7 +8,8 @@ use App\Models\Akun;
 use App\Models\Satuan;
 use App\Models\Kasdanbank;
 use App\Models\Produk;
-use App\Models\Pajak;
+use App\Models\Pajak_ppn;
+use App\Models\Pajak_ppnbm;
 use App\Models\Arusuang;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -84,8 +85,9 @@ class PenjualanController extends Controller
             'pajak'             => '1',
             'jns_pajak'         => $request->jns_pajak,
             'persen_pajak'      => $request->persen_pajak,
-            'nominal_pajak'     => $request->nominal_pajak,
+            'nominal_pajak'     => $request->total_pemasukan * ($request->persen_pajak / 100),
             'piutang'           => $request->piutangSwitch ? 1 : 0, // Jika checked, isi dengan 1,
+            'ongkir'            => $request->ongkir,
             'pembayaran'        => $request->pembayaran,
             'total_pemasukan'   => $request->total_pemasukan,
             'tgl_jatuh_tempo'   => $request->tgl_jatuh_tempo,
@@ -130,7 +132,7 @@ class PenjualanController extends Controller
         }
 
         // added data pajak jika ada
-        if($data->pajak == '1' && $data->pajak == 'ppn'){
+        if($data->pajak == 1 && $data->jns_pajak == 'ppn'){
             // Masukkan data ke tabel pajak
             DB::table('pajak_ppn')->insert([
                 'jenis_transaksi'   => 'penjualan',
@@ -142,13 +144,13 @@ class PenjualanController extends Controller
             ]);
         }
 
-        if($data->pajak == '1' && $data->pajak == 'ppnbm'){
+        if($data->pajak == 1 && $data->jns_pajak == 'ppnbm'){
             // Masukkan data ke tabel pajak
             DB::table('pajak_ppnbm')->insert([
                 'deskripsi_barang'      => $data->produk,
                 'harga_barang'          => $data->harga,
-                'tarif_ppnbm'           => $data->pajak,
-                'ppnbm_dikenakan'       => $data,
+                'tarif_ppnbm'           => $data->persen_pajak,
+                'ppnbm_dikenakan'       => $data->total_pemasukan * ($data->persen_pajak / 100),
                 'jenis_pajak'           => "Pajak Keluaran",
                 'tgl_transaksi'         => $data->tanggal
             ]);
@@ -236,6 +238,31 @@ class PenjualanController extends Controller
                     'jenis'         => 'piutang',
                     'nominal'       => $request->piutang,
                     'status'        => 'Belum Lunas',
+                ]);
+            }
+
+            // added data pajak jika ada
+            if($penjualan->pajak == 1 && $penjualan->jns_pajak == 'ppn'){
+                // Masukkan data ke tabel pajak
+                DB::table('pajak_ppn')->insert([
+                    'jenis_transaksi'   => 'penjualan',
+                    'keterangan'        => $penjualan->produk,
+                    'nilai_transaksi'   => $penjualan->harga * $penjualan->kuantitas,
+                    'persen_pajak'      => $penjualan->persen_pajak,
+                    'jenis_pajak'       => 'Pajak Keluaran',
+                    'saldo_pajak'       => $penjualan->total_pemasukan * ($data->persen_pajak / 100),
+                ]);
+            }
+
+            if($penjualan->pajak == 1 && $penjualan->jns_pajak == 'ppnbm'){
+                // Masukkan data ke tabel pajak
+                DB::table('pajak_ppnbm')->insert([
+                    'deskripsi_barang'      => $penjualan->produk,
+                    'harga_barang'          => $penjualan->harga,
+                    'tarif_ppnbm'           => $penjualan->persen_pajak,
+                    'ppnbm_dikenakan'       => $penjualan->total_pemasukan * ($penjualan->persen_pajak / 100),
+                    'jenis_pajak'           => "Pajak Keluaran",
+                    'tgl_transaksi'         => $penjualan->tanggal
                 ]);
             }
 

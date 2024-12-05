@@ -73,6 +73,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Deskripsi Barang Mewah</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Harga Barang</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Tarif PPNBM</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Jenis Pajak</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">PPNBM yang Dikenakan</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Tanggal Transaksi</th>
                     </tr>
@@ -84,7 +85,16 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $counter + ($pajak_ppnbm->currentPage() - 1) * $pajak_ppnbm->perPage() }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ $ppnbm->deskripsi_barang }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($ppnbm->harga_barang, 0, ".", ".") }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ $ppnbm->tarif_ppnbm }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ $ppnbm->tarif_ppnbm }}%</td>
+                        @if ($ppnbm->jenis_pajak == 'Pajak Keluaran')
+                            <td>
+                                <span class="whitespace-nowrap gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">{{ $ppnbm->jenis_pajak }}</span>
+                            </td>
+                        @else
+                            <td>
+                                <span class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">{{ $ppnbm->jenis_pajak }}</span>
+                            </td>
+                        @endif
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($ppnbm->ppnbm_dikenakan, 0, ".", ".") }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ \Carbon\Carbon::parse($ppnbm->tgl_transaksi)->format('d-m-Y') }}</td>
                     </tr>
