@@ -38,7 +38,10 @@ Route::get('/', function () {
 });
 
 Route::resource('/dashboard', \App\Http\Controllers\DashboardController::class);
+
+Route::get('/penjualan/edit', [PenjualanController::class, 'edit'])->name('penjualan.edit');
 Route::resource('/penjualan', \App\Http\Controllers\PenjualanController::class);
+
 Route::get('/sales-data', [PenjualanController::class, 'getSalesData']);
 Route::resource('/pengeluaran', \App\Http\Controllers\PengeluaranController::class);
 
