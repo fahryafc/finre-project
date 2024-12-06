@@ -16,6 +16,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Exception;
 
@@ -127,6 +128,9 @@ class PenjualanController extends Controller
             ? $this->generateKodeReff('PPNBM') 
             : $this->generateKodeReff('PPN');
 
+        // print_r($kodeReff);
+        // exit;
+
         DB::beginTransaction();
 
         try {
@@ -134,6 +138,12 @@ class PenjualanController extends Controller
 
             if (!$kategori_produk) {
                 throw new \Exception('Produk tidak ditemukan!');
+            }
+
+            if($request->jns_pajak == 'ppn'){
+                $persen_pajak = '11';
+            }else{
+                $persen_pajak = $request->persen_pajak;
             }
 
             $data = Penjualan::create([
@@ -148,8 +158,8 @@ class PenjualanController extends Controller
                 'pajak'             => '1',
                 'kode_reff_pajak'   => $kodeReff,
                 'jns_pajak'         => $request->jns_pajak,
-                'persen_pajak'      => $request->persen_pajak,
-                'nominal_pajak'     => $request->total_pemasukan * ($request->persen_pajak / 100),
+                'persen_pajak'      => $persen_pajak,
+                'nominal_pajak'     => $request->total_pemasukan * ($persen_pajak / 100),
                 'piutang'           => $request->piutangSwitch ? 1 : 0,
                 'ongkir'            => $request->ongkir,
                 'pembayaran'        => $request->pembayaran,
@@ -332,29 +342,29 @@ class PenjualanController extends Controller
                 ]);
             }
 
-            // added data pajak jika ada
-            if($penjualan->pajak == 1 && $penjualan->jns_pajak == 'ppn'){
-                // Masukkan data ke tabel pajak
-                DB::table('pajak_ppn')->insert([
-                    'jenis_transaksi'   => 'penjualan',
-                    'keterangan'        => $penjualan->produk,
-                    'nilai_transaksi'   => $penjualan->harga * $penjualan->kuantitas,
-                    'persen_pajak'      => $penjualan->persen_pajak,
-                    'jenis_pajak'       => 'Pajak Keluaran',
-                    'saldo_pajak'       => $penjualan->total_pemasukan * ($data->persen_pajak / 100),
-                ]);
-            }
-
-            if($penjualan->pajak == 1 && $penjualan->jns_pajak == 'ppnbm'){
-                // Masukkan data ke tabel pajak
-                DB::table('pajak_ppnbm')->insert([
-                    'deskripsi_barang'      => $penjualan->produk,
-                    'harga_barang'          => $penjualan->harga,
-                    'tarif_ppnbm'           => $penjualan->persen_pajak,
-                    'ppnbm_dikenakan'       => $penjualan->total_pemasukan * ($penjualan->persen_pajak / 100),
-                    'jenis_pajak'           => "Pajak Keluaran",
-                    'tgl_transaksi'         => $penjualan->tanggal
-                ]);
+            // Menambahkan data pajak jika ada
+            if ($data->pajak == 1) {
+                if ($data->jns_pajak == 'ppn') {
+                    DB::table('pajak_ppn')->insert([
+                        'kode_reff'         => $data->kode_reff_pajak,
+                        'jenis_transaksi'   => 'penjualan',
+                        'keterangan'        => $data->produk,
+                        'nilai_transaksi'   => $data->harga * $data->kuantitas,
+                        'persen_pajak'      => $data->persen_pajak,
+                        'jenis_pajak'       => 'Pajak Keluaran',
+                        'saldo_pajak'       => $data->total_pemasukan * ($data->persen_pajak / 100),
+                    ]);
+                } elseif ($data->jns_pajak == 'ppnbm') {
+                    DB::table('pajak_ppnbm')->insert([
+                        'kode_reff'             => $data->kode_reff_pajak,
+                        'deskripsi_barang'      => $data->produk,
+                        'harga_barang'          => $data->harga,
+                        'tarif_ppnbm'           => $data->persen_pajak,
+                        'ppnbm_dikenakan'       => $data->total_pemasukan * ($data->persen_pajak / 100),
+                        'jenis_pajak'           => "Pajak Keluaran",
+                        'tgl_transaksi'         => $data->tanggal,
+                    ]);
+                }
             }
 
             Alert::success('Data Updated!', 'Data Updated Successfully');

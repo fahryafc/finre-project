@@ -14,6 +14,7 @@ class Pajak_ppnbm extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'kode_reff',
         'deskripsi_barang',
         'harga_barang',
         'tarif_ppnbm',

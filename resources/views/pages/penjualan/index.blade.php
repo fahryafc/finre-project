@@ -43,9 +43,13 @@
         <div class="card-header mb-5">
             <div class="flex justify-between items-center">
                 <h4 class="card-title">Data Penjualan</h4>
-                <button class="btn bg-[#307487] text-white" data-fc-target="modalTambahAkun" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
+                <!-- <button class="btn bg-[#307487] text-white" data-fc-target="modalTambahAkun" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
                     Tambah Data
-                </button>
+                </button> -->
+                <a href="{{ route('penjualan.create') }}" class="btn bg-[#307487] text-white">
+                    <i class="mgc_add_fill text-base me-4"></i>
+                    Tambah Data 
+                </a>
             </div>
         </div>
         <div class="card-body">

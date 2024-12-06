@@ -14,6 +14,7 @@ class Pajak_ppn extends Model
     public $incrementing = false;
 
     protected $fillable = [        
+        'kode_reff',
         'jenis_transaksi',
         'keterangan',
         'nilai_transaksi',

@@ -23,6 +23,7 @@ class Penjualan extends Model
         'kuantitas',
         'diskon',
         'pajak',
+        'kode_reff_pajak',
         'jns_pajak',
         'persen_pajak',
         'nominal_pajak',
