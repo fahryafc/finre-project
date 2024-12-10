@@ -39,7 +39,7 @@ Route::get('/', function () {
 
 Route::resource('/dashboard', \App\Http\Controllers\DashboardController::class);
 
-Route::get('/penjualan/edit', [PenjualanController::class, 'edit'])->name('penjualan.edit');
+Route::get('/penjualan/edit{id}', [PenjualanController::class, 'edit'])->name('penjualan.edit');
 Route::resource('/penjualan', \App\Http\Controllers\PenjualanController::class);
 
 Route::get('/sales-data', [PenjualanController::class, 'getSalesData']);

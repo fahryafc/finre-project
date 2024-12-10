@@ -39,7 +39,7 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div class="mb-3">
                             <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Penjualan</label>
-                            <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
+                            <input type="text" class="form-input tgl_penjualan" name="tanggal" id="datepicker-basic">
                         </div>
                     </div>
                     <hr class="border-1 border-gray-300 my-1">

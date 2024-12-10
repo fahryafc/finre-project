@@ -1,6 +1,16 @@
-flatpickr("#datepicker-basic", {
+document.addEventListener('DOMContentLoaded', function () {
+    const tanggalInput = document.querySelector('.tgl_edit');
+    const defaultDate = tanggalInput.getAttribute('data-tanggal'); // Ambil nilai dari data-tanggal
+
+    flatpickr(".tgl_edit", {
+        dateFormat: "d-m-Y",
+        defaultDate: defaultDate // Set nilai default date
+    });
+});
+
+flatpickr(".tgl_penjualan", {
     dateFormat: "d-m-Y",
-    defaultDate: "today"
+    defaultDate: 'today',
 });
 
 if (document.getElementById("penjualan-table") && typeof simpleDatatables.DataTable !== 'undefined') {

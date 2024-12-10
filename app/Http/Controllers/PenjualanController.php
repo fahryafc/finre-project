@@ -240,13 +240,28 @@ class PenjualanController extends Controller
         return floatval($cleaned) ?: 0;
     }
 
-    public function edit(){
+    public function edit($id){
         try {
-            $penjualan = Penjualan::leftJoin('hutangpiutang', 'penjualan.id_kontak', '=', 'hutangpiutang.id_kontak')
-                ->select('penjualan.*', 'hutangpiutang.nominal as nominal_piutang', 'hutangpiutang.jenis')
-                ->groupBy('penjualan.id_penjualan')
-                ->paginate(5);
 
+            $penjualan = Penjualan::leftJoin('hutangpiutang', 'penjualan.id_kontak', '=', 'hutangpiutang.id_kontak')
+                ->leftJoin('pajak_ppn', function ($join) {
+                    $join->on('penjualan.kode_reff_pajak', '=', 'pajak_ppn.kode_reff')
+                        ->where('penjualan.jns_pajak', '=', 'ppn');
+                })
+                ->leftJoin('pajak_ppnbm', function ($join) {
+                    $join->on('penjualan.kode_reff_pajak', '=', 'pajak_ppnbm.kode_reff')
+                        ->where('penjualan.jns_pajak', '=', 'ppnbm');
+                })
+                ->select(
+                    'penjualan.*', 
+                    'hutangpiutang.nominal as nominal_piutang', 
+                    'hutangpiutang.jenis', 
+                    'pajak_ppn.*', 
+                    'pajak_ppnbm.*'
+                )
+                ->where('penjualan.id_penjualan', $id)
+                ->first();
+            $penjualan->tanggal = Carbon::parse($penjualan->tanggal)->format('d-m-Y');
             $akun = DB::table('akun')->where('kategori_akun', '=', 'Aset/Harta')->get();
             $kasdanbank = DB::table('kas_bank')->get();
             $satuan = DB::table('satuan')->get();
