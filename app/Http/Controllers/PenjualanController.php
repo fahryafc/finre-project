@@ -254,6 +254,7 @@ class PenjualanController extends Controller
                 })
                 ->select(
                     'penjualan.*', 
+                    'penjualan.persen_pajak as pajak_persen', 
                     'hutangpiutang.nominal as nominal_piutang', 
                     'hutangpiutang.jenis', 
                     'pajak_ppn.*', 

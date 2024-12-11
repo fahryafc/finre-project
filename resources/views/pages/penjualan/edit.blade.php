@@ -79,11 +79,11 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="mb-3">
                                     <label for="harga" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga</label>
-                                    <input type="text" class="form-input" id="hargaEdit{{$penjualan->id_penjualan}}" name="harga" aria-describedby="harga" placeholder="Masukan Harga" value="{{ old('harga','Rp '.number_format($penjualan->harga, 0, '.', '.')) }}">
+                                    <input type="text" class="form-input" id="harga" name="harga" aria-describedby="harga" placeholder="Masukan Harga" value="{{ old('harga','Rp '.number_format($penjualan->harga, 0, '.', '.')) }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="kuantitas" class="text-gray-800 text-sm font-medium inline-block mb-2">Kuantitas</label>
-                                    <input type="text" class="form-input" id="kuantitasEdit{{$penjualan->id_penjualan}}" name="kuantitas" aria-describedby="kuantitas" placeholder="Masukan Kuantitas" value="{{ old('kuantitas', $penjualan->kuantitas) }}">
+                                    <input type="text" class="form-input" id="kuantitas" name="kuantitas" aria-describedby="kuantitas" placeholder="Masukan Kuantitas" value="{{ old('kuantitas', $penjualan->kuantitas) }}">
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -106,18 +106,18 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div class="mb-3">
-                                <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2"> Jenis Pajak </label>
+                                <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Jenis Pajak</label>
                                 <select id="jns_pajak" name="jns_pajak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <option value="jns_pajak" selected>-- Jenis Pajak --</option>
-                                    <option value="ppn">PPN</option>
-                                    <option value="ppnbm">PPnBM</option>
+                                    <option value="">-- Jenis Pajak --</option>
+                                    <option value="ppn" {{ $penjualan->jns_pajak == 'ppn' ? 'selected' : '' }}>PPN</option>
+                                    <option value="ppnbm" {{ $penjualan->jns_pajak == 'ppnbm' ? 'selected' : '' }}>PPnBM</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="persen_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak (%)</label>
                                 <div class="flex w-full">
-                                    <input type="text" id="persen_pajak{{$penjualan->id_penjualan}}" name="persen_pajak" placeholder="Masukan Pajak (%)" class="form-input ltr:rounded-r-none rtl:rounded-l-none  w-1/3" disabled/>
-                                    <input type="text" id="nominal_pajak{{$penjualan->id_penjualan}}" name="nominal_pajak" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 pajak-output-edit flex-1" value="" disabled>
+                                    <input type="text" id="persen_pajak" name="persen_pajak" placeholder="Masukan Pajak (%)" class="form-input ltr:rounded-r-none rtl:rounded-l-none  w-1/3" value="{{$penjualan->pajak_persen}}" disabled>
+                                    <input type="text" id="nominal_pajak" name="nominal_pajak" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 pajak-output flex-1" value="{{ old('nominal_pajak','Rp '.number_format($penjualan->nominal_pajak, 0, '.', '.')) }}" disabled>
                                 </div>
                             </div>
                         </div>
@@ -127,28 +127,28 @@
                             <div class="mb-3">
                                 <label for="diskon" class="text-gray-800 text-sm font-medium inline-block mb-2">Diskon</label>
                                 <div class="flex w-full">
-                                    <input type="text" id="diskonEdit{{$penjualan->id_penjualan}}" name="diskon" placeholder="Masukan Diskon" class="form-input ltr:rounded-r-none rtl:rounded-l-none w-1/3" value="{{ old('diskon', $penjualan->diskon) }}" />
-                                    <div class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 diskon-output-edit flex-1" id="diskon-output-edit{{$penjualan->id_penjualan}}">
+                                    <input type="text" id="diskon" name="diskon" placeholder="Masukan Diskon" class="form-input ltr:rounded-r-none rtl:rounded-l-none w-1/3" value="{{ old('diskon', $penjualan->diskon) }}" />
+                                    <div class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400 diskon-output flex-1" id="diskon-output">
                                         Rp. 0
                                     </div>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="ongkir" class="text-gray-800 text-sm font-medium inline-block mb-2">Biaya Pengiriman</label>
-                                <input type="text" class="form-input" id="ongkirEdit{{$penjualan->id_penjualan}}" name="ongkir" aria-describedby="ongkir" placeholder="Masukan Ongkir">
+                                <input type="text" class="form-input" id="ongkir" name="ongkir" aria-describedby="ongkir" value="{{ old('ongkir','Rp '.number_format($penjualan->ongkir, 0, '.', '.')) }}" placeholder="Masukan Ongkir">
                             </div>
                             <div class="mb-3">
                                 <div class="flex items-center">
                                     <label for="piutangSwitch" class="text-gray-800 text-sm font-medium">Piutang</label>
                                     <label class="inline-flex items-center ml-2">
-                                        <input type="checkbox" id="piutangSwitch{{$penjualan->id_penjualan}}" name="piutangSwitch" class="form-switch text-primary" onclick="togglePiutangEdit({{$penjualan->id_penjualan}})" 
+                                        <input type="checkbox" id="piutangSwitch" name="piutangSwitch" class="form-switch text-primary" onclick="togglePiutang({{$penjualan->id_penjualan}})" 
                                         {{ $penjualan->piutang == 1 ? 'checked' : '' }}>
                                     </label>
                                 </div>
 
                                 <!-- Input Field for Piutang (Hidden by Default) -->
-                                <div id="piutangInputContainer{{$penjualan->id_penjualan}}" class="mt-2 {{ $penjualan->piutang == 1 ? '' : 'hidden' }}">
-                                    <input type="text" class="form-input w-full" id="piutangEdit{{$penjualan->id_penjualan}}" name="piutang" aria-describedby="piutang" placeholder="Masukan Piutang" 
+                                <div id="piutangInputContainer" class="mt-2 {{ $penjualan->piutang == 1 ? '' : 'hidden' }}">
+                                    <input type="text" class="form-input w-full" id="piutang" name="piutang" aria-describedby="piutang" placeholder="Masukan Piutang" 
                                     value="{{ old('piutang','Rp '.number_format($penjualan->nominal_piutang, 0, '.', '.')) }}">
                                 </div>
                             </div>
@@ -166,7 +166,7 @@
                                     <label class="text-gray-800 text-sm font-medium inline-blockpajak-output p-2 w-1/3">
                                         Total Pemasukan
                                     </label>
-                                    <input type="text" id="total_pemasukan_edit{{$penjualan->id_penjualan}}" name="total_pemasukan" class="form-input ltr:rounded-r-none rtl:rounded-l-none bg-[#307487] flex-1" style="color: white;" value="{{ old('total_pemasukan', $penjualan->total_pemasukan) }}" readonly/>
+                                    <input type="text" id="total_pemasukan" name="total_pemasukan" class="form-input ltr:rounded-r-none rtl:rounded-l-none bg-[#307487] flex-1" style="color: white;" value="{{ old('total_pemasukan','Rp '.number_format($penjualan->total_pemasukan, 0, '.', '.')) }}" readonly/>
                                 </div>
                             </div>
                         </div>
@@ -182,9 +182,9 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+<!-- @vite('resources/js/pages/charts-apex.js') -->
 @vite(['resources/js/pages/table-gridjs.js'])
-@vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
+@vite(['resources/js/pages/highlight.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
