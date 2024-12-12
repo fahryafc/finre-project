@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ModalController;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KasdanbankController;
 use App\Http\Controllers\HutangpiutangController;
@@ -40,10 +41,10 @@ Route::get('/', function () {
 Route::resource('/dashboard', \App\Http\Controllers\DashboardController::class);
 
 Route::get('/penjualan/edit{id}', [PenjualanController::class, 'edit'])->name('penjualan.edit');
-Route::resource('/penjualan', \App\Http\Controllers\PenjualanController::class);
+Route::resource('/penjualan', PenjualanController::class);
 
-Route::get('/sales-data', [PenjualanController::class, 'getSalesData']);
-Route::resource('/pengeluaran', \App\Http\Controllers\PengeluaranController::class);
+Route::get('/pengeluaran/edit{id}', [PengeluaranController::class, 'edit'])->name('pengeluaran.edit');
+Route::resource('/pengeluaran', PengeluaranController::class);
 
 // Route::post('/hutangpiutang/storePembayaranHutang', [HutangPiutangController::class, 'storePembayaranHutang'])->name('hutangpiutang.store');
 Route::get('/hutangpiutang/detail/{idKontak}', [HutangpiutangController::class, 'getHutangDetail']);

@@ -3,6 +3,25 @@ flatpickr("#datepicker-basic", {
     defaultDate: "today"
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    const collapsibleLinks = document.querySelectorAll('[data-fc-type="collapse"]');
+
+    collapsibleLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            const subMenu = this.nextElementSibling;
+            if (subMenu) {
+                if (subMenu.classList.contains('hidden')) {
+                    subMenu.classList.remove('hidden');
+                } else {
+                    subMenu.classList.add('hidden');
+                }
+            }
+        });
+    });
+});
+
 function validateNumberInput(input) {
     const originalValue = input.value;
     const numericValue = originalValue.replace(/\D/g, '');
@@ -41,28 +60,6 @@ function toggleCollapseHutang() {
     }
 }
 
-document.getElementById('modalTambahPengeluaran').addEventListener('show', function () {
-    const pajakButton = document.getElementById('pajakButton');
-    const hutangButton = document.getElementById('hutangButton');
-
-    // Reset switch dan collapse
-    hutangButton.checked = false;
-    collapseElementHutang.classList.add('hidden');
-    pajakButton.checked = false;
-    collapseElementPajak.classList.add('hidden');
-});
-
-document.getElementById('modalTambahPengeluaran').addEventListener('hide', function () {
-    const pajakButton = document.getElementById('pajakButton');
-    const hutangButton = document.getElementById('hutangButton');
-
-    // Reset switch dan collapse
-    hutangButton.checked = false;
-    collapseElementHutang.classList.add('hidden');
-    pajakButton.checked = false;
-    collapseElementPajak.classList.add('hidden');
-});
-
 function formatRupiah(input) {
     let angka = input.value.replace(/[^,\d]/g, '');
     let split = angka.split(',');
@@ -81,16 +78,74 @@ function formatRupiah(input) {
     hitungPajak(); // Memanggil fungsi perhitungan setelah format
 }
 
-function aturPajakDanHitung() {
-    const jnsPajak = document.getElementById('jns_pajak').value;
-    const pajakInput = document.getElementById('pajak');
+// Fungsi untuk menghapus format Rupiah dan konversi ke angka
+function parseRupiahToNumber(rupiah) {
+    // Hapus karakter selain angka dan koma, kemudian ganti koma menjadi titik desimal untuk angka desimal
+    return parseFloat(rupiah.replace(/[^,\d]/g, '').replace(',', '.')) || 0;
+}
 
-    if (jnsPajak === "ppn") {
-        pajakInput.value = 10;
-        pajakInput.setAttribute("disabled", "disabled");
+document.addEventListener('DOMContentLoaded', () => {
+    function togglePengeluaran() {
+        const jenisPengeluaran = document.getElementById('jenis_pengeluaran').value;
+        const divNamaKaryawan = document.getElementById('div_nama_karyawan');
+        const divNamaVendor = document.getElementById('div_nama_vendor');
+        const namaKaryawan = document.getElementById('nama_karyawan');
+        const namaVendor = document.getElementById('nama_vendor');
+
+        // Sembunyikan kedua elemen terlebih dahulu
+        divNamaKaryawan.classList.add('hidden');
+        divNamaVendor.classList.add('hidden');
+        namaKaryawan.disabled = true;
+        namaVendor.disabled = true;
+
+        // Tampilkan elemen berdasarkan pilihan dan aktifkan input yang benar
+        if (jenisPengeluaran === "gaji_karyawan") {
+            divNamaKaryawan.classList.remove('hidden');
+            namaKaryawan.disabled = false;
+        } else if (jenisPengeluaran === "pembayaran_vendor") {
+            divNamaVendor.classList.remove('hidden');
+            namaVendor.disabled = false;
+        }
+    }
+
+    document.getElementById('jenis_pengeluaran').addEventListener('change', togglePengeluaran);
+    togglePengeluaran();
+});
+
+function aturPajakDanHitung() {
+    const jenisPajak = document.getElementById('jns_pajak').value;
+    const pajakPersenInput = document.getElementById('pajak_persen');
+    const pajakDibayarkanInput = document.getElementById('pajak_dibayarkan');
+    const pajakPersenContainer = document.getElementById('pajakPersenContainer');
+
+    if (jenisPajak === 'ppn') {
+        pajakPersenInput.value = '11';
+        pajakPersenInput.disabled = true;
+        pajakPersenContainer.classList.remove('hidden');
+        pajakDibayarkanInput.readOnly = true;
+        pajakDibayarkanInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+        pajakDibayarkanInput.value = ''; // Reset nilai pajak dibayarkan
+    } else if (jenisPajak === 'ppnbm') {
+        pajakPersenInput.value = '';
+        pajakPersenInput.disabled = false;
+        pajakPersenContainer.classList.remove('hidden');
+        pajakDibayarkanInput.readOnly = true;
+        pajakDibayarkanInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+        pajakDibayarkanInput.value = ''; // Reset nilai pajak dibayarkan
+    } else if (jenisPajak === 'pph') {
+        pajakPersenInput.value = '';
+        pajakPersenInput.disabled = true;
+        pajakPersenContainer.classList.add('hidden');
+        pajakDibayarkanInput.readOnly = false;
+        pajakDibayarkanInput.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+        pajakDibayarkanInput.placeholder = "Masukan Nominal Pajak Dibayarkan";
     } else {
-        pajakInput.removeAttribute("disabled");
-        pajakInput.value = "";
+        pajakPersenInput.value = '';
+        pajakPersenInput.disabled = false;
+        pajakPersenContainer.classList.remove('hidden');
+        pajakDibayarkanInput.readOnly = true;
+        pajakDibayarkanInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+        pajakDibayarkanInput.value = ''; // Reset nilai pajak dibayarkan
     }
 
     hitungPajak();
@@ -102,18 +157,18 @@ function hitungPajak() {
     const pajakDibayarkanInput = document.getElementById('pajak_dibayarkan');
     const jnsPajak = document.getElementById('jns_pajak').value;
 
-    if (jnsPajak && biaya > 0) {
+    if (jnsPajak === 'pph') {
+        // Biarkan pengguna menginput manual, tidak ada perhitungan otomatis
+        pajakDibayarkanInput.oninput = function () {
+            formatRupiah(pajakDibayarkanInput);
+        };
+    } else if (biaya > 0 && jnsPajak) {
+        // Hitung Pajak Dibayarkan untuk PPN dan PPnBM
         const pajakDibayarkan = (biaya * pajakPersen) / 100;
         pajakDibayarkanInput.value = 'Rp ' + pajakDibayarkan.toLocaleString('id-ID', { minimumFractionDigits: 2 });
     } else {
         pajakDibayarkanInput.value = "";
     }
-}
-
-// Fungsi untuk menghapus format Rupiah dan konversi ke angka
-function parseRupiahToNumber(rupiah) {
-    // Hapus karakter selain angka dan koma, kemudian ganti koma menjadi titik desimal untuk angka desimal
-    return parseFloat(rupiah.replace(/[^,\d]/g, '').replace(',', '.')) || 0;
 }
 
 function prepareForSubmit() {
@@ -131,120 +186,3 @@ function prepareForSubmit() {
 
 // Tambahkan event listener submit pada form untuk memanggil fungsi prepareForSubmit
 document.querySelector('form').addEventListener('submit', prepareForSubmit);
-
-
-function togglePengeluaran() {
-    const jenisPengeluaran = document.getElementById('jenis_pengeluaran').value;
-    const divNamaKaryawan = document.getElementById('div_nama_karyawan');
-    const divNamaVendor = document.getElementById('div_nama_vendor');
-    const namaKaryawan = document.getElementById('nama_karyawan');
-    const namaVendor = document.getElementById('nama_vendor');
-
-    // Sembunyikan kedua elemen terlebih dahulu
-    divNamaKaryawan.classList.add('hidden');
-    divNamaVendor.classList.add('hidden');
-    namaKaryawan.disabled = true;
-    namaVendor.disabled = true;
-
-    // Tampilkan elemen berdasarkan pilihan dan aktifkan input yang benar
-    if (jenisPengeluaran === "gaji_karyawan") {
-        divNamaKaryawan.classList.remove('hidden');
-        namaKaryawan.disabled = false;
-    } else if (jenisPengeluaran === "pembayaran_vendor") {
-        divNamaVendor.classList.remove('hidden');
-        namaVendor.disabled = false;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    var editButtons = document.querySelectorAll('[data-fc-type="modal"]');
-
-    editButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            var modalId = this.getAttribute('data-fc-target').replace('#', '');
-            var modal = document.getElementById(modalId);
-
-            if (modal) {
-                var jenisPengeluaranSelect = modal.querySelector('#jenis_pengeluaran');
-                var pajakButton = modal.querySelector('#pajakButton');
-                var collapsePajak = modal.querySelector('#collapsePajak');
-                var hutangButton = modal.querySelector('#hutangButton');
-                var collapseHutang = modal.querySelector('#collapseHutang');
-
-                if (jenisPengeluaranSelect) {
-                    var selectedValue = jenisPengeluaranSelect.value;
-                    console.log('Jenis Pengeluaran:', selectedValue);
-
-                    // Function to toggle visibility of input forms
-                    function toggleInputForms(showKaryawan) {
-                        var karyawanDiv = modal.querySelector('#div_nama_karyawan');
-                        var vendorDiv = modal.querySelector('#div_nama_vendor');
-
-                        if (karyawanDiv && vendorDiv) {
-                            karyawanDiv.style.display = showKaryawan ? 'block' : 'none';
-                            vendorDiv.style.display = showKaryawan ? 'none' : 'block';
-                        }
-                    }
-
-                    // Show appropriate form based on selected value
-                    if (selectedValue === 'gaji_karyawan') {
-                        toggleInputForms(true);
-                    } else if (selectedValue === 'pembayaran_vendor') {
-                        toggleInputForms(false);
-                    }
-
-                    // Add change event listener to handle future changes
-                    jenisPengeluaranSelect.addEventListener('change', function () {
-                        var newValue = this.value;
-                        if (newValue === 'gaji_karyawan') {
-                            toggleInputForms(true);
-                        } else if (newValue === 'pembayaran_vendor') {
-                            toggleInputForms(false);
-                        } else {
-                            // Hide both if neither option is selected
-                            toggleInputForms(null);
-                        }
-                    });
-                } else {
-                    console.log('Jenis Pengeluaran select not found in modal');
-                }
-
-                // Function to handle collapse toggle
-                function handleCollapseToggle(button, collapse, dataAttribute) {
-                    if (button && collapse) {
-                        var value = modal.getAttribute(dataAttribute);
-
-                        function toggleCollapse() {
-                            if (value === '1') {
-                                collapse.classList.remove('hidden');
-                                button.checked = true;
-                            } else {
-                                collapse.classList.add('hidden');
-                                button.checked = false;
-                            }
-                        }
-
-                        // Initial state
-                        toggleCollapse();
-
-                        // Add event listener for future changes of the checkbox
-                        button.addEventListener('change', function () {
-                            value = this.checked ? '1' : '0';
-                            toggleCollapse();
-                        });
-                    } else {
-                        console.log(dataAttribute + ' button or collapse div not found in modal');
-                    }
-                }
-
-                // Handle pajak collapse
-                handleCollapseToggle(pajakButton, collapsePajak, 'data-pajak-value');
-
-                // Handle hutang collapse
-                handleCollapseToggle(hutangButton, collapseHutang, 'data-hutang-value');
-            } else {
-                console.log('Modal not found:', modalId);
-            }
-        });
-    });
-});

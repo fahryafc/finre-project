@@ -215,7 +215,7 @@ class PenjualanController extends Controller
                         'harga_barang'          => $data->harga,
                         'tarif_ppnbm'           => $data->persen_pajak,
                         'ppnbm_dikenakan'       => $data->total_pemasukan * ($data->persen_pajak / 100),
-                        'jenis_pajak'           => "Pajak Keluaran",
+                        'jenis_pajak'           => "Pajak Masukan",
                         'tgl_transaksi'         => $data->tanggal,
                     ]);
                 }
@@ -394,50 +394,17 @@ class PenjualanController extends Controller
     public function destroy(string $id_penjualan)
     {
         try {
-            $penjualan = Penjualan::find($id_penjualan);
+            $penjualan = Penjualan::findOrFail($id_penjualan);
+
+            PajakPpn::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
+            PajakPpnbm::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
+
             $penjualan->delete();
+
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('penjualan.index');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error creating product: ' . $e->getMessage());
         }
-    }
-
-        public function getSalesData()
-    {
-        $penjualan = Penjualan::select(
-            'id_penjualan',
-            'produk',
-            'harga',
-            'kuantitas',
-            'diskon',
-            'pajak',
-            'piutang',
-            'pembayaran',
-            'tgl_jatuh_tempo',
-        )->get();
-
-        $formatdata = [];
-        $formatdata = $penjualan->map(function ($penjualan, $index) {
-            $total_harga = $penjualan->harga * $penjualan->kuantitas;
-            $diskon = ((int) $penjualan->diskon / (int) 100) * $total_harga;
-            $harga_diskon = $total_harga - $diskon;
-            $pajak = ((int) $penjualan->pajak / (int) 100) * $harga_diskon;
-            $total_pemasukan = (int)$harga_diskon - (int)$pajak - (int)$penjualan->piutang;
-            return [
-                'No' => sprintf('%02d', $index + 1),
-                'Penjualan' => $penjualan->produk,
-                'Kuantitas' => $penjualan->kuantitas,
-                'Harga' => 'Rp. ' . number_format($penjualan->harga, 0, ',', '.'),
-                'Total_harga' => 'Rp. ' . number_format($total_harga, 0, ',', '.'),
-                'Diskon' => $penjualan->diskon . '%',
-                'Pajak' => $penjualan->pajak . '%',
-                'Piutang' => 'Rp. ' . number_format($penjualan->piutang, 0, ',', '.'),
-                'Total_pemasukan' => 'Rp. ' . number_format($total_pemasukan, 0, ',', '.'),
-                'id_penjualan' => $penjualan->id_penjualan
-            ];
-        });
-
-        return response()->json($formatdata);
     }
 }

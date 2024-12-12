@@ -60,9 +60,42 @@ class PengeluaranController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function create()
+    {
+        try {
+            // $pengeluaran = DB::table('pengeluaran')->get();
+            $pengeluaran = Pengeluaran::join('kontak', 'pengeluaran.id_kontak', '=', 'kontak.id_kontak')
+                ->select('pengeluaran.*', 'kontak.nama_kontak')
+                ->paginate(5);
+            $akun = DB::table('akun')->get();
+            $satuan = DB::table('satuan')->get();
+            $produk = DB::table('produk')->get();
+            $kasdanbank = DB::table('kas_bank')->get();
+            $kategori = DB::table('kategori')->get();
+            $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
+            $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
+
+            // dd($pengeluaran);
+
+            return view('pages.pengeluaran.create', [
+                'pengeluaran' => $pengeluaran,
+                'akun' => $akun,
+                'satuan' => $satuan,
+                'produk' => $produk,
+                'kas_bank' => $kasdanbank,
+                'kategori' => $kategori,
+                'karyawanKontak' => $karyawanKontak,
+                'vendorKontak' => $vendorKontak
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Get all datas pengeluaran failed',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function store(Request $request): RedirectResponse
     {
         // Simpan data pengeluaran ke dalam tabel pengeluaran
@@ -136,6 +169,41 @@ class PengeluaranController extends Controller
                     'tgl_jatuh_tempo'    => $data_pengeluaran->tgl_jatuh_tempo,
                 ]);
             }
+
+            // Menambahkan data pajak jika ada
+            $findKaryawan = Kontak::where('id_kontak', $data_pengeluaran->id_kontak)->first();
+            if ($data_pengeluaran->pajak == 1) {
+                if ($data_pengeluaran->jns_pajak == 'ppn') {
+                    DB::table('pajak_ppn')->insert([
+                        'kode_reff'         => $data_pengeluaran->kode_reff_pajak,
+                        'jenis_transaksi'   => 'penjualan',
+                        'keterangan'        => $data_pengeluaran->produk,
+                        'nilai_transaksi'   => $data_pengeluaran->harga * $data_pengeluaran->kuantitas,
+                        'persen_pajak'      => $data_pengeluaran->persen_pajak,
+                        'jenis_pajak'       => 'Pajak Keluaran',
+                        'saldo_pajak'       => $data_pengeluaran->total_pemasukan * ($data_pengeluaran->persen_pajak / 100),
+                    ]);
+                } elseif ($data_pengeluaran->jns_pajak == 'ppnbm') {
+                    DB::table('pajak_ppnbm')->insert([
+                        'kode_reff'             => $data_pengeluaran->kode_reff_pajak,
+                        'deskripsi_barang'      => $data_pengeluaran->produk,
+                        'harga_barang'          => $data_pengeluaran->harga,
+                        'tarif_ppnbm'           => $data_pengeluaran->persen_pajak,
+                        'ppnbm_dikenakan'       => $data_pengeluaran->total_pemasukan * ($data_pengeluaran->persen_pajak / 100),
+                        'jenis_pajak'           => "Pajak Masukan",
+                        'tgl_transaksi'         => $data_pengeluaran->tanggal,
+                    ]);
+                } elseif ($data_pengeluaran->jns_pajak == 'ppn') {
+                    DB::table('pajak_pph')->insert([
+                        'id_pengeluaran'    => $data_pengeluaran->id_pengeluaran,
+                        'nm_karyawan'       => $findKaryawan->nama_kontak,
+                        'gaji_karyawan'     => $data_pengeluaran->biaya,
+                        'pph_terutang'      => "",
+                        'potongan'          => "",
+                        'persen_pajak'      => "",
+                    ]);
+                }
+            }
         }
 
         // added data pajak jika ada
@@ -159,14 +227,44 @@ class PengeluaranController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function edit($id)
     {
-        //
+        try {
+            // $pengeluaran = DB::table('pengeluaran')->get();
+            $pengeluaran = Pengeluaran::join('kontak', 'pengeluaran.id_kontak', '=', 'kontak.id_kontak')
+                ->select('pengeluaran.*', 'kontak.nama_kontak')
+                ->where('pengeluaran.id_pengeluaran', $id)
+                ->first();
+
+            $akun = DB::table('akun')->get();
+            $satuan = DB::table('satuan')->get();
+            $produk = DB::table('produk')->get();
+            $kasdanbank = DB::table('kas_bank')->get();
+            $kategori = DB::table('kategori')->get();
+            $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
+            $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
+
+            // dd($pengeluaran);
+
+            return view('pages.pengeluaran.edit', [
+                'pengeluaran' => $pengeluaran,
+                'akun' => $akun,
+                'satuan' => $satuan,
+                'produk' => $produk,
+                'kas_bank' => $kasdanbank,
+                'kategori' => $kategori,
+                'karyawanKontak' => $karyawanKontak,
+                'vendorKontak' => $vendorKontak
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Get all datas pengeluaran failed',
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id_pengeluaran): RedirectResponse
     {
         try {

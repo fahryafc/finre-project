@@ -56,12 +56,6 @@
                     <span class="menu-text"> Kas & Bank </span>
                 </a>
             </li>
-            <!-- <li class="menu-item">
-                <a href="{{ route('pajak.index') }}" class="menu-link">
-                    <span class="menu-icon"><i class="ti ti-receipt-tax"></i></span>
-                    <span class="menu-text"> Pajak </span>
-                </a>
-            </li> -->
             <li class="menu-item">
                 <a data-fc-type="collapse" class="menu-link fc-collapse">
                     <span class="menu-icon"><i class="ti ti-receipt-tax"></i></span>
@@ -69,7 +63,7 @@
                     <span class="menu-arrow"></span>
                 </a>
 
-                <ul class="sub-menu" style="">
+                <ul class="sub-menu hidden">
                     <li class="menu-item">
                         <a href="{{ route('pajak.ppn') }}" class="menu-link">
                             <span class="menu-text">PPN</span>
