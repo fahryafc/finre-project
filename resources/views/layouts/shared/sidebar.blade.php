@@ -63,7 +63,7 @@
                     <span class="menu-arrow"></span>
                 </a>
 
-                <ul class="sub-menu hidden">
+                <ul class="sub-menu">
                     <li class="menu-item">
                         <a href="{{ route('pajak.ppn') }}" class="menu-link">
                             <span class="menu-text">PPN</span>

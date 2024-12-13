@@ -11,7 +11,7 @@ class Pengeluaran extends Model
     protected $table = 'pengeluaran';
     protected $primaryKey = 'id_pengeluaran';
 
-    public $incrementing = false;
+    public $incrementing = true;
 
     protected $fillable = [
         'nm_pengeluaran',
@@ -21,6 +21,7 @@ class Pengeluaran extends Model
         'kategori',
         'biaya',
         'pajak',
+        'kode_reff_pajak',
         'jns_pajak',
         'pajak_persen',
         'pajak_dibayarkan',

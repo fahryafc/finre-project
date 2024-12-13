@@ -48,15 +48,14 @@ class PajakController extends Controller
     public function pph(): View
     {
         try {
-            $pajak = DB::table('pajak')->get();
+            $pajak_pph = DB::table('pajak_pph')->get();
 
             return view('pages.pajak.pajak_pph', [
-                'pajak' => $pajak
+                'pajak_pph' => $pajak_pph
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Get all datas pajak failed',
+            return view('pages.pajak.pajak_pph', [
+                'message' => 'Get all data pajak failed',
                 'error' => $e->getMessage(),
             ]);
         }

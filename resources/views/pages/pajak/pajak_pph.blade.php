@@ -48,7 +48,7 @@
 
 <!-- table pajak -->
 <div class="card mt-10 p-5">
-    <div class="card-header mb-5">
+    <div class="card-header mb-5 flex justify-between items-center">
         <h4 class="card-title">Data Pajak</h4>
     </div>
     <div class="card-body">
@@ -63,32 +63,28 @@
                                         <span class="flex items-center"> No </span>
                                     </th>
                                     <th>
-                                        <span class="flex items-center"> Nama Produk </span>
+                                        <span class="flex items-center"> Nama Karyawan </span>
                                     </th>
                                     <th>
-                                        <span class="flex items-center"> Golongan Pajak </span>
+                                        <span class="flex items-center"> Gaji Bruto (Rp) </span>
                                     </th>
                                     <th>
-                                        <span class="flex items-center"> Pajak </span>
+                                        <span class="flex items-center"> PPH Terutang </span>
                                     </th>
                                     <th>
-                                        <span class="flex items-center"> Nominal Pajak </span>
-                                    </th>
-                                    <th>
-                                        <span class="flex items-center"> Total </span>
+                                        <span class="flex items-center"> Diterima </span>
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php $counter = 1; @endphp
-                                @foreach($pajak as $pjk)
-                                <tr>
-                                    <td class="font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ $counter++ }}</td>
-                                    <td>{{ $pjk->nama_produk }}</td>
-                                    <td>{{ $pjk->gol_pajak }}</td>
-                                    <td>{{ $pjk->persen_pajak }}%</td>
-                                    <td>{{ "Rp. ".number_format($pjk->nominal_pajak, 0, ".", ".") }}</td>
-                                    <td>{{ "Rp. ".number_format($pjk->total_pajak, 0, ".", ".") }}</td>
+                                @foreach($pajak_pph as $pph)
+                                <tr class="pajak-row">
+                                    <td class="font-medium text-gray-900 whitespace-nowrap dark:text-white"> {{ $counter++}} </td>
+                                    <td> {{ $pph->nm_karyawan }} </td>
+                                    <td> {{ "Rp. ".number_format($pph->gaji_karyawan, 0, ".", ".") }} </td>
+                                    <td> {{ "Rp. ".number_format($pph->pph_terutang, 0, ".", ".") }} </td>
+                                    <td> {{ "Rp. ".number_format($pph->bersih_diterima, 0, ".", ".") }} </td>
                                 </tr>
                                 @php $counter++; @endphp
                                 @endforeach
@@ -113,4 +109,17 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/pajak.js') }}" defer></script>
+<script>
+    document.getElementById('filter-jenis-pajak').addEventListener('change', function() {
+        const selectedJenis = this.value.toLowerCase();
+        document.querySelectorAll('#search-table .pajak-row').forEach(row => {
+            const rowJenisPajak = row.getAttribute('data-jenis-pajak').toLowerCase();
+            if (selectedJenis === "" || rowJenisPajak === selectedJenis) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+</script>
 @endsection

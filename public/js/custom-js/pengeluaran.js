@@ -3,41 +3,6 @@ flatpickr("#datepicker-basic", {
     defaultDate: "today"
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const collapsibleLinks = document.querySelectorAll('[data-fc-type="collapse"]');
-
-    collapsibleLinks.forEach(link => {
-        link.addEventListener('click', function (event) {
-            event.preventDefault();
-
-            const subMenu = this.nextElementSibling;
-            if (subMenu) {
-                if (subMenu.classList.contains('hidden')) {
-                    subMenu.classList.remove('hidden');
-                } else {
-                    subMenu.classList.add('hidden');
-                }
-            }
-        });
-    });
-});
-
-function validateNumberInput(input) {
-    const originalValue = input.value;
-    const numericValue = originalValue.replace(/\D/g, '');
-
-    const errorDiv = document.getElementById('no_hp_error');
-
-    // Cek jika ada karakter non-angka
-    if (originalValue !== numericValue) {
-        errorDiv.classList.remove('hidden'); // Tampilkan pesan error
-    } else {
-        errorDiv.classList.add('hidden'); // Sembunyikan pesan error
-    }
-
-    input.value = numericValue; // Set kembali nilai input dengan angka saja
-}
-
 function toggleCollapsePajak() {
     const collapseElementPajak = document.getElementById('collapsePajak');
     const pajak = document.getElementById('pajakButton');
