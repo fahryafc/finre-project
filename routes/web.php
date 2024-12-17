@@ -51,8 +51,7 @@ Route::get('/hutangpiutang/detail/{idKontak}', [HutangpiutangController::class, 
 Route::resource('/hutangpiutang', HutangpiutangController::class);
 
 Route::resource('/kasdanbank', KasdanbankController::class);
-Route::get('/get-kategori-kasbank', [KasdanbankController::class, 'getKategoriAkun'])->name('get-kategori-kasbank');
-Route::get('/get-subakun-kasbank', [KasdanbankController::class, 'getSubAkunByKategori'])->name('get-subakun-kasbank');
+Route::get('/get-subkategori', [KasdanbankController::class, 'getSubkategori']);
 
 Route::get('/pajak/ppn', [PajakController::class, 'ppn'])->name('pajak.ppn');
 Route::get('/pajak/pph', [PajakController::class, 'pph'])->name('pajak.pph');

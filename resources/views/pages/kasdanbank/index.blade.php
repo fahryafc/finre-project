@@ -150,6 +150,9 @@
                             <label for="kategori_akun" class="text-gray-800 text-sm font-medium inline-block mb-2">Kategori Akun</label>
                             <select id="kategori_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="kategori_akun">
                                 <option value="">-- Pilih Kategori Akun --</option>
+                                @foreach ( $kategoriAkun as $akun)
+                                <option value="{{ $akun->nama_kategori }}">{{ $akun->nama_kategori }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
@@ -176,56 +179,5 @@
 @vite('resources/js/pages/charts-apex.js')
 @vite(['resources/js/pages/highlight.js'])
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        // Muat data kategori akun saat modal dibuka
-        $.ajax({
-            url: "{{ route('get-kategori-kasbank') }}",
-            type: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                // console.log($('#kategori_akun')[0].selectize);
-
-                let kategoriSelect = $('#kategori_akun');
-                kategoriSelect.empty().append('<option value="">-- Pilih Kategori Akun --</option>');
-
-                response.forEach(function(kategori) {
-                    kategoriSelect.append('<option value="' + kategori.nama_kategori + '">' + kategori.nama_kategori + '</option>');
-                });
-            },
-            error: function() {
-                alert('Gagal memuat kategori akun.');
-            }
-        });
-
-        // Muat sub akun berdasarkan kategori yang dipilih
-        $('#kategori_akun').on('change', function() {
-            let kategoriId = $(this).val();
-
-            if (kategoriId) {
-                $.ajax({
-                    url: "{{ route('get-subakun-kasbank') }}",
-                    type: 'GET',
-                    data: {
-                        id_kategori: kategoriId
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        let subakunSelect = $('#subakun');
-                        subakunSelect.empty().append('<option value="">-- Pilih Sub Kategori Akun --</option>');
-
-                        response.forEach(function(subakun) {
-                            subakunSelect.append('<option value="' + subakun.nama_subakun + '">' + subakun.nama_subakun + '</option>');
-                        });
-                    },
-                    error: function() {
-                        alert('Gagal memuat sub akun.');
-                    }
-                });
-            } else {
-                $('#subakun').empty().append('<option value="">-- Pilih Sub Kategori Akun --</option>');
-            }
-        });
-    });
-</script>
+<script src="{{ asset('js/custom-js/kasbank.js') }}" defer></script>
 @endsection

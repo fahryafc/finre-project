@@ -63,11 +63,14 @@ class KasdanbankController extends Controller
         return response()->json($kategori_akun);
     }
 
-
-    public function getSubAkunByKategori(Request $request)
+    public function getSubkategori(Request $request)
     {
-        $subakun = Subakun::where('id_kategori_akun', '=', 1)->get();
-        return response()->json($subakun);
+        $kategori = $request->input('kategori'); // Ambil kategori dari request
+        $subkategori = Akun::where('kategori_akun', $kategori)
+                    ->groupBy('subakun')
+                    ->get();
+
+        return response()->json($subkategori); // Kembalikan sebagai JSON
     }
 
     public function store(Request $request)
