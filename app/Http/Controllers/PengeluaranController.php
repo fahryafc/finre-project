@@ -147,6 +147,8 @@ class PengeluaranController extends Controller
             'tgl_jatuh_tempo'      => $request->hutangButton ? Carbon::createFromFormat('d-m-Y', $request->tgl_jatuh_tempo)->format('Y-m-d') : null, // Set to null if hutang is 0
         ]);
 
+        // dd($data_pengeluaran->biaya);
+
         // Menambahkan data pajak jika ada
         $findKaryawan = Kontak::where('id_kontak', $data_pengeluaran->id_kontak)->first();
         if ($data_pengeluaran->pajak == 1) {
@@ -306,6 +308,82 @@ class PengeluaranController extends Controller
                 'tgl_jatuh_tempo'      => $request->hutangButton ? Carbon::createFromFormat('d-m-Y', $request->tgl_jatuh_tempo)->format('Y-m-d') : null,
             ]);
 
+            // Perbarui data pajak jika ada
+            if ($findPengeluaran->pajakButton) {
+                if ($findPengeluaran->jns_pajak === 'ppn') {
+                    if ($findPengeluaran->pajak == 1) {
+                        // Update data jika pajak bernilai 1
+                        DB::table('pajak_ppn')->where('id_pengeluaran', $id_pengeluaran)->update([
+                            'kode_reff'         => $findPengeluaran->kode_reff_pajak,
+                            'jenis_transaksi'   => 'pengeluaran',
+                            'keterangan'        => $findPengeluaran->nm_pengeluaran,
+                            'nilai_transaksi'   => $findPengeluaran->biaya,
+                            'persen_pajak'      => $findPengeluaran->pajak_persen,
+                            'jenis_pajak'       => 'Pajak Masukan',
+                            'saldo_pajak'       => $findPengeluaran->biaya * ($findPengeluaran->pajak_persen / 100),
+                        ]);
+                    } else {
+                        // Insert data baru jika pajak bernilai 0/null/kosong
+                        DB::table('pajak_ppn')->insert([
+                            'id_pengeluaran'    => $id_pengeluaran,
+                            'kode_reff'         => $findPengeluaran->kode_reff_pajak,
+                            'jenis_transaksi'   => 'pengeluaran',
+                            'keterangan'        => $findPengeluaran->nm_pengeluaran,
+                            'nilai_transaksi'   => $findPengeluaran->biaya,
+                            'persen_pajak'      => $findPengeluaran->pajak_persen,
+                            'jenis_pajak'       => 'Pajak Masukan',
+                            'saldo_pajak'       => $findPengeluaran->biaya * ($findPengeluaran->pajak_persen / 100),
+                        ]);
+                    }
+                } elseif ($findPengeluaran->jns_pajak === 'ppnbm') {
+                    if ($findPengeluaran->pajak == 1) {
+                        // Update data jika pajak bernilai 1
+                        DB::table('pajak_ppnbm')->where('id_pengeluaran', $id_pengeluaran)->update([
+                            'deskripsi_barang'  => $findPengeluaran->nm_pengeluaran,
+                            'harga_barang'      => $findPengeluaran->biaya,
+                            'tarif_ppnbm'       => $findPengeluaran->pajak_persen,
+                            'ppnbm_dikenakan'   => $findPengeluaran->biaya * ($findPengeluaran->pajak_persen / 100),
+                            'jenis_pajak'       => 'Pajak Masukan',
+                            'tgl_transaksi'     => $findPengeluaran->tanggal,
+                        ]);
+                    } else {
+                        // Insert data baru jika pajak bernilai 0/null/kosong
+                        DB::table('pajak_ppnbm')->insert([
+                            'id_pengeluaran'    => $id_pengeluaran,
+                            'deskripsi_barang'  => $findPengeluaran->nm_pengeluaran,
+                            'harga_barang'      => $findPengeluaran->biaya,
+                            'tarif_ppnbm'       => $findPengeluaran->pajak_persen,
+                            'ppnbm_dikenakan'   => $findPengeluaran->biaya * ($findPengeluaran->pajak_persen / 100),
+                            'jenis_pajak'       => 'Pajak Masukan',
+                            'tgl_transaksi'     => $findPengeluaran->tanggal,
+                        ]);
+                    }
+                } elseif ($findPengeluaran->jns_pajak === 'pph') {
+                    $findKaryawan = Kontak::where('id_kontak', $findPengeluaran->id_kontak)->first();
+                    if ($findPengeluaran->pajak == 1) {
+                        // Update data jika pajak bernilai 1
+                        DB::table('pajak_pph')->where('kode_reff', $findPengeluaran->kode_reff)->update([
+                            'id_pengeluaran'    => $findPengeluaran->id_pengeluaran,
+                            'kode_reff'         => $findPengeluaran->kode_reff,
+                            'nm_karyawan'       => $findKaryawan->nama_kontak,
+                            'gaji_karyawan'     => $findPengeluaran->biaya,
+                            'pph_terutang'      => $findPengeluaran->pajak_dibayarkan,
+                            'bersih_diterima'   => $findPengeluaran->biaya - $findPengeluaran->pajak_dibayarkan,
+                        ]);
+                    } else {
+                        // Insert data baru jika pajak bernilai 0/null/kosong
+                        DB::table('pajak_pph')->insert([
+                            'id_pengeluaran'    => $findPengeluaran->id_pengeluaran,
+                            'kode_reff'         => $findPengeluaran->kode_reff,
+                            'nm_karyawan'       => $findKaryawan->nama_kontak,
+                            'gaji_karyawan'     => $findPengeluaran->biaya,
+                            'pph_terutang'      => $findPengeluaran->pajak_dibayarkan,
+                            'bersih_diterima'   => $findPengeluaran->biaya - $findPengeluaran->pajak_dibayarkan,
+                        ]);
+                    }
+                }
+            }
+
             // Periksa perubahan pada akun pembayaran
             if ($old_data['akun_pembayaran'] !== $request->akun_pembayaran || $old_data['biaya'] != $request->biaya) {
                 // Kurangi saldo pada akun pembayaran lama
@@ -347,44 +425,6 @@ class PengeluaranController extends Controller
                         'nominal'            => $request->nominal_hutang,
                         'status'             => 'Belum Lunas',
                         'tgl_jatuh_tempo'    => $findPengeluaran->tgl_jatuh_tempo,
-                    ]);
-                }
-            }
-
-            // Perbarui data pajak jika ada
-            if ($request->pajakButton) {
-                if ($request->jns_pajak === 'ppn') {
-                    DB::table('pajak_ppn')->updateOrInsert([
-                        'id_pengeluaran'    => $id_pengeluaran,
-                    ], [
-                        'kode_reff'         => $findPengeluaran->kode_reff_pajak,
-                        'jenis_transaksi'   => 'pengeluaran',
-                        'keterangan'        => $findPengeluaran->nm_pengeluaran,
-                        'nilai_transaksi'   => $request->biaya,
-                        'persen_pajak'      => $request->pajak_persen,
-                        'jenis_pajak'       => 'Pajak Masukan',
-                        'saldo_pajak'       => $request->biaya * ($request->pajak_persen / 100),
-                    ]);
-                } elseif ($request->jns_pajak === 'ppnbm') {
-                    DB::table('pajak_ppnbm')->updateOrInsert([
-                        'id_pengeluaran'    => $id_pengeluaran,
-                    ], [
-                        'deskripsi_barang'  => $findPengeluaran->nm_pengeluaran,
-                        'harga_barang'      => $request->biaya,
-                        'tarif_ppnbm'       => $request->pajak_persen,
-                        'ppnbm_dikenakan'   => $request->biaya * ($request->pajak_persen / 100),
-                        'jenis_pajak'       => 'Pajak Masukan',
-                        'tgl_transaksi'     => $findPengeluaran->tanggal,
-                    ]);
-                } elseif ($request->jns_pajak === 'pph') {
-                    $findKaryawan = Kontak::where('id_kontak', $request->id_kontak)->first();
-                    DB::table('pajak_pph')->updateOrInsert([
-                        'id_pengeluaran'    => $id_pengeluaran,
-                    ], [
-                        'nm_karyawan'       => $findKaryawan->nama_kontak,
-                        'gaji_karyawan'     => $request->biaya,
-                        'pph_terutang'      => $request->pajak_dibayarkan,
-                        'bersih_diterima'   => $request->biaya - $request->pajak_dibayarkan,
                     ]);
                 }
             }

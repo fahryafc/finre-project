@@ -2,7 +2,6 @@
 
 @section('css')
 @vite(['node_modules/gridjs/dist/theme/mermaid.min.css'])
-@vite(['node_modules/nice-select2/dist/css/nice-select2.css'])
 @vite([
 'node_modules/flatpickr/dist/flatpickr.min.css',
 'node_modules/@simonwep/pickr/dist/themes/classic.min.css',
@@ -94,20 +93,16 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div class="mb-3">
                             <label for="biaya" class="text-gray-800 text-sm font-medium inline-block mb-2">Biaya</label>
-                            <input type="text" class="form-input" id="biaya" name="biaya" aria-describedby="biaya" placeholder="Masukan Biaya" oninput="formatRupiah(this)" value="{{ 'Rp. '.number_format(old('biaya', $pengeluaran->biaya, 0, '.', '.')) }}">
+                            <input type="text" class="form-input" id="biaya" name="biaya" aria-describedby="biaya" placeholder="Masukan Biaya" value="{{ 'Rp. '.number_format(old('biaya', $pengeluaran->biaya, 0, '.', '.')) }}">
                         </div>
-                        <div class=" mb-3">
+                        <div class="mb-3">
                             <label for="akun_pembayaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
                             <select id="akun_pembayaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pembayaran">
                                 <option value="" selected>-- Pilih Akun --</option>
-                                @foreach ( $kas_bank as $a )
-                                <option value="{{ $a->kode_akun }} {{ old('kode_akun', $pengeluaran->kode_akun) == $a->kode_akun ? 'selected' : '' }}">
-                                    <span class="flex justify-between w-full">
-                                        <span>{{ $a->nama_akun }}</span>
-                                        <span> - </span>
-                                        <span>{{ $a->kode_akun }}</span>
-                                    </span>
-                                </option>
+                                @foreach ($kas_bank as $akun)
+                                    <option value="{{ $akun->kode_akun }}" {{ old('akun_pembayaran', $pengeluaran->akun_pembayaran) == $akun->kode_akun ? 'selected' : '' }}>
+                                        {{ $akun->nama_akun }} - {{ $akun->kode_akun }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -115,67 +110,83 @@
                             <label for="akun_pemasukan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pengeluaran masuk akun</label>
                             <select id="akun_pemasukan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pemasukan">
                                 <option value="" selected>-- Pilih Akun --</option>
-                                @foreach ( $kas_bank as $a )
-                                <option value="{{ $a->kode_akun }}">
-                                    <span class="flex justify-between w-full">
-                                        <span>{{ $a->nama_akun }}</span>
-                                        <span> - </span>
-                                        <span>{{ $a->kode_akun }}</span>
-                                    </span>
-                                </option>
+                                @foreach ($kas_bank as $akun)
+                                    <option value="{{ $akun->kode_akun }}" {{ old('akun_pemasukan', $pengeluaran->akun_pemasukan) == $akun->kode_akun ? 'selected' : '' }}> {{ $akun->nama_akun }} - {{ $akun->kode_akun }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
                     <hr class="border-2 border-gray-300 my-2">
                     <!-- col 3 -->
+                    
                     <div class="grid grid-cols-6">
                         <div class="mb-3">
                             <div class="flex items-center">
-                                <input type="checkbox" id="pajakButton" name="pajakButton" class="form-switch text-primary" value="1" onchange="toggleCollapsePajak()">
+                                <input type="checkbox" id="pajakButton" name="pajakButton" class="form-switch text-primary"
+                                    value="1" 
+                                    onchange="toggleCollapsePajak()" 
+                                    {{ $pengeluaran->pajak == 1 ? 'checked' : '' }}>
                                 <label for="pajakButton" class="ms-1.5">Pajak</label>
                             </div>
                         </div>
                         <div class="mb-3">
                             <div class="flex items-center">
-                                <input type="checkbox" id="hutangButton" name="hutangButton" class="form-switch text-primary" value="1" onchange="toggleCollapseHutang()">
+                                <input type="checkbox" id="hutangButton" name="hutangButton" class="form-switch text-primary"
+                                    value="1"
+                                    {{ $pengeluaran->hutang == 1 ? 'checked' : '' }}>
                                 <label for="hutangButton" class="ms-1.5">Hutang</label>
                             </div>
                         </div>
                     </div>
 
                     <!-- collapse pajak -->
-                    <div id="collapsePajak" class="hidden w-full overflow-hidden transition-[height] duration-300 mt-5">
+                    <div id="collapsePajak" 
+                        class="w-full overflow-hidden transition-[height] duration-300 mt-5 {{ $pengeluaran->pajak == 1 ? '' : 'hidden' }}">
                         <div class="flex justify-between items-center py-2.5 px-4 border-b dark:border-gray-700">
-                            <h3 class="font-medium text-gray-800 dark:text-white text-lg">
-                                Pajak
-                            </h3>
+                            <h3 class="font-medium text-gray-800 dark:text-white text-lg">Pajak</h3>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-3">
                             <div class="mb-3">
                                 <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Jenis Pajak</label>
-                                <select id="jns_pajak" name="jns_pajak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" onchange="aturPajakDanHitung()">
+                                <select id="jns_pajak" name="jns_pajak" 
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                                    onchange="aturPajakDanHitung()">
                                     <option value="" selected>-- Pilih Jenis Pajak --</option>
-                                    <option value="ppn">PPN</option>
-                                    <option value="ppnbm">PPnBM</option>
-                                    <option value="pph">PPH</option>
+                                    <option value="ppn" {{ old('jns_pajak', $pengeluaran->jns_pajak) == 'ppn' ? 'selected' : '' }}>PPN</option>
+                                    <option value="ppnbm" {{ old('jns_pajak', $pengeluaran->jns_pajak) == 'ppnbm' ? 'selected' : '' }}>PPnBM</option>
+                                    <option value="pph" {{ old('jns_pajak', $pengeluaran->jns_pajak) == 'pph' ? 'selected' : '' }}>PPH</option>
                                 </select>
                             </div>
                             <div class="mb-3" id="pajakPersenContainer">
                                 <label for="pajak_persen" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak (%)</label>
-                                <input type="text" class="form-input" id="pajak_persen" name="pajak_persen" aria-describedby="pajak_persen" placeholder="Masukan Pajak (%)" oninput="hitungPajak()">
+                                <input type="text" 
+                                    class="form-input" 
+                                    id="pajak_persen" 
+                                    name="pajak_persen" 
+                                    aria-describedby="pajak_persen" 
+                                    placeholder="Masukan Pajak (%)" 
+                                    value="{{ old('pajak_persen', $pengeluaran->pajak_persen) }}" 
+                                    oninput="hitungPajak()">
                             </div>
                             <div class="mb-3">
                                 <label for="pajak_dibayarkan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak Dibayarkan (Rp)</label>
-                                <input type="text" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" id="pajak_dibayarkan" name="pajak_dibayarkan" aria-describedby="pajak_dibayarkan" placeholder="Pajak Dibayarkan" readonly>
+                                <input type="text" 
+                                    class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" 
+                                    id="pajak_dibayarkan" 
+                                    name="pajak_dibayarkan" 
+                                    aria-describedby="pajak_dibayarkan" 
+                                    placeholder="Pajak Dibayarkan" 
+                                    value="{{ 'Rp. '.number_format(old('pajak_dibayarkan', $pengeluaran->pajak_dibayarkan, 0, '.', '.')) }}" 
+                                    readonly>
                             </div>
                         </div>
                         <hr class="border-2 border-gray-300 my-2"> <!-- Garis pemisah -->
                     </div>
 
                     <!-- collapse Hutang -->
-                    <div id="collapseHutang" class="hidden w-full overflow-hidden transition-[height] duration-300 mt-5">
+                    <div id="collapseHutang" class="hidden w-full overflow-hidden transition-[height] duration-300 mt-5 {{ $pengeluaran->hutang == 1 ? '' : 'hidden' }}">
                         <div class="flex justify-between items-center py-2.5 px-4 border-b dark:border-gray-700">
                             <h3 class="font-medium text-gray-800 dark:text-white text-lg">
                                 Hutang
@@ -185,7 +196,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-3">
                             <div class="mb-3">
                                 <label for="nominal_hutang" class="text-gray-800 text-sm font-medium inline-block mb-2">Hutang</label>
-                                <input type="number" class="form-input" id="nominal_hutang" name="nominal_hutang" aria-describedby="hutang" placeholder="Masukan Nominal Hutang" value="{{  $pengeluaran->nominal_hutang }}">
+                                <input type="text" class="form-input" id="nominal_hutang" name="nominal_hutang" aria-describedby="hutang" placeholder="Masukan Nominal Hutang" value="{{ 'Rp. '.number_format(old('nominal_hutang', $pengeluaran->nominal_hutang, 0, '.', '.')) }}">
                             </div>
                             <div class="mb-3">
                                 <label for="tgl_jatuh_tempo" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Jatuh Tempo</label>
@@ -206,11 +217,10 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
 @vite(['resources/js/pages/table-gridjs.js'])
-@vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
+@vite(['resources/js/pages/highlight.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
-<script src="{{ asset('js/custom-js/pengeluaran.js') }}" defer></script>
+<script src="{{ asset('js/custom-js/create_pengeluaran.js') }}" defer></script>
 @endsection

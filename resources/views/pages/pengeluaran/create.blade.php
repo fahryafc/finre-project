@@ -182,7 +182,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-3">
                             <div class="mb-3">
                                 <label for="nominal_hutang" class="text-gray-800 text-sm font-medium inline-block mb-2">Hutang</label>
-                                <input type="number" class="form-input" id="nominal_hutang" name="nominal_hutang" aria-describedby="hutang" placeholder="Masukan Nominal Hutang">
+                                <input type="text" class="form-input" id="nominal_hutang" name="nominal_hutang" aria-describedby="hutang" placeholder="Masukan Nominal Hutang">
                             </div>
                             <div class="mb-3">
                                 <label for="tgl_jatuh_tempo" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Jatuh Tempo</label>
@@ -204,11 +204,10 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
 @vite(['resources/js/pages/table-gridjs.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
-<script src="{{ asset('js/custom-js/pengeluaran.js') }}" defer></script>
+<script src="{{ asset('js/custom-js/create_pengeluaran.js') }}" defer></script>
 @endsection
