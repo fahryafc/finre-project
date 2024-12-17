@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helpers\Helper;
 use App\Models\Produk;
 use App\Models\Kategori;
 use App\Models\Satuan;
@@ -41,6 +42,53 @@ class ProdukdaninventoriController extends Controller
 
             // Kirimkan data ke view
             return view('pages.produkdaninventori.index', [
+                'produk' => $produk,
+                'satuan' => $satuan,
+                'kategori' => $kategori,
+                'akun' => $akun,
+                'pemasoks' => $pemasoks,
+                'produkTersedia' => $produkTersedia,
+                'produkHampirHabis' => $produkHampirHabis,
+                'produkHabis' => $produkHabis,
+                'totalProduk' => $totalProduk,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Get all data produk failed',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function create()
+    {
+        try {
+            if ($request->jns_pajak === 'ppnbm') {
+                $kodeReff = Helper::generateKodeReff('PPNBM');
+            } elseif ($request->jns_pajak === 'ppn') {
+                $kodeReff = Helper::generateKodeReff('PPN');
+            } elseif ($request->jns_pajak === 'pph') {
+                $kodeReff = Helper::generateKodeReff('PPH');
+            } else {
+                $kodeReff = null;
+            }
+
+            // Ambil data untuk ditampilkan di tabel produk
+            $produk = DB::table('produk')->paginate(5);
+            $satuan = DB::table('satuan')->get();
+            $kategori = DB::table('kategori')->get();
+            $akun = DB::table('akun')->get();
+            $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
+
+            // Hitung jumlah produk tersedia, hampir habis, habis, dan total produk
+            $produkTersedia = DB::table('produk')->where('kuantitas', '>', 0)->count();
+            $produkHampirHabis = DB::table('produk')->where('kuantitas', '<=', 3)->count();
+            $produkHabis = DB::table('produk')->where('kuantitas', '=', 0)->count();
+            $totalProduk = DB::table('produk')->sum('kuantitas');
+
+            // Kirimkan data ke view
+            return view('pages.produkdaninventori.create', [
                 'produk' => $produk,
                 'satuan' => $satuan,
                 'kategori' => $kategori,

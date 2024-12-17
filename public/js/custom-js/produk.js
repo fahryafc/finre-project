@@ -129,3 +129,54 @@ function openEditProduk(button) {
 
     hitungTotalEdit(idProduk);
 }
+
+function aturPajakDanHitung() {
+    const jenisPajak = document.getElementById('jns_pajak').value;
+    const pajakPersenInput = document.getElementById('pajak_persen');
+    const nominal_pajak = document.getElementById('nominal_pajak');
+    const pajakPersenContainer = document.getElementById('pajakPersenContainer');
+
+    if (jenisPajak === 'ppn') {
+        pajakPersenInput.value = '11';
+        pajakPersenInput.disabled = true;
+        pajakPersenContainer.classList.remove('hidden');
+        nominal_pajak.readOnly = true;
+        nominal_pajak.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+        nominal_pajak.value = ''; // Reset nilai pajak dibayarkan
+    } else if (jenisPajak === 'ppnbm') {
+        pajakPersenInput.value = '';
+        pajakPersenInput.disabled = false;
+        pajakPersenContainer.classList.remove('hidden');
+        nominal_pajak.readOnly = true;
+        nominal_pajak.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+        nominal_pajak.value = ''; // Reset nilai pajak dibayarkan
+    } else {
+        pajakPersenInput.value = '';
+        pajakPersenInput.disabled = false;
+        pajakPersenContainer.classList.remove('hidden');
+        nominal_pajak.readOnly = true;
+        nominal_pajak.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+        nominal_pajak.value = ''; // Reset nilai pajak dibayarkan
+    }
+
+    hitungPajak();
+}
+
+function hitungPajak() {
+    const harga_beli = parseFloat(document.getElementById('harga_beli').value.replace(/[^0-9]/g, '')) || 0;
+    const pajakPersen = parseFloat(document.getElementById('pajak_persen').value) || 0;
+    const nominal_pajak = document.getElementById('nominal_pajak');
+    const jnsPajak = document.getElementById('jns_pajak').value;
+
+    if (harga_beli > 0 && jnsPajak) {
+        // Hitung Pajak Dibayarkan untuk PPN dan PPnBM
+        const nominal_pajak = (harga_beli * pajakPersen) / 100;
+        nominal_pajak.value = 'Rp ' + nominal_pajak.toLocaleString('id-ID', { minimumFractionDigits: 2 });
+    } else {
+        nominal_pajak.value = "";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    aturPajakDanHitung();
+});

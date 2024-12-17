@@ -6,6 +6,7 @@ use App\Http\Controllers\ModalController;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PengeluaranController;
+use App\Http\Controllers\ProdukdaninventoriController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KasdanbankController;
 use App\Http\Controllers\HutangpiutangController;
@@ -58,7 +59,8 @@ Route::get('/pajak/pph', [PajakController::class, 'pph'])->name('pajak.pph');
 Route::get('/pajak/ppnbm', [PajakController::class, 'ppnbm'])->name('pajak.ppnbm');
 Route::resource('/pajak', PajakController::class);
 
-Route::resource('/produkdaninventori', \App\Http\Controllers\ProdukdaninventoriController::class);
+// Route::get('/produkdaninventori/edit{id}', [ProdukdaninventoriController::class, 'ppn'])->name('produkdaninventori.edit');
+Route::resource('/produkdaninventori', ProdukdaninventoriController::class);
 
 Route::resource('/asset', AssetController::class);
 Route::get('/get-asset-data/{id}', [AssetController::class, 'getAssetData']);

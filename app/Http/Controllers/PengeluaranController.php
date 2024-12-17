@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helpers\Helper;
 use App\Models\Pengeluaran;
 use App\Models\Kasdanbank;
 use App\Models\Arusuang;
@@ -118,11 +119,11 @@ class PengeluaranController extends Controller
     {
         // generate kode reff untuk pajak
         if ($request->jns_pajak === 'ppnbm') {
-            $kodeReff = $this->generateKodeReff('PPNBM');
+            $kodeReff = Helper::generateKodeReff('PPNBM');
         } elseif ($request->jns_pajak === 'ppn') {
-            $kodeReff = $this->generateKodeReff('PPN');
+            $kodeReff = Helper::generateKodeReff('PPN');
         } elseif ($request->jns_pajak === 'pph') {
-            $kodeReff = $this->generateKodeReff('PPH');
+            $kodeReff = Helper::generateKodeReff('PPH');
         } else {
             $kodeReff = null;
         }

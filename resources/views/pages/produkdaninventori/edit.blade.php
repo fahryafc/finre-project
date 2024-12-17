@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['title' => 'Produk & Inventori', 'mode' => $mode ?? '', 'demo' => $demo ?? ''])
+@extends('layouts.vertical', ['title' => 'Tambah Produk & Inventori', 'mode' => $mode ?? '', 'demo' => $demo ?? ''])
 
 @section('css')
 @vite(['node_modules/gridjs/dist/theme/mermaid.min.css'])
@@ -13,64 +13,6 @@
 @endsection
 
 @section('content')
-<div class="grid grid-rows-1 grid-flow-col gap-4 mb-5">
-    <div class="card">
-        <div class="p-5">
-            <div class="flex justify-between">
-                <div class="w-20 h-20 rounded-full inline-flex items-center justify-center bg-green-100">
-                    <i class="ti ti-package text-4xl text-green-500"></i>
-                </div>
-                <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">{{$produkTersedia}}</h3>
-                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Tersedia</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="p-5">
-            <div class="flex justify-between">
-                <div class="w-20 h-20 rounded-full inline-flex items-center justify-center bg-yellow-100">
-                    <i class="ti ti-package text-4xl text-yellow-500"></i>
-                </div>
-                <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">{{$produkHampirHabis}}</h3>
-                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Hampir Habis</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="p-5">
-            <div class="flex justify-between">
-                <div class="w-20 h-20 rounded-full inline-flex items-center justify-center bg-red-100">
-                    <i class="ti ti-package text-4xl text-red-500"></i>
-                </div>
-                <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">{{$produkHabis}}</h3>
-                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Habis</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="p-5">
-            <div class="flex justify-between">
-                <div class="w-20 h-20 rounded-full inline-flex items-center justify-center bg-primary/25 ">
-                    <i class="ti ti-package text-4xl text-primary"></i>
-                </div>
-                <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">{{$totalProduk}}</h3>
-                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Total Produk</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="grid lg grid-cols-1 gap-6 mt-5">
     <div class="card">
         <div class="card-header">
@@ -199,6 +141,146 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Edit Produk -->
+@foreach($produk as $prd)
+<div id="modalEditProduk{{$prd->id_produk}}" class="w-full h-auto max-h-[70vh] mt-5 fixed top-0 left-0 z-50 transition-all duration-500 fc-modal hidden">
+    <div class="max-w-[60rem] fc-modal-open:opacity-100 duration-500 opacity-0 ease-out transition-all sm:w-full m-3 sm:mx-auto flex flex-col bg-white border shadow-sm rounded-md dark:bg-slate-800 dark:border-gray-700">
+        <div class="flex justify-between items-center py-2.5 px-4 border-b dark:border-gray-700">
+            <h3 class="font-medium text-gray-800 dark:text-white text-lg">
+                Edit Data Produk
+            </h3>
+            <button class="inline-flex flex-shrink-0 justify-center items-center h-8 w-8 dark:text-gray-200" data-fc-dismiss type="button">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <form id="" action="{{ route('produkdaninventori.update', $prd->id_produk) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div class="px-4 py-4 overflow-y-auto h-auto max-h-[60vh]">
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="pemasok" class="text-gray-800 text-sm font-medium inline-block mb-2">Pemasok</label>
+                        <select id="pemasok" name="pemasok" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" selected>-- Pilih Pemasok --</option>
+                            @foreach ( $pemasoks as $vendor)
+                            <option value="{{ $vendor->id_kontak }}" {{ old('id_kontak', $prd->id_kontak) == $vendor->id_kontak ? 'selected' : '' }}>{{ $vendor->nama_kontak }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal</label>
+                        <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-2">
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="nama_produk" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Produk</label>
+                        <input type="text" class="form-input" id="nama_produk" name="nama_produk" aria-describedby="nama_produk" placeholder="Masukan Nama Produk" value="{{ old('nama_produk', $prd->nama_produk) }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="satuan" class="text-gray-800 text-sm font-medium inline-block mb-2">Satuan</label>
+                        <select id="satuan" class="selectize" name="satuan">
+                            <option value="" selected>-- Pilih Satuan --</option>
+                            @foreach ($satuan as $key)
+                            <option value="{{ $key->nama_satuan }}" {{ old('nama_satuan', $prd->satuan) == $key->nama_satuan ? 'selected' : '' }}>{{ $key->nama_satuan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kategori" class="text-gray-800 text-sm font-medium inline-block mb-2">Kategori</label>
+                        <select id="kategori" class="selectize" name="kategori">
+                            <option value="" selected>-- Pilih Kategori --</option>
+                            @foreach ( $kategori as $key)
+                            <option value="{{ $key->nama_kategori }}" {{ old('nama_kategori', $prd->kategori) == $key->nama_kategori ? 'selected' : '' }}>{{ $key->nama_kategori }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kuantitas" class="text-gray-800 text-sm font-medium inline-block mb-2">Kuantitas</label>
+                        <input type="number" class="form-input" id="kuantitasEdit{{$prd->id_produk}}" name="kuantitas" placeholder="Masukan Kuantitas" value="{{ old('kuantitas', $prd->kuantitas) }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="kode_sku" class="text-gray-800 text-sm font-medium inline-block mb-2">Kode/SKU</label>
+                        <input type="text" class="form-input" id="kode_sku" name="kode_sku" aria-describedby="kode_sku" placeholder="Masukan Kode/SKU" value="{{ old('kode_sku', $prd->kode_sku) }}">
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-2">
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="harga_beli" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga Beli</label>
+                        <input type="text" class="form-input" id="harga_beli_edit{{$prd->id_produk}}" name="harga_beli" placeholder="Masukan Harga Beli" value="{{ old('harga_beli','Rp '.number_format($prd->harga_beli, 0, '.', '.')) }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="harga_jual" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga Jual</label>
+                        <input type="text" class="form-input" id="harga_jual_edit{{ $prd->id_produk }}" name="harga_jual" placeholder="Masukan Harga Jual" value="{{ old('harga_jual','Rp '.number_format($prd->harga_jual, 0, '.', '.')) }}">
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-2">
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Jenis Pajak</label>
+                        <input type="text" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400" id="jns_pajak" name="jns_pajak" disabled="" value="PPN">
+                    </div>
+                    <div class="mb-3">
+                        <label for="persen_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Persen Pajak (%)</label>
+                        <input type="text" class="inline-flex items-center px-4 rounded-e border border-s-0 border-gray-200 bg-gray-300 text-gray-500 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-400" id="persen_pajak" name="persen_pajak" disabled="" value="11%">
+                    </div>
+                    <div class="mb-3">
+                        <label for="nominal_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Nominal Pajak</label>
+                        <input type="text" class="form-input bg-gray-300 text-gray-500" id="nominal_pajak_edit{{ $prd->id_produk }}" name="nominal_pajak" value="{{ old('nominal_pajak','Rp '.number_format($prd->nominal_pajak, 0, '.', '.')) }}" readonly>
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-2">
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3">
+                        <label for="akun_pembayaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
+                        <select id="akun_pembayaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pembayaran">
+                            <option value="" selected>-- Pilih Akun --</option>
+                            @foreach ( $akun as $key)
+                            <option value="{{ $key->nama_akun }}">{{ $key->nama_akun }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="masuk_akun" class="text-gray-800 text-sm font-medium inline-block mb-2"> Masuk Akun </label>
+                        <select id="masuk_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="masuk_akun">
+                            <option value="" selected>-- Pilih Akun --</option>
+                            @foreach ( $akun as $key)
+                            <option value="{{ $key->nama_akun }}">{{ $key->nama_akun }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <hr class="border-2 border-gray-300 my-2">
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="mb-3"></div>
+                    <div class="mb-3"></div>
+                    <div class="mb-3">
+                        <div class="flex w-full">
+                            <label for="total_transaksi" class="text-gray-800 text-sm font-medium inline-block p-2">Total Transaksi</label>
+                            <input type="text" class="form-input ltr:rounded-r-none rtl:rounded-l-none bg-[#307487] flex-1" style="color: white;" id="total_transaksi_edit{{ $prd->id_produk }}" name="total_transaksi" value="{{ old('total_transaksi','Rp '.number_format($prd->harga_beli * $prd->kuantitas, 0, '.', '.')) }}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
+                <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close
+                </button>
+                <button class="btn bg-[#307487] text-white" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endforeach
+<!-- end modal -->
 
 <!-- Modal Tambah Kategori -->
 <div id="tambahKategori" class="w-full h-full mt-5 fixed top-0 left-0 z-50 transition-all duration-500 fc-modal hidden">
