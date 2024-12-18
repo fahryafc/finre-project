@@ -35,7 +35,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal</label>
-                        <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
+                        <input type="text" class="form-input tanggal" name="tanggal" id="datepicker-basic">
                     </div>
                 </div>
                 <hr class="border-2 border-gray-300 my-2">

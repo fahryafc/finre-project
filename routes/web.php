@@ -59,7 +59,7 @@ Route::get('/pajak/pph', [PajakController::class, 'pph'])->name('pajak.pph');
 Route::get('/pajak/ppnbm', [PajakController::class, 'ppnbm'])->name('pajak.ppnbm');
 Route::resource('/pajak', PajakController::class);
 
-// Route::get('/produkdaninventori/edit{id}', [ProdukdaninventoriController::class, 'ppn'])->name('produkdaninventori.edit');
+Route::get('/produkdaninventori/edit{id}', [ProdukdaninventoriController::class, 'ppn'])->name('produkdaninventori.edit');
 Route::resource('/produkdaninventori', ProdukdaninventoriController::class);
 
 Route::resource('/asset', AssetController::class);

@@ -16,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ProdukdaninventoriController extends Controller
@@ -61,7 +62,7 @@ class ProdukdaninventoriController extends Controller
         }
     }
 
-    public function create()
+    public function create(Request $request)
     {
         try {
             if ($request->jns_pajak === 'ppnbm') {
@@ -89,6 +90,44 @@ class ProdukdaninventoriController extends Controller
 
             // Kirimkan data ke view
             return view('pages.produkdaninventori.create', [
+                'produk' => $produk,
+                'satuan' => $satuan,
+                'kategori' => $kategori,
+                'akun' => $akun,
+                'pemasoks' => $pemasoks,
+                'produkTersedia' => $produkTersedia,
+                'produkHampirHabis' => $produkHampirHabis,
+                'produkHabis' => $produkHabis,
+                'totalProduk' => $totalProduk,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Get all data produk failed',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function edit($id)
+    {
+        try {
+            // Ambil data untuk ditampilkan di tabel produk
+            $produk = DB::table('produk')->where('id_produk', '=', $id)->first();
+            $produk->tanggal = Carbon::parse($produk->tanggal)->format('d-m-Y');
+            $satuan = DB::table('satuan')->get();
+            $kategori = DB::table('kategori')->get();
+            $akun = DB::table('akun')->get();
+            $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
+
+            // Hitung jumlah produk tersedia, hampir habis, habis, dan total produk
+            $produkTersedia = DB::table('produk')->where('kuantitas', '>', 0)->count();
+            $produkHampirHabis = DB::table('produk')->where('kuantitas', '<=', 3)->count();
+            $produkHabis = DB::table('produk')->where('kuantitas', '=', 0)->count();
+            $totalProduk = DB::table('produk')->sum('kuantitas');
+
+            // Kirimkan data ke view
+            return view('pages.produkdaninventori.edit', [
                 'produk' => $produk,
                 'satuan' => $satuan,
                 'kategori' => $kategori,

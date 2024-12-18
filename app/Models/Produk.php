@@ -14,8 +14,9 @@ class Produk extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'pemasok',
+        'id_produk',
         'id_kontak',
+        'pemasok',
         'nama_produk',
         'satuan',
         'kategori',
@@ -26,9 +27,14 @@ class Produk extends Model
         'harga_jual',
         'akun_pembayaran',
         'masuk_akun',
+        'kode_reff_pajak',
         'jns_pajak',
-        'persen_pajak',	
+        'persen_pajak',
         'nominal_pajak',
-        'total_transaksi'
+        'total_transaksi',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
     ];
 }

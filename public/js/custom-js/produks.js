@@ -1,3 +1,19 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const tanggalInput = document.querySelector('.tgl_edit');
+    const defaultDate = tanggalInput.getAttribute('data-tanggal'); // Ambil nilai dari data-tanggal
+
+    flatpickr(".tgl_edit", {
+        dateFormat: "d-m-Y",
+        defaultDate: defaultDate
+    });
+});
+
+flatpickr(".tanggal", {
+    dateFormat: "d-m-Y",
+    defaultDate: "today"
+});
+
+
 // Format angka ke Rupiah
 function formatRupiah(value) {
     return 'Rp ' + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(value);
@@ -68,7 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     const pajakPersenInput = document.getElementById('pajak_persen');
-    pajakPersenInput.value = 'Pilih Jenis Pajak';
-    pajakPersenInput.disabled = true;
-    pajakPersenInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+    if (!pajakPersenInput.value) {
+        pajakPersenInput.value = 'Pilih Jenis Pajak';
+        pajakPersenInput.disabled = true;
+        pajakPersenInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+    }
+    window.addEventListener('DOMContentLoaded', function () {
+        jenisPajakSelect.dispatchEvent(new Event('change'));
+    });
 });
