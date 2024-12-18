@@ -239,5 +239,4 @@
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
-<script src="{{ asset('js/custom-js/produk.js') }}" defer></script>
 @endsection

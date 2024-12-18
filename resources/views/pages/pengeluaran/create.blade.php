@@ -210,4 +210,19 @@
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
 <script src="{{ asset('js/custom-js/create_pengeluaran.js') }}" defer></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const tanggalInput = document.querySelector('.tgl_edit');
+    const defaultDate = tanggalInput.getAttribute('data-tanggal'); // Ambil nilai dari data-tanggal
+
+    flatpickr(".tgl_edit", {
+        dateFormat: "d-m-Y",
+        defaultDate: defaultDate
+    });
+});
+flatpickr("#datepicker-basic", {
+    dateFormat: "d-m-Y",
+    defaultDate: "today"
+});
+</script>
 @endsection

@@ -62,18 +62,18 @@ class ProdukdaninventoriController extends Controller
         }
     }
 
-    public function create(Request $request)
+    public function create()
     {
         try {
-            if ($request->jns_pajak === 'ppnbm') {
-                $kodeReff = Helper::generateKodeReff('PPNBM');
-            } elseif ($request->jns_pajak === 'ppn') {
-                $kodeReff = Helper::generateKodeReff('PPN');
-            } elseif ($request->jns_pajak === 'pph') {
-                $kodeReff = Helper::generateKodeReff('PPH');
-            } else {
-                $kodeReff = null;
-            }
+            // if ($request->jns_pajak === 'ppnbm') {
+            //     $kodeReff = Helper::generateKodeReff('PPNBM');
+            // } elseif ($request->jns_pajak === 'ppn') {
+            //     $kodeReff = Helper::generateKodeReff('PPN');
+            // } elseif ($request->jns_pajak === 'pph') {
+            //     $kodeReff = Helper::generateKodeReff('PPH');
+            // } else {
+            //     $kodeReff = null;
+            // }
 
             // Ambil data untuk ditampilkan di tabel produk
             $produk = DB::table('produk')->paginate(5);
@@ -106,6 +106,67 @@ class ProdukdaninventoriController extends Controller
                 'message' => 'Get all data produk failed',
                 'error' => $e->getMessage(),
             ]);
+        }
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        if ($request->jns_pajak === 'ppnbm') {
+            $kodeReff = Helper::generateKodeReff('PPNBM');
+        } elseif ($request->jns_pajak === 'ppn') {
+            $kodeReff = Helper::generateKodeReff('PPN');
+        } elseif ($request->jns_pajak === 'pph') {
+            $kodeReff = Helper::generateKodeReff('PPH');
+        } else {
+            $kodeReff = null;
+        }
+        $pemasok = Kontak::where('id_kontak', $request->pemasok)->first();
+        try {
+            $data = Produk::create([
+                'id_kontak'         => $request->pemasok,
+                'pemasok'           => $pemasok->nama_kontak,
+                'nama_produk'       => $request->nama_produk,
+                'satuan'            => $request->satuan,
+                'kategori'          => $request->kategori,
+                'kuantitas'         => $request->kuantitas,
+                'kode_sku'          => $request->kode_sku,
+                'tanggal'           => $request->tanggal,
+                'harga_beli'        => $request->harga_beli,
+                'harga_jual'        => $request->harga_jual,
+                'akun_pembayaran'   => $request->akun_pembayaran,
+                'masuk_akun'        => $request->masuk_akun,
+                'jns_pajak'         => $request->jns_pajak,
+                'persen_pajak'	    => $request->persen_pajak,
+                'nominal_pajak'     => $request->nominal_pajak,
+                'total_transaksi'   => $request->total_transaksi,
+            ]);
+            
+            if ($data->jns_pajak == 'ppn') {
+                DB::table('pajak_ppn')->insert([
+                    'kode_reff'         => $data->kode_reff_pajak,
+                    'jenis_transaksi'   => 'penjualan',
+                    'keterangan'        => $data->produk,
+                    'nilai_transaksi'   => $data->harga * $data->kuantitas,
+                    'persen_pajak'      => $data->persen_pajak,
+                    'jenis_pajak'       => 'Pajak Keluaran',
+                    'saldo_pajak'       => $data->total_pemasukan * ($data->persen_pajak / 100),
+                ]);
+            } elseif ($data->jns_pajak == 'ppnbm') {
+                DB::table('pajak_ppnbm')->insert([
+                    'kode_reff'             => $data->kode_reff_pajak,
+                    'deskripsi_barang'      => $data->produk,
+                    'harga_barang'          => $data->harga,
+                    'tarif_ppnbm'           => $data->persen_pajak,
+                    'ppnbm_dikenakan'       => $data->total_pemasukan * ($data->persen_pajak / 100),
+                    'jenis_pajak'           => "Pajak Masukan",
+                    'tgl_transaksi'         => $data->tanggal,
+                ]);
+            }
+
+            Alert::success('Data Added!', 'Data Created Successfully');
+            return redirect()->route('produkdaninventori.index');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error creating product: ' . $e->getMessage());
         }
     }
 
@@ -144,49 +205,6 @@ class ProdukdaninventoriController extends Controller
                 'message' => 'Get all data produk failed',
                 'error' => $e->getMessage(),
             ]);
-        }
-    }
-
-    public function store(Request $request): RedirectResponse
-    {
-        $pemasok = Kontak::where('id_kontak', $request->pemasok)->first();
-        try {
-            $data = Produk::create([
-                'id_kontak'         => $request->pemasok,
-                'pemasok'           => $pemasok->nama_kontak,
-                'nama_produk'       => $request->nama_produk,
-                'satuan'            => $request->satuan,
-                'kategori'          => $request->kategori,
-                'kuantitas'         => $request->kuantitas,
-                'kode_sku'          => $request->kode_sku,
-                'tanggal'           => $request->tanggal,
-                'harga_beli'        => $request->harga_beli,
-                'harga_jual'        => $request->harga_jual,
-                'akun_pembayaran'   => $request->akun_pembayaran,
-                'masuk_akun'        => $request->masuk_akun,
-                'jns_pajak'         => 'PPN',
-                'persen_pajak'	    => '11',
-                'nominal_pajak'     => $request->nominal_pajak,
-                'total_transaksi'   => $request->total_transaksi,
-            ]);
-            
-            // var_dump($data);
-            // die;
-            if($request->nominal_pajak != NULL || $request->nominal_pajak != ''){
-            // Masukkan data ke tabel pajak
-                DB::table('pajak_ppn')->insert([
-                    'jenis_transaksi'   => 'penjualan',
-                    'keterangan'        => $data->nama_produk,
-                    'nilai_transaksi'   => $data->harga_beli * $data->kuantitas,
-                    'persen_pajak'      => $data->persen_pajak,
-                    'jenis_pajak'       => 'Pajak Masukan',
-                    'saldo_pajak'       => $data->nominal_pajak,
-                ]);
-            }
-            Alert::success('Data Added!', 'Data Created Successfully');
-            return redirect()->route('produkdaninventori.index');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error creating product: ' . $e->getMessage());
         }
     }
 

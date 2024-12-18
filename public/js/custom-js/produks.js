@@ -1,13 +1,3 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const tanggalInput = document.querySelector('.tgl_edit');
-    const defaultDate = tanggalInput.getAttribute('data-tanggal'); // Ambil nilai dari data-tanggal
-
-    flatpickr(".tgl_edit", {
-        dateFormat: "d-m-Y",
-        defaultDate: defaultDate
-    });
-});
-
 flatpickr(".tanggal", {
     dateFormat: "d-m-Y",
     defaultDate: "today"
@@ -19,12 +9,19 @@ function formatRupiah(value) {
     return 'Rp ' + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(value);
 }
 
+function parseRupiahToNumber(rupiah) {
+    if (!rupiah) return 0;
+    return parseFloat(rupiah.replace(/Rp\s?|[^,\d]/g, '').replace(',', '.')) || 0;
+}
+
 // Fungsi untuk menambahkan format rupiah pada input
 function addRupiahFormatting(inputId) {
     document.getElementById(inputId).addEventListener('input', function (e) {
         const input = e.target;
+        const start = input.selectionStart; // Simpan posisi kursor
         const value = input.value.replace(/[^0-9]/g, ''); // Hapus karakter non-angka
         input.value = formatRupiah(value);
+        input.setSelectionRange(start, start); // Kembalikan posisi kursor
     });
 }
 
@@ -61,35 +58,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listener untuk jenis pajak
+    // Jenis Pajak
     const jenisPajakSelect = document.getElementById('jns_pajak');
+    const pajakPersenInput = document.getElementById('pajak_persen');
+
     jenisPajakSelect.addEventListener('change', function () {
-        const pajakPersenInput = document.getElementById('pajak_persen');
         if (jenisPajakSelect.value === 'ppn') {
-            // Atur default persen pajak ke 11 dan disable input persen pajak
             pajakPersenInput.value = 11;
             pajakPersenInput.disabled = true;
             pajakPersenInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-            hitungPajakDanTotal(); // Hitung pajak dan total transaksi dengan nilai default
         } else if (jenisPajakSelect.value === 'ppnbm') {
-            // Enable input persen pajak untuk PPnBM
             pajakPersenInput.value = '';
             pajakPersenInput.disabled = false;
             pajakPersenInput.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-            hitungPajakDanTotal(); // Hitung pajak dan total transaksi sesuai input
-        } else if (jenisPajakSelect.value === 'jns_pajak' || jenisPajakSelect.value === '') {
+        } else {
             pajakPersenInput.value = 'Pilih Jenis Pajak';
             pajakPersenInput.disabled = true;
             pajakPersenInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
         }
+        hitungPajakDanTotal();
     });
-    const pajakPersenInput = document.getElementById('pajak_persen');
-    if (!pajakPersenInput.value) {
-        pajakPersenInput.value = 'Pilih Jenis Pajak';
-        pajakPersenInput.disabled = true;
-        pajakPersenInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-    }
-    window.addEventListener('DOMContentLoaded', function () {
-        jenisPajakSelect.dispatchEvent(new Event('change'));
-    });
+
+    jenisPajakSelect.dispatchEvent(new Event('change')); // Set default behavior
 });
+
+function convertToYMD(dateStr) {
+    const [day, month, year] = dateStr.split('-');
+    return `${year}-${month}-${day}`;
+}
+
+function prepareForSubmit() {
+    const tanggalInput = document.querySelector('.tanggal');
+    if (tanggalInput) {
+        console.log(convertToYMD(tanggalInput.value))
+        tanggalInput.value = convertToYMD(tanggalInput.value);
+    }
+
+    // Daftar ID input yang perlu dihapus format Rupiah-nya
+    const fields = ['harga_beli', 'harga_jual', 'nominal_pajak', 'total_transaksi'];
+
+    // Proses setiap field
+    fields.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.value = parseRupiahToNumber(input.value); // Konversi ke angka tanpa format Rupiah
+        }
+    });
+}
+
+document.getElementById('createProduk').addEventListener('submit', prepareForSubmit);
