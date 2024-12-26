@@ -101,24 +101,6 @@ function toggleCollapsePajakPenjualan() {
     }
 }
 
-// Event listener untuk reset switch saat modal terbuka
-document.getElementById('tambahAsset').addEventListener('show', function () {
-    const penyusutan = document.getElementById('penyusutan');
-    const collapseElement = document.getElementById('collapseWithTarget');
-    const pajakButton = document.getElementById('pajakButton');
-    const collapseElementPajak = document.getElementById('collapsePajak');
-    const buttonPajakPenjualan = document.getElementById('buttonPajakPenjualan');
-    const collapseElementPajakPenjualan = document.getElementById('collapsePajakPenjualan');
-
-    // Reset switch dan collapse
-    penyusutan.checked = false;
-    collapseElement.classList.add('hidden');
-    pajakButton.checked = false;
-    collapseElementPajak.classList.add('hidden');
-    buttonPajakPenjualan.checked = false;
-    collapseElementPajakPenjualan.classList.add('hidden');
-});
-
 // Ambil elemen dropdown jenis pajak, input pajak, harga beli, kuantitas, dan pajak dibayarkan
 const jnsPajakSelect = document.getElementById('jns_pajak');
 const pajakInput = document.getElementById('pajak');

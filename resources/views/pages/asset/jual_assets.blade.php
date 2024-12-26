@@ -47,7 +47,7 @@
                 @csrf
                     <div class="grid grid-cols-3 gap-4">
                         <div>
-                            <input type="hidden" id="id_aset" name="id_aset"> <!-- ID asset yang dijual -->
+                            <input type="hidden" id="id_aset" name="id_aset" value="{{ $asset->id_aset }}"> <!-- ID asset yang dijual -->
                             <div class="mb-3">
                                 <label for="nm_pelanggan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pelanggan</label>
                                 <input type="text" class="form-input" id="nm_pelanggan" name="nm_pelanggan" aria-describedby="nm_pelanggan" placeholder="Masukan Nama Pelanggan">
@@ -92,7 +92,7 @@
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div class="mb-3">
                             <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Pembelian</label>
-                            <input type="text" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed tgl_pembelian" name="tanggal" id="datepicker-basic" disabled>
+                            <input type="text" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed tgl_pembelian"  name="tanggal" id="datepicker-basic" value="{{ \Carbon\Carbon::parse($asset->tanggal)->format('d-m-Y') }}" data-tanggal="{{ \Carbon\Carbon::parse($asset->tanggal)->format('d-m-Y') }}" disabled>
                         </div>
                         <div class="mb-3">
                             <label for="tgl_penjualan" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Penjualan</label>
@@ -104,11 +104,11 @@
                     <div class="grid grid-cols-3 gap-4 mb-4">
                         <div class="mb-3">
                             <label for="harga_beli" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga Beli</label>
-                            <input type="text" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" id="harga_beli_aset" name="harga_beli" placeholder="Masukan Harga Beli" value="{{ 'Rp. '.number_format(old('harga_beli', $asset->harga_beli, 0, '.', '.')) }}" readonly>
+                            <input type="text" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" id="harga_beli" name="harga_beli" placeholder="Masukan Harga Beli" value="{{ 'Rp. '.number_format(old('harga_beli', $asset->harga_beli, 0, '.', '.')) }}" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="kuantitas" class="text-gray-800 text-sm font-medium inline-block mb-2">Kuantitas</label>
-                            <input type="text" class="form-input" id="jumlah" name="kuantitas" placeholder="Masukan Kuantitas" value="{{ old('kuantitas', $asset->kuantitas) }}">
+                            <input type="text" class="form-input" id="kuantitas" name="kuantitas" placeholder="Masukan Kuantitas" value="{{ old('kuantitas', $asset->kuantitas) }}" data-max-kuantitas="{{ $asset->kuantitas }}">
                         </div>
                         <div class="mb-3">
                             <label for="total_nilai_asset" class="text-gray-800 text-sm font-medium inline-block mb-2">Total Nilai Asset</label>
@@ -147,12 +147,12 @@
 
                         <div class="grid grid-cols-4 gap-4 mb-4">
                             <div class="mb-3">
-                                <label for="jns_pajak_penjualan" class="text-gray-800 text-sm font-medium inline-block mb-2">Jenis Pajak</label>
-                                <select id="jns_pajak_penjualan" name="jns_pajak_penjualan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Jenis Pajak</label>
+                                <select id="jns_pajak" name="jns_pajak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     <option value="" selected>-- Pilih Jenis Pajak --</option>
-                                    <option value="ppn">PPN</option>
+                                    <option value="ppn11">PPN (11%)</option>
+                                    <option value="ppn12">PPN (12%)</option>
                                     <option value="ppnbm">PPnBM</option>
-                                    <option value="bphtb">BPHTB</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -160,8 +160,8 @@
                                 <input type="text" class="form-input" id="pajak_penjualan" name="pajak_penjualan" aria-describedby="pajak" placeholder="Masukan Pajak (%)">
                             </div>
                             <div class="mb-3">
-                                <label for="pajak_penjualan_dibayarkan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak Dibayarkan</label>
-                                <input type="text" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" id="pajak_penjualan_dibayarkan" name="pajak_penjualan_dibayarkan" aria-describedby="pajak_penjualan_dibayarkan" placeholder="Pajak Dibayarkan" readonly>
+                                <label for="pajak_dibayarkan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak Dibayarkan</label>
+                                <input type="text" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" id="pajak_dibayarkan" name="pajak_dibayarkan" aria-describedby="pajak_dibayarkan" placeholder="Pajak Dibayarkan" readonly>
                             </div>
                             <div class="mb-3">
                                 <label for="akun_pajak_penjualan" class="text-gray-800 text-sm font-medium inline-block mb-2">Akun Pajak</label>
@@ -171,8 +171,6 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- end row collapse -->
-                        <hr class="border-2 border-gray-300 my-4"> <!-- Garis pemisah -->
                     </div>
 
                     <hr class="border-2 border-gray-300 my-4"> <!-- Garis pemisah -->

@@ -239,5 +239,20 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{{ asset('js/custom-js/assets.js') }}" defer></script>
+<!-- <script src="{{ asset('js/custom-js/assets.js') }}" defer></script> -->
+<script>
+    if (document.getElementById("asset-tersedia") && typeof simpleDatatables.DataTable !== 'undefined') {
+        const dataTable = new simpleDatatables.DataTable("#asset-tersedia", {
+            paging: true,
+            perPage: 5,
+            perPageSelect: [5, 10, 15, 20, 25],
+            sortable: false,
+            labels: {
+                perPage: "",
+                noRows: "Tidak ada data",
+                info: "Menampilkan {start} sampai {end} dari {rows} entri"
+            }
+        });
+    }
+</script>
 @endsection
