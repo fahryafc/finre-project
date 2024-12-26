@@ -8,8 +8,8 @@ use App\Models\Akun;
 use App\Models\Satuan;
 use App\Models\Kasdanbank;
 use App\Models\Produk;
-use App\Models\Pajak_ppn;
-use App\Models\Pajak_ppnbm;
+use App\Models\Pajakppn;
+use App\Models\Pajakppnbm;
 use App\Models\Arusuang;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -406,15 +406,15 @@ class PenjualanController extends Controller
         try {
             $penjualan = Penjualan::findOrFail($id_penjualan);
 
-            PajakPpn::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
-            PajakPpnbm::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
+            Pajakppn::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
+            Pajakppnbm::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
 
             $penjualan->delete();
 
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('penjualan.index');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error creating product: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error : ' . $e->getMessage());
         }
     }
 }

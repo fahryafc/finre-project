@@ -214,7 +214,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"></td>
                                             <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                                <input type="text" id="hargaPelepasanDisplay" name="nominal_deposit" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" value="Rp. 0">
+                                                <input type="text" id="nominal_deposit" name="nominal_deposit" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" value="Rp. 0">
                                             </td>
                                         </tr>
 

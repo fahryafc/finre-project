@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pajak_ppn extends Model
+class Pajakppn extends Model
 {
     use HasFactory;
-    protected $table = 'Pajak_ppn';
+    protected $table = 'pajak_ppn';
     protected $primaryKey = 'id_pajak_ppn';
 
     public $incrementing = false;

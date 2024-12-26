@@ -659,12 +659,14 @@ class AssetController extends Controller
                 'tgl_penjualan'                 => $request->tgl_penjualan,
                 'harga_pelepasan'               => $request->harga_pelepasan,
                 'nilai_penyusutan_terakhir'     => $request->nilai_penyusutan_terakhir,
-                'nilai_buku'                => $request->nilai_buku,
+                'nilai_buku'                    => $request->nilai_buku,
                 'akun_deposit'                  => $request->akun_deposit,
                 'nominal_deposit'               => $request->nominal_deposit,
                 'akun_keuntungan_kerugian'      => $request->akun_keuntungan_kerugian,
                 'nominal_keuntungan_kerugian'   => $request->nominal_keuntungan_kerugian
             ]);
+
+            // dd($PenjualanAsset);
 
             // Update field asset_terjual pada tabel asset
             // Asumsi bahwa $request->id_asset berisi ID dari asset yang terjual
@@ -692,9 +694,43 @@ class AssetController extends Controller
                 return redirect()->route('penjualan.index');
             }
 
+            if ($PenjualanAsset->pajak == 1) {
+                if ($PenjualanAsset->jns_pajak == 'ppn11') {
+                    DB::table('pajak_ppn')->insert([
+                        'kode_reff'         => $PenjualanAsset->kode_reff_pajak,
+                        'jenis_transaksi'   => 'Assets',
+                        'keterangan'        => $PenjualanAsset->nm_aset,
+                        'nilai_transaksi'   => $PenjualanAsset->harga_beli * $PenjualanAsset->kuantitas,
+                        'persen_pajak'      => $PenjualanAsset->persen_pajak,
+                        'jenis_pajak'       => 'Pajak Keluaran',
+                        'saldo_pajak'       => $PenjualanAsset->pajak_dibayarkan,
+                    ]);
+                } elseif ($PenjualanAsset->jns_pajak == 'ppn12') {
+                    DB::table('pajak_ppn')->insert([
+                        'kode_reff'         => $PenjualanAsset->kode_reff_pajak,
+                        'jenis_transaksi'   => 'Assets',
+                        'keterangan'        => $PenjualanAsset->nm_aset,
+                        'nilai_transaksi'   => $PenjualanAsset->harga_beli * $PenjualanAsset->kuantitas,
+                        'persen_pajak'      => $PenjualanAsset->persen_pajak,
+                        'jenis_pajak'       => 'Pajak Keluaran',
+                        'saldo_pajak'       => $PenjualanAsset->pajak_dibayarkan,
+                    ]);
+                } elseif ($PenjualanAsset->jns_pajak == 'ppnbm') {
+                    DB::table('pajak_ppnbm')->insert([
+                        'kode_reff'             => $aset->kode_reff_pajak,
+                        'deskripsi_barang'      => $aset->produk,
+                        'harga_barang'          => $aset->harga_beli,
+                        'tarif_ppnbm'           => $aset->persen_pajak,
+                        'ppnbm_dikenakan'       => $aset->pajak_dibayarkan,
+                        'jenis_pajak'           => "Pajak Masukan",
+                        'tgl_transaksi'         => $aset->tanggal,
+                    ]);
+                }
+            }
+
             // Redirect atau response jika penyimpanan berhasil
             Alert::success('Data Added!', 'Data Created Successfully');
-            return redirect()->route('asset.index');
+            return redirect()->route('asset.asset_terjual');
         } catch (\Exception $e) {
             Log::error('Error saving penjualan asset: ' . $e->getMessage());
             // Menangani kesalahan jika terjadi exception

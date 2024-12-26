@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Produk extends Model
 {
     use HasFactory;
-    protected $table = 'Produk';
+    protected $table = 'produk';
     protected $primaryKey = 'id_produk';
 
     public $incrementing = false;

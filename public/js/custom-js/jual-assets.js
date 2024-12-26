@@ -119,7 +119,7 @@ document.getElementById('harga_pelepasan').addEventListener('input', function ()
     let hargaPelepasan = this.value.replace(/[^,\d]/g, ""); // Hapus karakter non-angka
     hargaPelepasan = hargaPelepasan ? parseInt(hargaPelepasan) : 0; // Pastikan validitas angka
     const hargaFormatted = formatRupiah(hargaPelepasan);
-    document.getElementById('hargaPelepasanDisplay').value = hargaFormatted;
+    document.getElementById('nominal_deposit').value = hargaFormatted;
 });
 // Event listener untuk format input harga pelepasan
 document.getElementById('harga_pelepasan').addEventListener('input', function () {
@@ -229,7 +229,7 @@ function prepareForSubmit() {
     const hargaBeliAsetInput = document.getElementById('harga_beli_aset');
     const hargaBeliInput = document.getElementById('harga_beli');
     const pajakdiBayarkan = document.getElementById('pajak_dibayarkan');
-    const nominal_keuntungan_kerugian = document.getElementById('nominal_keuntungan_kerugian');
+    const nominal_keuntungan_kerugian = document.getElementById('keuntungan_kerugian');
     const nilai_buku = document.getElementById('nilai_buku');
     const nominal_deposit = document.getElementById('nominal_deposit');
     const nilai_penyusutan_terakhir = document.getElementById('nilai_penyusutan_terakhir');
@@ -255,7 +255,7 @@ function prepareForSubmit() {
         pajakdiBayarkan.value = parseRupiahToNumber(pajakdiBayarkan.value)
     }
     if (nominal_keuntungan_kerugian) {
-        nominal_keuntungan_kerugian.value = parseRupiahToNumber(nominal_keuntungan_kerugian.value)
+        nominal_keuntungan_kerugian.value = parseRupiahToNumber(keuntungan_kerugian.value)
     }
     if (nilai_buku) {
         nilai_buku.value = parseRupiahToNumber(nilai_buku.value)
@@ -267,7 +267,7 @@ function prepareForSubmit() {
         nilai_penyusutan_terakhir.value = parseRupiahToNumber(nilai_penyusutan_terakhir.value)
     }
     if (harga_pelepasan) {
-        harga_pelepasan.valie = parseRupiahToNumber(harga_pelepasan.value)
+        harga_pelepasan.value = parseRupiahToNumber(harga_pelepasan.value)
     }
 }
 
