@@ -62,11 +62,14 @@ Route::resource('/pajak', PajakController::class);
 Route::get('/produkdaninventori/edit{id}', [ProdukdaninventoriController::class, 'ppn'])->name('produkdaninventori.edit');
 Route::resource('/produkdaninventori', ProdukdaninventoriController::class);
 
-Route::resource('/asset', AssetController::class);
+Route::get('/asset/asset_tersedia', [AssetController::class, 'asset_tersedia'])->name('asset.asset_tersedia');
+Route::get('/asset/asset_terjual', [AssetController::class, 'asset_terjual'])->name('asset.asset_terjual');
 Route::get('/get-asset-data/{id}', [AssetController::class, 'getAssetData']);
 Route::post('/penjualan-asset/store', [AssetController::class, 'store_penjualan'])->name('penjualan-asset.store');
 Route::get('/get-asset-detail/{id}', [AssetController::class, 'getAssetDetail']);
-
+Route::get('/asset/tambah_asset', [AssetController::class, 'create'])->name('asset.tambah_asset');
+Route::get('/asset/jual_asset/{id}', [AssetController::class, 'jual'])->name('asset.jual_asset');
+Route::resource('/asset', AssetController::class);
 
 Route::resource('/kategori', KategoriController::class);
 

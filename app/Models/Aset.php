@@ -20,9 +20,11 @@ class Aset extends Model
         'alamat',
         'tanggal',
         'nm_aset',
+        'kategori',
         'satuan',
         'kuantitas',
         'pajak',
+        'kode_reff_pajak',
         'jns_pajak',
         'persen_pajak',
         'pajak_dibayarkan',
@@ -31,7 +33,6 @@ class Aset extends Model
         'akun_pembayaran',
         'akun_aset',
         'penyusutan',
-        'kategori',
     ];
 
     public function assetPenyusutan()

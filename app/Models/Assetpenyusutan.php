@@ -14,6 +14,7 @@ class Assetpenyusutan extends Model
 
     protected $fillable = [
         'id_aset',
+        'tanggal_penyusutan',
         'masa_manfaat',
         'nilai_tahun',
         'nominal_masa_manfaat',

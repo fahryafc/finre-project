@@ -198,7 +198,17 @@ class PenjualanController extends Controller
 
             // Menambahkan data pajak jika ada
             if ($data->pajak == 1) {
-                if ($data->jns_pajak == 'ppn') {
+                if ($data->jns_pajak == 'ppn11') {
+                    DB::table('pajak_ppn')->insert([
+                        'kode_reff'         => $data->kode_reff_pajak,
+                        'jenis_transaksi'   => 'penjualan',
+                        'keterangan'        => $data->produk,
+                        'nilai_transaksi'   => $data->harga * $data->kuantitas,
+                        'persen_pajak'      => $data->persen_pajak,
+                        'jenis_pajak'       => 'Pajak Keluaran',
+                        'saldo_pajak'       => $data->total_pemasukan * ($data->persen_pajak / 100),
+                    ]);
+                } else if ($data->jns_pajak == 'ppn12') {
                     DB::table('pajak_ppn')->insert([
                         'kode_reff'         => $data->kode_reff_pajak,
                         'jenis_transaksi'   => 'penjualan',

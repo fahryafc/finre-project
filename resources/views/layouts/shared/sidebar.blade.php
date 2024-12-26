@@ -57,13 +57,13 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a data-fc-type="collapse" class="menu-link fc-collapse">
+                <a href="javascript:void(0)" data-fc-type="collapse" class="menu-link fc-collapse">
                     <span class="menu-icon"><i class="ti ti-receipt-tax"></i></span>
                     <span class="menu-text"> Pajak </span>
                     <span class="menu-arrow"></span>
                 </a>
 
-                <ul class="sub-menu">
+                <ul class="sub-menu hidden" style="">
                     <li class="menu-item">
                         <a href="{{ route('pajak.ppn') }}" class="menu-link">
                             <span class="menu-text">PPN</span>
@@ -87,11 +87,31 @@
                     <span class="menu-text"> Produk & Inventori </span>
                 </a>
             </li>
-            <li class="menu-item">
+            <!-- <li class="menu-item">
                 <a href="{{ route('asset.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="ti ti-database-cog"></i></span>
                     <span class="menu-text"> Aset </span>
                 </a>
+            </li> -->
+            <li class="menu-item">
+                <a href="javascript:void(0)" data-fc-type="collapse" class="menu-link fc-collapse">
+                    <span class="menu-icon"><i class="ti ti-database-cog"></i></span>
+                    <span class="menu-text"> Asset </span>
+                    <span class="menu-arrow"></span>
+                </a>
+
+                <ul class="sub-menu hidden" style="">
+                    <li class="menu-item">
+                        <a href="{{ route('asset.asset_tersedia') }}" class="menu-link">
+                            <span class="menu-text">Asset Tersedia</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('asset.asset_terjual') }}" class="menu-link">
+                            <span class="menu-text">Asset Terjual</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li class="menu-item">
                 <a href="javascript:void(0)" class="menu-link">
