@@ -46,46 +46,16 @@
             <form action="{{ route('penjualan-asset.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                     <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <input type="hidden" id="id_aset" name="id_aset" value="{{ $asset->id_aset }}"> <!-- ID asset yang dijual -->
-                            <div class="mb-3">
-                                <label for="nm_pelanggan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pelanggan</label>
-                                <input type="text" class="form-input" id="nm_pelanggan" name="nm_pelanggan" aria-describedby="nm_pelanggan" placeholder="Masukan Nama Pelanggan">
-                            </div>
-                            <div class="mb-3">
-                                <label for="no_hp" class="text-gray-800 text-sm font-medium inline-block mb-2">No Handphone</label>
-                                <input type="number" class="form-input" id="no_hp" name="no_hp" aria-describedby="no_hp" placeholder="Masukan No handphone">
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="mb-3">
-                                <label for="gender" class="text-gray-800 text-sm font-medium inline-block mb-2">Gender</label>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                                    <select id="gender" name="gender" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <option value="Laki - Laki">Laki - Laki</option>
-                                        <option value="Perempuan">Perempuan</option>
-                                    </select>
-                                </td>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="text-gray-800 text-sm font-medium inline-block mb-2">Email</label>
-                                <input type="email" class="form-input" id="email" name="email" aria-describedby="emailHelp" placeholder="Masukan email">
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="mb-3">
-                                <label for="nm_perusahaan" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Perusahaan</label>
-                                <input type="text" class="form-input" id="nm_perusahaan" name="nm_perusahaan" aria-describedby="nm_perusahaan" placeholder="Masukan Nama Perusahaan">
-                            </div>
-                            <div class="mb-3">
-                                <label for="alamat" class="text-gray-800 text-sm font-medium inline-block mb-2">Alamat</label>
-                                <textarea id="alamat" name="alamat" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Masukan Alamat"></textarea>
-                            </div>
+                        <div class="mb-3">
+                            <label for="id_kontak" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Pelanggan</label>
+                            <select id="id_kontak" name="id_kontak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value="" selected>-- Pilih Pelanggan --</option>
+                                @foreach ($pelanggan as $customer)
+                                <option value="{{ $customer->id_kontak }}">{{ $customer->nama_kontak }} - {{ $customer->nm_perusahaan }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
-
                     <hr class="border-2 border-gray-300 my-4"> <!-- Garis pemisah -->
 
                     <!-- Row 1: Tanggal Pembelian dan Tanggal Penjualan -->

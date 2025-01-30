@@ -65,6 +65,19 @@ class PengeluaranController extends Controller
         }
     }
 
+    public function pengeluaran()
+    {
+        try {
+            return view('pages.pengeluaran.pengeluaran');
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Get all datas pengeluaran failed',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function create()
     {
         try {

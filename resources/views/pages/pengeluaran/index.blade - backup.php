@@ -20,67 +20,35 @@
 
 @section('content')
 <div class="grid grid-rows-1 grid-flow-col gap-4">
-    <div class="col-span-5 lg:col-span-2">
-        <div class="bg-red-50 border border-red-200 rounded-lg p-6 h-full relative">
-            <!-- Header Section -->
-            <!-- Teks di Kiri Atas -->
-            <h2 class="text-red-600 text-2xl font-bold h-[20&]">Total Pengeluaran</h2>
-            <div class="flex items-center justify-between h-[70%]">
-                <div class="flex items-center h-full">
-                    <!-- Angka di bawah Teks "Total Pengeluaran" -->
-                    <p class="text-3xl xl:text-4xl font-extrabold text-red-600 mt-4">Rp 6.500.000</p>
-                </div>
-                <!-- Ikon Tetap di Kanan -->
-                <div class="text-red-600 p-3 rounded-full">
-                    <i data-feather="activity" class="h-32 w-32"></i>
-                </div>
+    <div class="row-span-3">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Kategori Pembayaran</h4>
             </div>
-            <!-- Footer Section -->
-            <div class="flex items-center justify-between mt-4 h-[10%]">
-                <span class="text-gray-500 text-lg">Dari bulan lalu</span>
+            <div class="p-6">
+                <div id="pie_chart" class="apex-charts" dir="ltr"></div>
             </div>
         </div>
     </div>
-
-    <div class="col-span-5 lg:col-span-3">
-        <div class="bg-white shadow-md rounded-lg p-4">
-            <div class="flex justify-between items-center mb-4">
-                <div class="flex gap-2">
-                    <h2 class="text-lg font-semibold">Pengeluaran</h2>
-                </div>
-
+    <div class="row-span-2">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Overview Pengeluaran</h4>
             </div>
+            <div class="p-6">
 
-            <div class="flex flex-col items-start mb-2">
-                <p class="text-2xl font-semibold ml-2 text-red-500">
-                    Rp 6.600.000
-                    {{-- <span class="inline-flex items-center">
-                        <svg class="text-green-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                            viewBox="0 0 24 24">
-                            <path fill="currentColor"
-                                d="M16.21 16H7.79a1.76 1.76 0 0 1-1.59-1a2.1 2.1 0 0 1 .26-2.21l4.21-5.1a1.76 1.76 0 0 1 2.66 0l4.21 5.1A2.1 2.1 0 0 1 17.8 15a1.76 1.76 0 0 1-1.59 1" />
-                        </svg>
-                        <svg class="text-red-500 -ml-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                            viewBox="0 0 24 24">
-                            <path fill="currentColor"
-                                d="M12 17a1.72 1.72 0 0 1-1.33-.64l-4.21-5.1a2.1 2.1 0 0 1-.26-2.21A1.76 1.76 0 0 1 7.79 8h8.42a1.76 1.76 0 0 1 1.59 1.05a2.1 2.1 0 0 1-.26 2.21l-4.21 5.1A1.72 1.72 0 0 1 12 17" />
-                        </svg>
-                    </span> --}}
-                </p>
+                <div id="spline_area" class="apex-charts" dir="ltr"></div>
             </div>
-
-            <div id="chart-pengeluaran" class="apex-charts mt-4"></div>
-
         </div>
     </div>
 </div>
 
-<div class="grid lg grid-cols-1 gap-6">
+<div class="grid lg grid-cols-1 gap-6 mt-5">
     <div class="card mt-10 p-5">
-        <div class="card-header mb-5">
+        <div class="card-header">
             <div class="flex justify-between items-center">
                 <h4 class="card-title">Data Pengeluaran</h4>
-                <a href="{{ route('pengeluaran.create') }}" class="btn bg-[#307487] text-white">
+                <a href="{{ route('penjualan.create') }}" class="btn bg-[#307487] text-white">
                     <i class="mgc_add_fill text-base me-4"></i>
                     Tambah Data 
                 </a>
@@ -147,12 +115,11 @@
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
-@vite('resources/js/pages/custom.js')
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="{{ asset('js/custom-js/pengeluaran.js') }}" defer></script>
 <script>
-if (document.getElementById("pengeluaran-table") && typeof simpleDatatables.DataTable !== 'undefined') {
+    if (document.getElementById("pengeluaran-table") && typeof simpleDatatables.DataTable !== 'undefined') {
     const dataTable = new simpleDatatables.DataTable("#pengeluaran-table", {
         paging: true,
         perPage: 5,

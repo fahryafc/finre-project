@@ -625,6 +625,7 @@ class AssetController extends Controller
         $totalTersedia = Aset::sum('kuantitas');
         $totalTerjual = PenjualanAsset::sum('kuantitas');
         $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
+        $pelanggan = DB::table('kontak')->where('jenis_kontak', '=', 'pelanggan')->get();
 
         return view('pages.asset.jual_assets', [
                 'asset' => $asset,
@@ -632,6 +633,7 @@ class AssetController extends Controller
                 'satuan' => $satuan,
                 'akun' => $akun,
                 'pemasoks' => $pemasoks,
+                'pelanggan' => $pelanggan,
                 'kasdanbank' => $kasdanbank,
                 'akun_penyusutan' => $akun_penyusutan,
                 'total_nilai_asset' => $total_nilai_asset,
@@ -737,6 +739,41 @@ class AssetController extends Controller
             Alert::error('Error', 'Failed Created Penjualan');
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
         }
+    }
+
+    public function edit($id){
+        // Ambil data tambahan lainnya
+        $asset = DB::table('asset')->where('id_aset', '=', $id)->first();
+        $satuan = Satuan::get();
+        $kategori = Kategori::get();
+        $akun = DB::table('akun')->where('kategori_akun', '=', 'Aset/Harta')->get();
+        $akun_penyusutan = DB::table('akun')->where('kategori_akun', '=', 'Beban')->get();
+        $akun_deposit = DB::table('akun')->where('kategori_akun', '=', 'Aset/Harta')->get();
+        $akun_kredit = DB::table('akun')
+            ->whereIn('kategori_akun', ['Pendapatan', 'Beban'])
+            ->get();
+        $kasdanbank = DB::table('kas_bank')->get();
+        $total_nilai_asset = DB::table('asset')
+            ->selectRaw('SUM(harga_beli * kuantitas) as total_nilai_asset')
+            ->value('total_nilai_asset');
+        $totalTersedia = Aset::sum('kuantitas');
+        $totalTerjual = PenjualanAsset::sum('kuantitas');
+        $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
+
+        return view('pages.asset.edit_assets', [
+                'asset' => $asset,
+                'kategori' => $kategori,
+                'satuan' => $satuan,
+                'akun' => $akun,
+                'pemasoks' => $pemasoks,
+                'kasdanbank' => $kasdanbank,
+                'akun_penyusutan' => $akun_penyusutan,
+                'total_nilai_asset' => $total_nilai_asset,
+                'akun_kredit' => $akun_kredit,
+                'akun_deposit' => $akun_deposit,
+                'totalTersedia' => $totalTersedia,
+                'totalTerjual' => $totalTerjual,
+            ]);
     }
 
     public function update(Request $request, $id): RedirectResponse

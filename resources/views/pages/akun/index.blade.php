@@ -1,12 +1,13 @@
-@extends('layouts.vertical', ['title' => 'Select', 'sub_title' => 'Forms', 'mode' => $mode ?? '', 'demo' => $demo ?? ''])
+@extends('layouts.vertical', ['title' => 'Akun'])
 
 @section('css')
 @vite(['node_modules/nice-select2/dist/css/nice-select2.css'])
+<link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
 @endsection
 
 @section('content')
 <div class="grid lg grid-cols-1 gap-6">
-    <div class="card">
+    <div class="card p-5">
         <div class="card-header">
             <div class="flex justify-between items-center">
                 <h4 class="card-title">Data Akun</h4>
@@ -15,61 +16,36 @@
                 </button>
             </div>
         </div>
-        <div class="p-6">
-            <!-- <div id="tabel-penjualan"></div> -->
-            <div class="overflow-x-auto">
-                <div class="min-w-full inline-block align-middle">
-                    <div class="border rounded-lg divide-y divide-gray-200 dark:border-gray-700 dark:divide-gray-700">
-                        <div class="py-3 px-4">
-                            <div class="relative max-w-xs">
-                                <label for="table-with-pagination-search" class="sr-only">Search</label>
-                                <input type="text" name="table-with-pagination-search" id="table-with-pagination-search" class="form-input ps-11" placeholder="Search for items">
-                                <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-4">
-                                    <svg class="h-3.5 w-3.5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z">
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="overflow-hidden">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Akun</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                    @php $counter = 1; @endphp
-                                    @foreach($akun as $key)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $counter + ($akun->currentPage() - 1) * $akun->perPage() }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->kode_akun}}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->nama_akun}}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->kategori_akun}}</td>
+        <div class="card-body">
+            <table id="akun-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Akun</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $counter = 1; @endphp
+                    @foreach($akun as $key)
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $counter }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->kode_akun}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->nama_akun}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->kategori_akun}}</td>
 
-                                        @if (!empty($key->saldo))
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->saldo, 0, ".", ".") }}</td>
-                                        @else
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">Rp. 0</td>
-                                        @endif
-                                    </tr>
-                                    @php $counter++; @endphp
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="py-1 px-4">
-                            <nav class="flex items-center space-x-2">
-                                {{ $akun->links('pagination::tailwind') }}
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        @if (!empty($key->saldo))
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->saldo, 0, ".", ".") }}</td>
+                        @else
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">Rp. 0</td>
+                        @endif
+                    </tr>
+                    @php $counter++; @endphp
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -107,7 +83,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="subakun" class="text-gray-800 text-sm font-medium inline-block mb-2">Sub Kategori Akun</label>
-                            <select id="subakun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="kategori_akun">
+                            <select id="subakun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="subakun">
                                 <option value="">-- Pilih Sub Kategori Akun --</option>
                             </select>
                         </div>
@@ -128,7 +104,23 @@
 @section('script')
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script>
+if (document.getElementById("akun-table") && typeof simpleDatatables.DataTable !== 'undefined') {
+    const dataTable = new simpleDatatables.DataTable("#akun-table", {
+        paging: true,
+        perPage: 5,
+        perPageSelect: [5, 10, 15, 20, 25],
+        sortable: false,
+        labels: {
+            perPage: "",
+            noRows: "Tidak ada data",
+            info: "Menampilkan {start} sampai {end} dari {rows} entri"
+        }
+    });
+}
+
     $(document).ready(function() {
         // Muat data kategori akun saat modal dibuka
         $.ajax({

@@ -202,12 +202,14 @@
                                     <i class="ti ti-credit-card-pay text-base me-1"></i>
                                     Jual 
                                 </a>
-
-                                <!-- Edit Button -->
-                                <button class="btn rounded-full bg-[#307487]/25 text-primary hover:bg-[#307487] hover:text-white"
-                                    data-fc-target="modalEditAsset" data-fc-type="modal" type="button" data-id="{{ $ast->id_aset }}">
-                                    <i class="mgc_edit_2_line text-base me-1"></i> Edit
-                                </button>
+                                <a href="{{ route('asset.edit_asset', $ast->id_aset) }}" class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white">
+                                    <i class="mgc_edit_2_line text-base me-1"></i>
+                                    Edit 
+                                </a>
+                                <a href="{{ route('asset.edit_asset', $ast->id_aset) }}" class="btn rounded-full bg-info/25 text-info hover:bg-info hover:text-white">
+                                    <i class="mgc_information_line text-base me-1"></i>
+                                    Detail 
+                                </a>
 
                                 <!-- Delete Form & Button -->
                                 <form action="{{ route('asset.destroy', $ast->id_aset) }}" method="POST" class="inline delete-form">

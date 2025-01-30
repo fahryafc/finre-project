@@ -42,9 +42,11 @@ Route::get('/', function () {
 Route::resource('/dashboard', \App\Http\Controllers\DashboardController::class);
 
 Route::get('/penjualan/edit{id}', [PenjualanController::class, 'edit'])->name('penjualan.edit');
+Route::get('/penjualan/detail/{id}', [PenjualanController::class, 'detail'])->name('penjualan.detail');
 Route::resource('/penjualan', PenjualanController::class);
 
 Route::get('/pengeluaran/edit{id}', [PengeluaranController::class, 'edit'])->name('pengeluaran.edit');
+Route::get('/pengeluaran/pengeluaran', [PengeluaranController::class, 'pengeluaran'])->name('pengeluaran.pengeluaran');
 Route::resource('/pengeluaran', PengeluaranController::class);
 
 // Route::post('/hutangpiutang/storePembayaranHutang', [HutangPiutangController::class, 'storePembayaranHutang'])->name('hutangpiutang.store');
@@ -69,6 +71,8 @@ Route::post('/penjualan-asset/store', [AssetController::class, 'store_penjualan'
 Route::get('/get-asset-detail/{id}', [AssetController::class, 'getAssetDetail']);
 Route::get('/asset/tambah_asset', [AssetController::class, 'create'])->name('asset.tambah_asset');
 Route::get('/asset/jual_asset/{id}', [AssetController::class, 'jual'])->name('asset.jual_asset');
+Route::get('/asset/edit_asset/{id}', [AssetController::class, 'edit'])->name('asset.edit_asset');
+Route::get('/asset/detail_asset/{id}', [AssetController::class, 'detail'])->name('asset.detail_asset');
 Route::resource('/asset', AssetController::class);
 
 Route::resource('/kategori', KategoriController::class);

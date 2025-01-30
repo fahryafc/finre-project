@@ -21,7 +21,7 @@ class AkunController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $akun = Akun::paginate(10);
+        $akun = Akun::get();
         // dd($akun);
         return view('pages.akun.index', compact('akun'));
     }
@@ -41,15 +41,24 @@ class AkunController extends Controller
 
     public function store(Request $request)
     {
+        
         try {
-            $request->validate([
-                'nama_akun' => 'string',
-                'kode_akun' => 'string',
-                'kategori_akun' => 'string',
-                'subakun' => 'string',
-            ]);
+            // $request->validate([
+            //     'nama_akun' => 'string',
+            //     'kode_akun' => 'string',
+            //     'kategori_akun' => 'string',
+            //     'subakun' => 'string',
+            // ]);
 
-            Akun::create($request->all());
+            $data_akun = Akun::where('id_kategori_akun', $request->kategori_akun)->first();
+            $akun = Akun::create([
+                'id_kategori_akun'      => $request->kategori_akun,
+                'nama_akun'             => $request->nama_akun,
+                'kode_akun'             => $request->kode_akun,
+                'kategori_akun'         => $data_akun->kategori_akun,
+                'subakun'               => $data_akun->subakun,
+            ]);
+            // dd($akun);
 
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('akun.index');

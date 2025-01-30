@@ -205,6 +205,15 @@
                         </div>
                         <hr class="border-2 border-gray-300 my-2"> <!-- Garis pemisah -->
                     </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                    <div></div>
+                    <div class="mb-4">
+                        <div class="flex w-full items-center">
+                            <label class="text-gray-800 text-sm font-medium p-2 w-1/3">Total Transaksi</label>
+                            <input type="text" id="total_transaksi" name="total_transaksi" class="form-input bg-[#307487] text-white rounded flex-1" value="Total Transaksi" readonly>
+                        </div>
+                    </div>
                 <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
                     <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close
                     </button>
