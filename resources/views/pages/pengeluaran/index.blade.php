@@ -79,10 +79,18 @@
     <div class="card mt-10 p-5">
         <div class="card-header mb-5">
             <div class="flex justify-between items-center">
-                <h4 class="card-title">Data Pengeluaran</h4>
+                <div class="flex items-center gap-3">
+                    <h4 class="card-title">Data Penjualan</h4>
+                    <input type="date" class="border border-gray-300 rounded-md p-2" onchange="filterByDate(this.value)" id="tanggal" name="tanggal" value="{{ request()->get('date') ?? request()->get('date') }}">
+                    @if (request()->get('date'))
+                        <a href="/pengeluaran" class="btn bg-red-600 text-white">
+                            Reset
+                        </a>
+                    @endif
+                </div>
                 <a href="{{ route('pengeluaran.create') }}" class="btn bg-[#307487] text-white">
                     <i class="mgc_add_fill text-base me-4"></i>
-                    Tambah Data 
+                    Tambah Data
                 </a>
             </div>
         </div>
@@ -152,18 +160,21 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="{{ asset('js/custom-js/pengeluaran.js') }}" defer></script>
 <script>
-if (document.getElementById("pengeluaran-table") && typeof simpleDatatables.DataTable !== 'undefined') {
-    const dataTable = new simpleDatatables.DataTable("#pengeluaran-table", {
-        paging: true,
-        perPage: 5,
-        perPageSelect: [5, 10, 15, 20, 25],
-        sortable: false,
-        labels: {
-            perPage: "",
-            noRows: "Tidak ada data",
-            info: "Menampilkan {start} sampai {end} dari {rows} entri"
-        }
-    });
-}
+    function filterByDate(date) {
+        window.location.href = `?date=${date}`;
+    }
+    if (document.getElementById("pengeluaran-table") && typeof simpleDatatables.DataTable !== 'undefined') {
+        const dataTable = new simpleDatatables.DataTable("#pengeluaran-table", {
+            paging: true,
+            perPage: 5,
+            perPageSelect: [5, 10, 15, 20, 25],
+            sortable: false,
+            labels: {
+                perPage: "",
+                noRows: "Tidak ada data",
+                info: "Menampilkan {start} sampai {end} dari {rows} entri"
+            }
+        });
+    }
 </script>
 @endsection

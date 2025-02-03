@@ -25,15 +25,20 @@ class PengeluaranController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
+        $filter_date = $request->input('date');
+
         try {
             // $pengeluaran = DB::table('pengeluaran')->get();
             $pengeluaran = Pengeluaran::join('kontak', 'pengeluaran.id_kontak', '=', 'kontak.id_kontak')
+                ->when($filter_date, function ($query, $filter_date) {
+                    return $query->whereDate('tanggal', $filter_date);
+                })
                 ->select('pengeluaran.*', 'kontak.nama_kontak')
                 ->paginate(5);
             $akun = DB::table('akun')->get();
@@ -120,8 +125,8 @@ class PengeluaranController extends Controller
         do {
             $kodeReff = $prefix . '-' . strtoupper(Str::random(6));
         } while (
-            DB::table('pajak_ppnbm')->where('kode_reff', $kodeReff)->exists() || 
-            DB::table('pajak_ppn')->where('kode_reff', $kodeReff)->exists() || 
+            DB::table('pajak_ppnbm')->where('kode_reff', $kodeReff)->exists() ||
+            DB::table('pajak_ppn')->where('kode_reff', $kodeReff)->exists() ||
             DB::table('pajak_pph')->where('kode_reff', $kodeReff)->exists()
         );
 
