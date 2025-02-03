@@ -31,13 +31,14 @@ class PenjualanController extends Controller
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
-        $filter_tgl = $request->input('date');
+
+        $filter_date = $request->input('date');
         try {
             $penjualan = DB::table('penjualan')
                 ->join('kontak', 'kontak.id_kontak', '=', 'penjualan.id_kontak')
                 ->join('produk_penjualan', 'produk_penjualan.id_penjualan', '=', 'penjualan.id_penjualan')
-                ->when($filter_tgl, function ($query, $filter_tgl) {
-                    return $query->where('penjualan.tanggal', $filter_tgl);
+                ->when($filter_date, function ($query, $filter_date) {
+                    return $query->whereDate('penjualan.tanggal', $filter_date);
                 })
                 ->select(
                     'kontak.nama_kontak',

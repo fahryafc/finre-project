@@ -31,7 +31,7 @@
                 </div> -->
             </div>
         </div>
-        
+
         <div class="p-6">
             <form id="salesEditForm" action="{{ route('penjualan.update', $penjualan->id_penjualan) }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -82,55 +82,60 @@
                     </div>
                 </div>
 
-                @foreach ( $penjualan->produkPenjualan as $produks )
-                    <div id="productRows" class="productRows">
-                        <!-- Initial product row -->
-                        <div class="product-row grid grid-cols-8 grid-rows-1 gap-4">
-                            <div class="mb-3">
-                                <select id="produk" name="produk[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                    <option value="" selected>-- Pilih Produk --</option>
-                                    @foreach ( $produk as $nm_produk)
-                                    <option value="{{ $nm_produk->nama_produk }}" {{ old('nama_produk', $produks->produk) == $nm_produk->nama_produk ? 'selected' : '' }}>{{ $nm_produk->nama_produk }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <input type="text" class="form-input satuan" id="satuan" name="satuan[]" placeholder="Masukan satuan" value="{{ $produks->satuan }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" value="{{ old('harga','Rp '.number_format($produks->harga, 0, '.', '.')) }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <input type="text" class="form-input kuantitas" id="kuantitas" name="kuantitas[]" placeholder="Masukan Kuantitas" value="{{ $produks->kuantitas }}">
-                            </div>
-                            <div class="mb-3">
-                                <select id="jns_pajak" name="jns_pajak[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                    <option value="jns_pajak" selected>-- Jenis Pajak --</option>
-                                    <option value="ppn11" {{ $produks->jns_pajak == 'ppn11' ? 'selected' : '' }}>PPN (11%)</option>
-                                    <option value="ppn12" {{ $produks->jns_pajak == 'ppn12' ? 'selected' : '' }}>PPN (12%)</option>
-                                    <option value="ppnbm" {{ $produks->jns_pajak == 'ppnbm' ? 'selected' : '' }}>PPnBM</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <input type="text" id="persen_pajak" name="persen_pajak[]" placeholder="Masukan Pajak (%)" class="form-input persen_pajak" value="{{ $produks->persen_pajak }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <input type="text" id="diskon" name="diskon[]" placeholder="Masukan Diskon" class="form-input diskon" value="{{ $produks->persen_diskon }}" />
-                            </div>
-                            <div class="mb-3">
-                                <button type="button" class="delete-row btn bg-red-500 text-white hover:bg-red-600 p-2 rounded-lg" onclick="deleteRow(this)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
+                <div id="productRowsContainer">
+                    @foreach ( $penjualan->produkPenjualan as $produks )
+                        <div id="productRows" class="productRows">
+                            <!-- Initial product row -->
+                            <div class="product-row grid grid-cols-8 grid-rows-1 gap-4">
+                                <div class="mb-3">
+                                    <select id="produk" name="produk[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" selected>-- Pilih Produk --</option>
+                                        @foreach ( $produk as $nm_produk)
+                                        <option value="{{ $nm_produk->nama_produk }}" {{ old('nama_produk', $produks->produk) == $nm_produk->nama_produk ? 'selected' : '' }}>{{ $nm_produk->nama_produk }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-input satuan" id="satuan" name="satuan[]" placeholder="Masukan satuan" value="{{ $produks->satuan }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" value="{{ old('harga','Rp '.number_format($produks->harga, 0, '.', '.')) }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-input kuantitas" id="kuantitas" name="kuantitas[]" placeholder="Masukan Kuantitas" value="{{ $produks->kuantitas }}">
+                                </div>
+                                <div class="mb-3">
+                                    <select id="jns_pajak" name="jns_pajak[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="jns_pajak" selected>-- Jenis Pajak --</option>
+                                        <option value="ppn11" {{ $produks->jns_pajak == 'ppn11' ? 'selected' : '' }}>PPN (11%)</option>
+                                        <option value="ppn12" {{ $produks->jns_pajak == 'ppn12' ? 'selected' : '' }}>PPN (12%)</option>
+                                        <option value="ppnbm" {{ $produks->jns_pajak == 'ppnbm' ? 'selected' : '' }}>PPnBM</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" id="persen_pajak" name="persen_pajak[]" placeholder="Masukan Pajak (%)" class="form-input persen_pajak" value="{{ $produks->persen_pajak }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" id="diskon" name="diskon[]" placeholder="Masukan Diskon" class="form-input diskon" value="{{ $produks->persen_diskon }}" />
+                                </div>
+                                <div class="mb-3">
+                                    <button type="button" class="delete-row btn bg-red-500 text-white hover:bg-red-600 p-2 rounded-lg" onclick="deleteRow(this)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
 
-                <button type="button" onclick="addProductRow()" class="btn bg-blue-500 text-white hover:bg-blue-600 mb-4">
-                    + Tambah Baris
-                </button>
+                @if ($penjualan->produkPenjualan->count() < $produk->count())
+                    <button type="button" onclick="addProductRow({{ $produk->count() }})" class="btn bg-blue-500 text-white hover:bg-blue-600 mb-4">
+                        + Tambah Baris
+                    </button>
+                @endif
+
                 <hr class="border-1 border-gray-300 my-1">
 
                 <div class="grid grid-cols-2 gap-4">
@@ -157,14 +162,14 @@
                         <div class="flex items-center">
                             <label for="piutangSwitch" class="text-gray-800 text-sm font-medium">Piutang</label>
                             <label class="inline-flex items-center ml-2">
-                                <input type="checkbox" id="piutangSwitch" name="piutangSwitch" class="form-switch text-primary" onclick="togglePiutang({{$penjualan->id_penjualan}})" 
+                                <input type="checkbox" id="piutangSwitch" name="piutangSwitch" class="form-switch text-primary" onclick="togglePiutang({{$penjualan->id_penjualan}})"
                                 {{ $penjualan->piutang == 1 ? 'checked' : '' }}>
                             </label>
                         </div>
 
                         <!-- Input Field for Piutang (Hidden by Default) -->
                         <div id="piutangInputContainer" class="mt-2 {{ $penjualan->piutang == 1 ? '' : 'hidden' }}">
-                            <input type="text" class="form-input w-full" id="piutang" name="piutang" aria-describedby="piutang" placeholder="Masukan Piutang" 
+                            <input type="text" class="form-input w-full" id="piutang" name="piutang" aria-describedby="piutang" placeholder="Masukan Piutang"
                             value="{{ old('piutang','Rp '.number_format($penjualan->nominal_piutang, 0, '.', '.')) }}">
                         </div>
                     </div>
@@ -205,7 +210,9 @@
                 </div>
 
                 <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
-                    <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close</button>
+                    <a href="/penjualan">
+                        <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close</button>
+                    </a>
                     <button class="btn bg-[#307487] text-white" type="submit">Save</button>
                 </div>
             </form>
@@ -263,7 +270,7 @@
                     </div>
                     <div class="col-span-2 sm:col-span-1">
                         <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Alamat</label>
-                        <textarea id="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Masukan Alamat"></textarea>                    
+                        <textarea id="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Masukan Alamat"></textarea>
                     </div>
                 </div>
                 <div class="flex justify-end gap-x-2 mt-4">
@@ -278,7 +285,7 @@
             </form>
         </div>
     </div>
-</div> 
+</div>
 <!-- End Modal -->
 @endsection
 
