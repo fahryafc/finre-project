@@ -26,16 +26,19 @@ class PenjualanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
-
+        $filter_tgl = $request->input('date');
         try {
             $penjualan = DB::table('penjualan')
                 ->join('kontak', 'kontak.id_kontak', '=', 'penjualan.id_kontak')
                 ->join('produk_penjualan', 'produk_penjualan.id_penjualan', '=', 'penjualan.id_penjualan')
+                ->when($filter_tgl, function ($query, $filter_tgl) {
+                    return $query->where('penjualan.tanggal', $filter_tgl);
+                })
                 ->select(
                     'kontak.nama_kontak',
                     'penjualan.*',
@@ -124,7 +127,7 @@ class PenjualanController extends Controller
         do {
             $kodeReff = $prefix . '-' . strtoupper(Str::random(6));
         } while (
-            DB::table('pajak_ppnbm')->where('kode_reff', $kodeReff)->exists() || 
+            DB::table('pajak_ppnbm')->where('kode_reff', $kodeReff)->exists() ||
             DB::table('pajak_ppn')->where('kode_reff', $kodeReff)->exists()
         );
 
@@ -158,8 +161,8 @@ class PenjualanController extends Controller
                 }
 
                 // Generate kode reff untuk pajak
-                $kodeReff = $request->jns_pajak[$key] === 'ppnbm' 
-                    ? $this->generateKodeReff('PPNBM') 
+                $kodeReff = $request->jns_pajak[$key] === 'ppnbm'
+                    ? $this->generateKodeReff('PPNBM')
                     : $this->generateKodeReff('PPN');
 
                 // Simpan detail produk penjualan
@@ -181,8 +184,8 @@ class PenjualanController extends Controller
                 // Menambahkan pajak jika ada
                 if ($produkPenjualan->jns_pajak) {
                     if ($produkPenjualan->jns_pajak == 'ppn11' || $produkPenjualan->jns_pajak == 'ppn12') {
-                    // Insert pajak untuk PPN
-                    DB::table('pajak_ppn')->insert([
+                        // Insert pajak untuk PPN
+                        DB::table('pajak_ppn')->insert([
                             'kode_reff'       => $produkPenjualan->kode_reff_pajak,
                             'jenis_transaksi' => 'penjualan',
                             'keterangan'      => $produkPenjualan->produk,
@@ -195,7 +198,7 @@ class PenjualanController extends Controller
                         // Insert pajak untuk PPNBM
                         DB::table('pajak_ppnbm')->insert([
                             'kode_reff'       => $produkPenjualan->kode_reff_pajak,
-                            'deskripsi_barang'=> $produkPenjualan->produk,
+                            'deskripsi_barang' => $produkPenjualan->produk,
                             'harga_barang'    => $produkPenjualan->harga,
                             'tarif_ppnbm'     => $produkPenjualan->persen_pajak,
                             'ppnbm_dikenakan' => $produkPenjualan->harga * $produkPenjualan->kuantitas * ($produkPenjualan->persen_pajak / 100),
@@ -279,7 +282,8 @@ class PenjualanController extends Controller
         return floatval($cleaned) ?: 0;
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         try {
             $penjualan = Penjualan::with('produkPenjualan')
                 ->where('id_penjualan', $id)
@@ -345,8 +349,8 @@ class PenjualanController extends Controller
                 }
 
                 // Generate kode reff untuk pajak
-                $kodeReff = $request->jns_pajak[$key] === 'ppnbm' 
-                    ? $this->generateKodeReff('PPNBM') 
+                $kodeReff = $request->jns_pajak[$key] === 'ppnbm'
+                    ? $this->generateKodeReff('PPNBM')
                     : $this->generateKodeReff('PPN');
 
                 // Simpan detail produk penjualan
@@ -370,8 +374,8 @@ class PenjualanController extends Controller
                 // Menambahkan pajak jika ada
                 if ($produkPenjualan->jns_pajak) {
                     if ($produkPenjualan->jns_pajak == 'ppn11' || $produkPenjualan->jns_pajak == 'ppn12') {
-                    // Insert pajak untuk PPN
-                    DB::table('pajak_ppn')->insert([
+                        // Insert pajak untuk PPN
+                        DB::table('pajak_ppn')->insert([
                             'kode_reff'       => $produkPenjualan->kode_reff_pajak,
                             'jenis_transaksi' => 'penjualan',
                             'keterangan'      => $produkPenjualan->produk,
@@ -384,7 +388,7 @@ class PenjualanController extends Controller
                         // Insert pajak untuk PPNBM
                         DB::table('pajak_ppnbm')->insert([
                             'kode_reff'       => $produkPenjualan->kode_reff_pajak,
-                            'deskripsi_barang'=> $produkPenjualan->produk,
+                            'deskripsi_barang' => $produkPenjualan->produk,
                             'harga_barang'    => $produkPenjualan->harga,
                             'tarif_ppnbm'     => $produkPenjualan->persen_pajak,
                             'ppnbm_dikenakan' => $produkPenjualan->harga * $produkPenjualan->kuantitas * ($produkPenjualan->persen_pajak / 100),
@@ -423,7 +427,7 @@ class PenjualanController extends Controller
             }
 
             // added data piutang jika ada
-            if($penjualan->piutang == 1){
+            if ($penjualan->piutang == 1) {
                 // Masukkan data ke tabel hutangpiutang
                 DB::table('hutangpiutang')->insert([
                     'id_kontak'     => $penjualan->id_kontak, // Contoh field, sesuaikan dengan struktur tabel Anda

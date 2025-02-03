@@ -58,13 +58,21 @@
     <div class="card mt-10 p-5">
         <div class="card-header mb-5">
             <div class="flex justify-between items-center">
-                <h4 class="card-title">Data Penjualan</h4>
+                <div class="flex items-center gap-3">
+                    <h4 class="card-title">Data Penjualan</h4>
+                    <input type="date" class="border border-gray-300 rounded-md p-2" onchange="filterByDate(this.value)" id="tanggal" name="tanggal" value="{{ request()->get('date') ?? request()->get('date') }}">
+                    @if (request()->get('date'))
+                        <a href="/penjualan" class="btn bg-red-600 text-white">
+                            Reset
+                        </a>
+                    @endif
+                </div>
                 <!-- <button class="btn bg-[#307487] text-white" data-fc-target="modalTambahAkun" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
                     Tambah Data
                 </button> -->
                 <a href="{{ route('penjualan.create') }}" class="btn bg-[#307487] text-white">
                     <i class="mgc_add_fill text-base me-4"></i>
-                    Tambah Data 
+                    Tambah Data
                 </a>
             </div>
         </div>
@@ -114,7 +122,7 @@
                         @else
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">0</td>
                         @endif
-                        
+
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$p->pembayaran}}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{"Rp. ".number_format($p->total_pemasukan, 0, ".", ".") }}</td>
 
@@ -195,61 +203,65 @@
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/penjualan.js') }}" defer></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('[data-modal-target="modal-detail-penjualan"]');
-    const modalBody = document.querySelector('#detail-penjualan-table tbody');
-
-    if (document.getElementById("detail-penjualan-table") && typeof simpleDatatables.DataTable !== 'undefined') {
-        const dataTable = new simpleDatatables.DataTable("#detail-penjualan-table", {
-            paging: true,
-            perPage: 5,
-            perPageSelect: [5, 10, 15, 20, 25],
-            sortable: false,
-            labels: {
-                perPage: "",
-                noRows: "Tidak ada data",
-                info: "Menampilkan {start} sampai {end} dari {rows} entri"
-            }
-        });
+    function filterByDate(date) {
+        window.location.href = `?date=${date}`;
     }
 
-    buttons.forEach(button => {
-        button.addEventListener('click', async () => {
-            const penjualanId = button.getAttribute('data-id');
-            try {
-                const response = await fetch(`/penjualan/detail/${penjualanId}`);
-                const data = await response.json();
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('[data-modal-target="modal-detail-penjualan"]');
+        const modalBody = document.querySelector('#detail-penjualan-table tbody');
 
-                // Clear previous table rows
-                modalBody.innerHTML = '';
-
-                if (data && data.status === 'success') {
-                    // Loop through each detail row and populate the table
-                    data.detailPenjualan.forEach((detail, index) => {
-                        const row = `
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${index + 1}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.nama_kontak}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.produk}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kategori_produk}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.satuan}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.harga).toLocaleString()}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kuantitas}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.nominal_pajak).toLocaleString()}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.nominal_diskon).toLocaleString()}</td>
-                            </tr>
-                        `;
-                        modalBody.innerHTML += row;
-                    });
-                } else {
-                    modalBody.innerHTML = '<tr><td colspan="9" class="text-center text-gray-500">Detail tidak ditemukan</td></tr>';
+        if (document.getElementById("detail-penjualan-table") && typeof simpleDatatables.DataTable !== 'undefined') {
+            const dataTable = new simpleDatatables.DataTable("#detail-penjualan-table", {
+                paging: true,
+                perPage: 5,
+                perPageSelect: [5, 10, 15, 20, 25],
+                sortable: false,
+                labels: {
+                    perPage: "",
+                    noRows: "Tidak ada data",
+                    info: "Menampilkan {start} sampai {end} dari {rows} entri"
                 }
-            } catch (error) {
-                console.error('Error fetching detail:', error);
-                modalBody.innerHTML = '<tr><td colspan="9" class="text-center text-red-500">Terjadi kesalahan saat memuat detail</td></tr>';
-            }
+            });
+        }
+
+        buttons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const penjualanId = button.getAttribute('data-id');
+                try {
+                    const response = await fetch(`/penjualan/detail/${penjualanId}`);
+                    const data = await response.json();
+
+                    // Clear previous table rows
+                    modalBody.innerHTML = '';
+
+                    if (data && data.status === 'success') {
+                        // Loop through each detail row and populate the table
+                        data.detailPenjualan.forEach((detail, index) => {
+                            const row = `
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${index + 1}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.nama_kontak}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.produk}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kategori_produk}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.satuan}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.harga).toLocaleString()}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kuantitas}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.nominal_pajak).toLocaleString()}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.nominal_diskon).toLocaleString()}</td>
+                                </tr>
+                            `;
+                            modalBody.innerHTML += row;
+                        });
+                    } else {
+                        modalBody.innerHTML = '<tr><td colspan="9" class="text-center text-gray-500">Detail tidak ditemukan</td></tr>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching detail:', error);
+                    modalBody.innerHTML = '<tr><td colspan="9" class="text-center text-red-500">Terjadi kesalahan saat memuat detail</td></tr>';
+                }
+            });
         });
     });
-});
 </script>
 @endsection
