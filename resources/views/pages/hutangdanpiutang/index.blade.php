@@ -78,7 +78,7 @@
                                 @if ($data->status == 'Belum Lunas')
                                     <button type="button" class="btn rounded-full bg-info/25 text-info hover:bg-info hover:text-white" data-fc-behavior="static" data-fc-target="modalPelunasanHutang{{$data->id_hutangpiutang}}" data-fc-type="modal">Bayar Hutang</button>
                                 @else
-                                    
+
                                 @endif
                             </td>
                         </tr>
@@ -105,7 +105,7 @@
                         <span class="material-symbols-rounded">close</span>
                     </button>
                 </div>
-                
+
                 <div class="loading-spinner hidden animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-primary rounded-full mx-auto mt-4" role="status" aria-label="loading">
                     <span class="sr-only">Loading...</span>
                 </div>
@@ -259,7 +259,7 @@
                                 @if ($data->status == 'Belum Lunas')
                                     <button type="button" class="btn rounded-full bg-info/25 text-info hover:bg-info hover:text-white" data-fc-behavior="static" data-fc-target="modalPelunasanPiutang{{$data->id_hutangpiutang}}" data-fc-type="modal">Bayar Piutang</button>
                                 @else
-                                    
+
                                 @endif
                             </td>
                         </tr>
@@ -270,7 +270,7 @@
             </div>
         </div>
         <!-- end table -->
-        
+
         <!-- Modal Riwayat Pembayaran Piutang -->
         @foreach ($piutang as $index)
         <div id="riwayatPiutang{{$index->id_hutangpiutang}}" class="w-full h-auto max-h-[70vh] mt-5 fixed top-0 left-0 z-50 transition-all duration-500 fc-modal hidden">
@@ -286,7 +286,7 @@
                         <span class="material-symbols-rounded">close</span>
                     </button>
                 </div>
-                
+
                 <div class="loading-spinner hidden animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-primary rounded-full mx-auto mt-4" role="status" aria-label="loading">
                     <span class="sr-only">Loading...</span>
                 </div>
@@ -316,7 +316,7 @@
         </div>
         @endforeach
         <!-- end modal -->
-        
+
         <!-- Modal Pelunasan Piutang -->
         @foreach ( $piutang as $data)
         <div id="modalPelunasanPiutang{{$data->id_hutangpiutang}}" class="w-full h-auto max-h-[70vh] mt-5 fixed top-0 left-0 z-50 transition-all duration-500 fc-modal hidden">
@@ -359,7 +359,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="mb-3">
                                 <label for="tanggal_pembayaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Pembayaran</label>
-                                <input type="text" class="form-input" name="tanggal_pembayaran" id="datepicker-basic">
+                                <input type="date" class="form-input" name="tanggal_pembayaran" id="datepicker-basic">
                             </div>
                             <div class="mb-3">
                                 <label for="dibayarkan" class="text-gray-800 text-sm font-medium inline-block mb-2">Nominal Pembayaran</label>

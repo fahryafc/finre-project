@@ -23,6 +23,10 @@ class RiwayatPembayaranHutangPiutang extends Model
         'catatan'
     ];
 
+    protected $casts = [
+        'tanggal_pembayaran' => 'datetime:Y-m-d',
+    ];
+
     public function hutangpiutang()
     {
         return $this->hasOne(Kontak::class, 'id_hutangpiutang', 'id_hutangpiutang');

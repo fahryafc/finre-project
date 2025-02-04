@@ -251,22 +251,19 @@ var options = {
         colors: ['transparent']
     },
     series: [{
-        name: 'Net Profit',
+        name: 'Piutang',
         data: [46, 57, 59, 54, 62, 58, 64, 60, 66]
     }, {
-        name: 'Revenue',
-        data: [74, 83, 102, 97, 86, 106, 93, 114, 94]
-    }, {
-        name: 'Free Cash Flow',
+        name: 'Hutang',
         data: [37, 42, 38, 26, 47, 50, 54, 55, 43]
     }],
-    colors: ['#34c38f', '#556ee6', '#f46a6a'],
+    colors: ['#34c38f', '#f46a6a'],
     xaxis: {
         categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
     },
     yaxis: {
         title: {
-            text: '$ (thousands)',
+            text: 'Rp (Rupiah)',
             style: {
                 fontWeight: '500',
             },
@@ -282,7 +279,7 @@ var options = {
     tooltip: {
         y: {
             formatter: function (val) {
-                return "$ " + val + " thousands"
+                return "Rp " + val
             }
         }
     }
