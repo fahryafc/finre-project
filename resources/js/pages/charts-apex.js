@@ -293,6 +293,69 @@ var chart = new ApexCharts(
 chart.render();
 
 
+var options = {
+    chart: {
+        height: 350,
+        type: 'bar',
+        toolbar: {
+            show: false,
+        }
+    },
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '45%',
+            endingShape: 'rounded'
+        },
+    },
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        show: true,
+        width: 2,
+        colors: ['transparent']
+    },
+    series: [{
+        name: 'PPH',
+        data: [46, 57, 59, 54, 62, 58, 64, 60, 66]
+    }],
+    colors: ['#037ffc'],
+    xaxis: {
+        categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+    },
+    yaxis: {
+        title: {
+            text: 'Nominal',
+            style: {
+                fontWeight: '500',
+            },
+        }
+    },
+    grid: {
+        borderColor: '#9ca3af20',
+    },
+    fill: {
+        opacity: 1
+
+    },
+    tooltip: {
+        y: {
+            formatter: function (val) {
+                return "Rp " + val
+            }
+        }
+    }
+}
+
+var chart = new ApexCharts(
+    document.querySelector("#column_chart_2"),
+    options
+);
+
+chart.render();
+
+
 // column chart with datalabels
 
 // var options = {

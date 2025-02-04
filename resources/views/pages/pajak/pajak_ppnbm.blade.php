@@ -59,7 +59,15 @@
     <div class="card mt-10 p-5">
         <div class="card-header mb-5">
             <div class="flex justify-between items-center">
-                <h4 class="card-title">Data Pajak PPnBM</h4>
+                <div class="flex items-center gap-3">
+                    <h4 class="card-title">Data Pajak PPnBM</h4>
+                    <input type="date" class="border border-gray-300 rounded-md p-2" onchange="filterByDate(this.value)" id="tanggal" name="tanggal" value="{{ request()->get('date') ?? request()->get('date') }}">
+                    @if (request()->get('date'))
+                        <a href="/pajak/ppnbm" class="btn bg-red-600 text-white">
+                            Reset
+                        </a>
+                    @endif
+                </div>
                 <!-- <button class="btn bg-[#307487] text-white" data-fc-target="modalTambahAkun" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
                     Tambah Data
                 </button> -->
@@ -117,4 +125,9 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/penjualan.js') }}" defer></script>
+<script>
+    function filterByDate(date) {
+        window.location.href = `?date=${date}`;
+    }
+</script>
 @endsection

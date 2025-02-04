@@ -51,10 +51,16 @@ class PajakController extends Controller
         }
     }
 
-    public function pph(): View
+    public function pph(Request $request): View
     {
         try {
-            $pajak_pph = DB::table('pajak_pph')->get();
+            $filter_date = $request->input('date');
+
+            $pajak_pph = DB::table('pajak_pph')
+                ->when($filter_date, function ($query, $filter_date) {
+                    return $query->whereDate('created_at', $filter_date);
+                })
+                ->get();
 
             return view('pages.pajak.pajak_pph', [
                 'pajak_pph' => $pajak_pph
@@ -67,11 +73,16 @@ class PajakController extends Controller
         }
     }
 
-    public function ppnbm(): view
+    public function ppnbm(Request $request): view
     {
-
         try {
-            $pajak_ppnbm = DB::table('pajak_ppnbm')->paginate(5);
+            $filter_date = $request->input('date');
+
+            $pajak_ppnbm = DB::table('pajak_ppnbm')
+                ->when($filter_date, function ($query, $filter_date) {
+                    return $query->whereDate('tgl_transaksi', $filter_date);
+                })
+                ->paginate(5);
 
             return view('pages.pajak.pajak_ppnbm', [
                 'pajak_ppnbm' => $pajak_ppnbm

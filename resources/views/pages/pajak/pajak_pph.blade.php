@@ -9,7 +9,7 @@
         <div class="card h-full flex flex-col bg-white">
             <div class="p-6 flex-grow flex flex-col justify-center">
                 <h4 class="card-title mb-4">Golongan Pajak</h4>
-                <div id="pie_chart" class="apex-charts my-4 flex-grow flex items-center justify-center">
+                <div id="column_chart_2" class="apex-charts my-4 flex-grow flex items-center justify-center">
                 </div>
             </div>
         </div>
@@ -48,14 +48,20 @@
 
 <!-- table pajak -->
 <div class="card mt-10 p-5">
-    <div class="card-header mb-5 flex justify-between items-center">
+    <div class="flex items-center gap-3">
         <h4 class="card-title">Data Pajak</h4>
+        <input type="date" class="border border-gray-300 rounded-md p-2" onchange="filterByDate(this.value)" id="tanggal" name="tanggal" value="{{ request()->get('date') ?? request()->get('date') }}">
+        @if (request()->get('date'))
+            <a href="/pajak/pph" class="btn bg-red-600 text-white">
+                Reset
+            </a>
+        @endif
     </div>
     <div class="card-body">
         <div class="overflow-x-auto mt-5">
             <div class="min-w-full inline-block align-middle">
                 <div class="border rounded-lg divide-y divide-gray-200 dark:border-gray-700 dark:divide-gray-700">
-                    <div class="overflow-hidden p-5">              
+                    <div class="overflow-hidden p-5">
                         <table id="search-table">
                             <thead>
                                 <tr>
@@ -110,6 +116,10 @@
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/pajak.js') }}" defer></script>
 <script>
+    function filterByDate(date) {
+        window.location.href = `?date=${date}`;
+    }
+
     document.getElementById('filter-jenis-pajak').addEventListener('change', function() {
         const selectedJenis = this.value.toLowerCase();
         document.querySelectorAll('#search-table .pajak-row').forEach(row => {
