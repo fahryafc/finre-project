@@ -225,48 +225,17 @@ document.getElementById('productRows').addEventListener('change', function (even
 });
 document.getElementById('persen_pajak').setAttribute('readonly', 'readonly');
 
-// function addProductRow(jmlProduk) {
-//     const productRowsContainer = document.getElementById('productRowsContainer');
-//     const container = document.getElementById('productRows');
+function addProductRow() {
+    const container = document.getElementById('productRows');
 
-//     if(jmlProdukPenjualan < jmlProduk) {
-//         // Get the first row template
-//         const template = document.querySelector('.product-row').cloneNode(true);
+    // Get the first row template
+    const template = document.querySelector('.product-row').cloneNode(true);
 
-//         // Clear any values in the inputs
-//         template.querySelectorAll('input').forEach(input => input.value = '');
-//         template.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+    // Clear any values in the inputs
+    template.querySelectorAll('input').forEach(input => input.value = '');
+    template.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
 
-//         container.appendChild(template);
-
-//         return
-//     }
-
-//     alert('Produk yang ingin ditambahkan sudah ada di daftar produk penjualan!');
-//     return;
-// }
-
-function addProductRow(jmlProduk) {
-    const container = document.getElementById('productRows'); // Container tempat baris produk ditambahkan
-    const productRows = container.children.length; // Hitung jumlah child yang ada
-
-    if (productRows + 1 < jmlProduk) {
-        // Ambil template dari baris pertama
-        const template = document.querySelector('.product-row').cloneNode(true);
-
-        // Reset input & select dalam template
-        template.querySelectorAll('input').forEach(input => input.value = '');
-        template.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
-
-        container.appendChild(template); // Tambahkan template ke container
-
-        // Hitung ulang jumlah child setelah penambahan
-        const newTotalChild = container.children.length + 1;
-        // console.log("Jumlah child setelah penambahan:", newTotalChild, "dari", jmlProduk);
-        return;
-    }
-
-    alert('Produk yang ingin ditambahkan sudah ada di daftar produk penjualan!');
+    container.appendChild(template);
 }
 
 
