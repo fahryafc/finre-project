@@ -18,6 +18,9 @@ class KasdanbankController extends Controller
 {
     public function index()
     {
+        $title = 'Hapus Data!';
+        $text = "Apakah kamu yakin menghapus data ini ?";
+        confirmDelete($title, $text);
         try {
             // Mengambil data dari tabel kas_bank dengan join ke tabel penjualan
             $kasdanbank = DB::table('kas_bank')
@@ -28,6 +31,8 @@ class KasdanbankController extends Controller
                 )
                 ->groupBy('kas_bank.id_kas_bank') // Pastikan untuk group by berdasarkan primary key tabel kas_bank
                 ->paginate(5);
+
+            // dd($kasdanbank->toArray());
 
             $kategoriAkun = DB::table('kategori_akun')->get();
             $subakunKategori = DB::table('subakun_kategori')->get();
@@ -67,8 +72,8 @@ class KasdanbankController extends Controller
     {
         $kategori = $request->input('kategori'); // Ambil kategori dari request
         $subkategori = Akun::where('kategori_akun', $kategori)
-                    ->groupBy('subakun')
-                    ->get();
+            ->groupBy('subakun')
+            ->get();
 
         return response()->json($subkategori); // Kembalikan sebagai JSON
     }
@@ -90,6 +95,24 @@ class KasdanbankController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function show($id)
+    {
+        $data = Kasdanbank::find($id);
+
+        // Jika data tidak ditemukan
+        if (!$data) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data,
+        ], 200);
     }
 
     public function update(Request $request, kasdanbank $kasdanbank)
