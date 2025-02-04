@@ -28,14 +28,17 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card relative">
+        <button class="absolute top-1 left-1" data-fc-target="setHampirHabis" data-fc-type="modal" type="button">
+            <span class="menu-icon"><i class="ti ti-settings text-2xl text-yellow-700"></i></span>
+        </button>
         <div class="p-5">
             <div class="flex justify-between">
                 <div class="w-20 h-20 rounded-full inline-flex items-center justify-center bg-yellow-100">
                     <i class="ti ti-package text-4xl text-yellow-500"></i>
                 </div>
                 <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">{{$produkHampirHabis}}</h3>
+                    <h3 id="produkHampirHabis" class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300"></h3>
                     <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Hampir Habis</p>
                 </div>
             </div>
@@ -178,7 +181,7 @@
                                         @method('DELETE')
                                         <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                                             <a href="{{ route('produkdaninventori.destroy', $prd->id_produk) }}" data-confirm-delete="true" class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white"><i class="mgc_delete_2_line"></i></a>
-                                            <button type="button" class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white" data-fc-target="modalEditProduk{{$prd->id_produk}}" data-id-produk="{{$prd->id_produk}}" onclick="openEditProduk(this)" data-fc-type="modal"><i class="mgc_edit_2_line"></i></button>
+                                            <a href="{{ route('produkdaninventori.edit', $prd->id_produk) }}" class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white" data-fc-target="modalEditProduk{{$prd->id_produk}}" data-id-produk="{{$prd->id_produk}}" onclick="openEditProduk(this)" data-fc-type="modal"><i class="mgc_edit_2_line"></i></a>
                                         </td>
                                     </tr>
                                     @php $counter++; @endphp
@@ -195,6 +198,38 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal Hampir Habis -->
+<div id="setHampirHabis" class="w-full h-full mt-5 fixed top-0 left-0 z-50 transition-all duration-500 fc-modal hidden">
+    <div class="sm:max-w-2xl fc-modal-open:opacity-100 duration-500 opacity-0 ease-out transition-all sm:w-full m-3 sm:mx-auto flex flex-col bg-white border shadow-sm rounded-md dark:bg-slate-800 dark:border-gray-700">
+        <div class="flex justify-between items-center py-2.5 px-4 border-b dark:border-gray-700">
+            <h3 class="font-medium text-gray-800 dark:text-white text-lg">
+                Set Hampir Habis
+            </h3>
+            <button class="inline-flex flex-shrink-0 justify-center items-center h-8 w-8 dark:text-gray-200" data-fc-dismiss type="button">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <form onsubmit="setProdukHampirHabis(event)">
+            <div class="px-4 py-8 overflow-y-auto">
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- col 1 -->
+                    <div>
+                        <div class="mb-3">
+                            <label for="hampir_habis" class="text-gray-800 text-sm font-medium inline-block mb-2">Set minimal hampir habis</label>
+                            <input type="number" class="form-input" id="hampir_habis" name="hampir_habis" value="1" aria-describedby="hampir_habis" min="1" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
+                <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close
+                </button>
+                <button class="btn bg-primary text-white" type="submit">Save</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -239,4 +274,43 @@
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
+<script>
+    // Jika localStorage belum ada, maka set default value 1
+    if (!localStorage.getItem('produkHampirHabis')) {
+        localStorage.setItem('produkHampirHabis', 1);
+    }
+
+    // Get value localStorage
+    const getProdukHampirHabis = localStorage.getItem('produkHampirHabis');
+
+    // Set value localStorage ke input
+    document.getElementById('hampir_habis').value = getProdukHampirHabis;
+
+    // Fetch data hampir habis
+    fetch('/check-hampir-habis', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': @json(csrf_token())
+        },
+        body: JSON.stringify({
+            hampirHabis: getProdukHampirHabis
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('produkHampirHabis').textContent = data.data;
+            }
+        });
+
+    // Set produk hampir habis
+    function setProdukHampirHabis(event) {
+        event.preventDefault();
+        const hampirHabis = document.getElementById('hampir_habis').value;
+        localStorage.setItem('produkHampirHabis', hampirHabis);
+        window.location.reload();
+    }
+</script>
 @endsection

@@ -63,6 +63,7 @@ Route::resource('/pajak', PajakController::class);
 
 Route::get('/produkdaninventori/edit{id}', [ProdukdaninventoriController::class, 'ppn'])->name('produkdaninventori.edit');
 Route::resource('/produkdaninventori', ProdukdaninventoriController::class);
+Route::post('/check-hampir-habis', [ProdukdaninventoriController::class, 'check_hampir_habis']);
 
 Route::get('/asset/asset_tersedia', [AssetController::class, 'asset_tersedia'])->name('asset.asset_tersedia');
 Route::get('/asset/asset_terjual', [AssetController::class, 'asset_terjual'])->name('asset.asset_terjual');

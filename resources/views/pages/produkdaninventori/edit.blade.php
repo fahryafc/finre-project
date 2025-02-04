@@ -22,14 +22,14 @@
         </div>
         <div class="p-6">
             <form id="" action="{{ route('produkdaninventori.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf            
+                @csrf
                 <div class="grid grid-cols-3 gap-4">
                     <div class="mb-3">
                         <label for="pemasok" class="text-gray-800 text-sm font-medium inline-block mb-2">Pemasok</label>
                         <select id="pemasok" name="pemasok" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="" selected>-- Pilih Pemasok --</option>
                             @foreach ( $pemasoks as $pemasok)
-                            <option value="{{ $pemasok->id_kontak }}" 
+                            <option value="{{ $pemasok->id_kontak }}"
                                 {{ $produk->id_kontak == $pemasok->id_kontak ? 'selected' : '' }}>
                                 {{ $pemasok->nama_kontak }}
                             </option>
@@ -53,7 +53,7 @@
                         <select id="satuan" class="selectize" name="satuan">
                             <option value="" selected>-- Pilih Satuan --</option>
                             @foreach ($satuan as $key)
-                            <option value="{{ $key->nama_satuan }}" 
+                            <option value="{{ $key->nama_satuan }}"
                             {{ $produk->satuan == $key->nama_satuan ? 'selected' : '' }}>
                             {{ $key->nama_satuan }}
                         </option>

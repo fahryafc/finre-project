@@ -37,7 +37,6 @@ class ProdukdaninventoriController extends Controller
 
             // Hitung jumlah produk tersedia, hampir habis, habis, dan total produk
             $produkTersedia = DB::table('produk')->where('kuantitas', '>', 0)->count();
-            $produkHampirHabis = DB::table('produk')->where('kuantitas', '<=', 3)->count();
             $produkHabis = DB::table('produk')->where('kuantitas', '=', 0)->count();
             $totalProduk = DB::table('produk')->sum('kuantitas');
 
@@ -49,7 +48,6 @@ class ProdukdaninventoriController extends Controller
                 'akun' => $akun,
                 'pemasoks' => $pemasoks,
                 'produkTersedia' => $produkTersedia,
-                'produkHampirHabis' => $produkHampirHabis,
                 'produkHabis' => $produkHabis,
                 'totalProduk' => $totalProduk,
             ]);
@@ -60,6 +58,17 @@ class ProdukdaninventoriController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    public function check_hampir_habis(Request $request)
+    {
+        $produkHampirHabis = DB::table('produk')->where('kuantitas', '<=', $request->hampirHabis)->count();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Get all data produk success',
+            'data' => $produkHampirHabis,
+        ]);
     }
 
     public function create()
@@ -136,11 +145,11 @@ class ProdukdaninventoriController extends Controller
                 'akun_pembayaran'   => $request->akun_pembayaran,
                 'masuk_akun'        => $request->masuk_akun,
                 'jns_pajak'         => $request->jns_pajak,
-                'persen_pajak'	    => $request->persen_pajak,
+                'persen_pajak'        => $request->persen_pajak,
                 'nominal_pajak'     => $request->nominal_pajak,
                 'total_transaksi'   => $request->total_transaksi,
             ]);
-            
+
             if ($data->jns_pajak == 'ppn') {
                 DB::table('pajak_ppn')->insert([
                     'kode_reff'         => $data->kode_reff_pajak,
@@ -235,8 +244,8 @@ class ProdukdaninventoriController extends Controller
                 'total_transaksi'     => $request->total_transaksi,
             ]);
 
-            if($data->nominal_pajak != NULL || $data->nominal_pajak != ''){
-            // Masukkan data ke tabel pajak
+            if ($data->nominal_pajak != NULL || $data->nominal_pajak != '') {
+                // Masukkan data ke tabel pajak
                 DB::table('pajak_ppn')->insert([
                     'jenis_transaksi'   => 'penjualan',
                     'keterangan'        => $data->nama_produk,
