@@ -119,13 +119,13 @@
                     </div>
                     <hr class="border-2 border-gray-300 my-2">
                     <!-- col 3 -->
-                    
+
                     <div class="grid grid-cols-6">
                         <div class="mb-3">
                             <div class="flex items-center">
                                 <input type="checkbox" id="pajakButton" name="pajakButton" class="form-switch text-primary"
-                                    value="1" 
-                                    onchange="toggleCollapsePajak()" 
+                                    value="1"
+                                    onchange="toggleCollapsePajak()"
                                     {{ $pengeluaran->pajak == 1 ? 'checked' : '' }}>
                                 <label for="pajakButton" class="ms-1.5">Pajak</label>
                             </div>
@@ -141,7 +141,7 @@
                     </div>
 
                     <!-- collapse pajak -->
-                    <div id="collapsePajak" 
+                    <div id="collapsePajak"
                         class="w-full overflow-hidden transition-[height] duration-300 mt-5 {{ $pengeluaran->pajak == 1 ? '' : 'hidden' }}">
                         <div class="flex justify-between items-center py-2.5 px-4 border-b dark:border-gray-700">
                             <h3 class="font-medium text-gray-800 dark:text-white text-lg">Pajak</h3>
@@ -150,8 +150,8 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-3">
                             <div class="mb-3">
                                 <label for="jns_pajak" class="text-gray-800 text-sm font-medium inline-block mb-2">Jenis Pajak</label>
-                                <select id="jns_pajak" name="jns_pajak" 
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                                <select id="jns_pajak" name="jns_pajak"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                     onchange="aturPajakDanHitung()">
                                     <option value="" selected>-- Pilih Jenis Pajak --</option>
                                     <option value="ppn" {{ old('jns_pajak', $pengeluaran->jns_pajak) == 'ppn' ? 'selected' : '' }}>PPN</option>
@@ -161,24 +161,24 @@
                             </div>
                             <div class="mb-3" id="pajakPersenContainer">
                                 <label for="pajak_persen" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak (%)</label>
-                                <input type="text" 
-                                    class="form-input" 
-                                    id="pajak_persen" 
-                                    name="pajak_persen" 
-                                    aria-describedby="pajak_persen" 
-                                    placeholder="Masukan Pajak (%)" 
-                                    value="{{ old('pajak_persen', $pengeluaran->pajak_persen) }}" 
+                                <input type="text"
+                                    class="form-input"
+                                    id="pajak_persen"
+                                    name="pajak_persen"
+                                    aria-describedby="pajak_persen"
+                                    placeholder="Masukan Pajak (%)"
+                                    value="{{ old('pajak_persen', $pengeluaran->pajak_persen) }}"
                                     oninput="hitungPajak()">
                             </div>
                             <div class="mb-3">
                                 <label for="pajak_dibayarkan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak Dibayarkan (Rp)</label>
-                                <input type="text" 
-                                    class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" 
-                                    id="pajak_dibayarkan" 
-                                    name="pajak_dibayarkan" 
-                                    aria-describedby="pajak_dibayarkan" 
-                                    placeholder="Pajak Dibayarkan" 
-                                    value="{{ 'Rp. '.number_format(old('pajak_dibayarkan', $pengeluaran->pajak_dibayarkan, 0, '.', '.')) }}" 
+                                <input type="text"
+                                    class="form-input bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    id="pajak_dibayarkan"
+                                    name="pajak_dibayarkan"
+                                    aria-describedby="pajak_dibayarkan"
+                                    placeholder="Pajak Dibayarkan"
+                                    value="{{ 'Rp. '.number_format(old('pajak_dibayarkan', $pengeluaran->pajak_dibayarkan, 0, '.', '.')) }}"
                                     readonly>
                             </div>
                         </div>
@@ -215,9 +215,9 @@
                         </div>
                     </div>
                 <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
-                    <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close
+                    <button onclick="window.history.back()" type="button" class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close
                     </button>
-                    <button class="btn bg-[#307487] text-white" type="submit">Save</button>
+                    <button type="submit" class="btn bg-[#307487] text-white" type="submit">Save</button>
                 </div>
             </form>
         </div>
