@@ -28,10 +28,16 @@ class PajakController extends Controller
         }
     }
 
-    public function ppn(): View
+    public function ppn(Request $request): View
     {
         try {
-            $pajak_ppn = DB::table('pajak_ppn')->get();
+            $filter_date = $request->input('date');
+
+            $pajak_ppn = DB::table('pajak_ppn')
+                ->when($filter_date, function ($query, $filter_date) {
+                    return $query->whereDate('created_at', $filter_date);
+                })
+                ->get();
 
             return view('pages.pajak.pajak_ppn', [
                 'pajak_ppn' => $pajak_ppn
@@ -64,7 +70,7 @@ class PajakController extends Controller
     public function ppnbm(): view
     {
 
-        try {    
+        try {
             $pajak_ppnbm = DB::table('pajak_ppnbm')->paginate(5);
 
             return view('pages.pajak.pajak_ppnbm', [

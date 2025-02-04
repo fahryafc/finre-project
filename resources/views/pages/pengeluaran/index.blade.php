@@ -80,7 +80,7 @@
         <div class="card-header mb-5">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <h4 class="card-title">Data Penjualan</h4>
+                    <h4 class="card-title">Data Pengeluaran</h4>
                     <input type="date" class="border border-gray-300 rounded-md p-2" onchange="filterByDate(this.value)" id="tanggal" name="tanggal" value="{{ request()->get('date') ?? request()->get('date') }}">
                     @if (request()->get('date'))
                         <a href="/pengeluaran" class="btn bg-red-600 text-white">
