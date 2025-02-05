@@ -32,13 +32,14 @@ class PenjualanController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $filter_date = $request->input('date');
+        $from_date = $request->input('from');
+        $to_date = $request->input('to');
         try {
             $penjualan = DB::table('penjualan')
                 ->join('kontak', 'kontak.id_kontak', '=', 'penjualan.id_kontak')
                 ->join('produk_penjualan', 'produk_penjualan.id_penjualan', '=', 'penjualan.id_penjualan')
-                ->when($filter_date, function ($query, $filter_date) {
-                    return $query->whereDate('penjualan.tanggal', $filter_date);
+                ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
+                    return $query->whereBetween('penjualan.tanggal', [$from_date, $to_date]);
                 })
                 ->select(
                     'kontak.nama_kontak',

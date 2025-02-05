@@ -31,13 +31,14 @@ class PengeluaranController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $filter_date = $request->input('date');
+        $from_date = $request->input('from');
+        $to_date = $request->input('to');
 
         try {
             // $pengeluaran = DB::table('pengeluaran')->get();
             $pengeluaran = Pengeluaran::join('kontak', 'pengeluaran.id_kontak', '=', 'kontak.id_kontak')
-                ->when($filter_date, function ($query, $filter_date) {
-                    return $query->whereDate('tanggal', $filter_date);
+                ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
+                    return $query->whereBetween('tanggal', [$from_date, $to_date]);
                 })
                 ->select('pengeluaran.*', 'kontak.nama_kontak')
                 ->paginate(5);
