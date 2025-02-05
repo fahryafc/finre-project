@@ -80,9 +80,6 @@
             <div class="flex justify-between items-center">
                 <h4 class="card-title">Data Produk & Inventori</h4>
                 <div class="flex space-x-2">
-                    <button class="btn bg-secondary text-white" data-fc-target="tambahKategori" data-fc-type="modal" type="button">
-                        <i class="mgc_add_fill text-base me-1"></i> Tambah Kategori
-                    </button>
                     <a href="{{ route('produkdaninventori.create') }}" class="btn bg-primary text-white"><i class="mgc_add_fill text-base me-1"></i> Tambah Produk </a>
                 </div>
             </div>
@@ -232,40 +229,6 @@
         </form>
     </div>
 </div>
-
-<!-- Modal Tambah Kategori -->
-<div id="tambahKategori" class="w-full h-full mt-5 fixed top-0 left-0 z-50 transition-all duration-500 fc-modal hidden">
-    <div class="sm:max-w-2xl fc-modal-open:opacity-100 duration-500 opacity-0 ease-out transition-all sm:w-full m-3 sm:mx-auto flex flex-col bg-white border shadow-sm rounded-md dark:bg-slate-800 dark:border-gray-700">
-        <div class="flex justify-between items-center py-2.5 px-4 border-b dark:border-gray-700">
-            <h3 class="font-medium text-gray-800 dark:text-white text-lg">
-                Tambah Kategori
-            </h3>
-            <button class="inline-flex flex-shrink-0 justify-center items-center h-8 w-8 dark:text-gray-200" data-fc-dismiss type="button">
-                <span class="material-symbols-rounded">close</span>
-            </button>
-        </div>
-        <form action="{{ route('kategori.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="px-4 py-8 overflow-y-auto">
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- col 1 -->
-                    <div>
-                        <div class="mb-3">
-                            <label for="nama_kategori" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Kategori</label>
-                            <input type="text" class="form-input" id="nama_kategori" name="nama_kategori" aria-describedby="nama_kategori" placeholder="Masukan Nama Kategori">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
-                <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close
-                </button>
-                <button class="btn bg-primary text-white" type="submit">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
-<!-- end modal -->
 @endsection
 
 @section('script')
