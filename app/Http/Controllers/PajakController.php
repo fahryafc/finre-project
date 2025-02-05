@@ -31,11 +31,12 @@ class PajakController extends Controller
     public function ppn(Request $request): View
     {
         try {
-            $filter_date = $request->input('date');
+            $from_date = $request->input('from');
+            $to_date = $request->input('to');
 
             $pajak_ppn = DB::table('pajak_ppn')
-                ->when($filter_date, function ($query, $filter_date) {
-                    return $query->whereDate('created_at', $filter_date);
+                ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
+                    return $query->whereBetween('created_at', [$from_date . ' 00:00:00', $to_date . ' 23:59:59']);
                 })
                 ->get();
 
@@ -54,11 +55,12 @@ class PajakController extends Controller
     public function pph(Request $request): View
     {
         try {
-            $filter_date = $request->input('date');
+            $from_date = $request->input('from');
+            $to_date = $request->input('to');
 
             $pajak_pph = DB::table('pajak_pph')
-                ->when($filter_date, function ($query, $filter_date) {
-                    return $query->whereDate('created_at', $filter_date);
+                ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
+                    return $query->whereBetween('created_at', [$from_date . ' 00:00:00', $to_date . ' 23:59:59']);
                 })
                 ->get();
 
@@ -76,11 +78,12 @@ class PajakController extends Controller
     public function ppnbm(Request $request): view
     {
         try {
-            $filter_date = $request->input('date');
+            $from_date = $request->input('from');
+            $to_date = $request->input('to');
 
             $pajak_ppnbm = DB::table('pajak_ppnbm')
-                ->when($filter_date, function ($query, $filter_date) {
-                    return $query->whereDate('tgl_transaksi', $filter_date);
+                ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
+                    return $query->whereBetween('tgl_transaksi', [$from_date, $to_date]);
                 })
                 ->paginate(5);
 

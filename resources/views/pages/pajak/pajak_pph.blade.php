@@ -50,8 +50,10 @@
 <div class="card mt-10 p-5">
     <div class="flex items-center gap-3">
         <h4 class="card-title">Data Pajak</h4>
-        <input type="date" class="border border-gray-300 rounded-md p-2" onchange="filterByDate(this.value)" id="tanggal" name="tanggal" value="{{ request()->get('date') ?? request()->get('date') }}">
-        @if (request()->get('date'))
+        <input type="date" class="border border-gray-300 rounded-md p-2" id="from_date" name="from_date" value="{{ request()->get('from') ?? request()->get('from') }}">
+        <span>To</span>
+        <input type="date" disabled class="border border-gray-300 rounded-md p-2" id="to_date" name="to_date" value="{{ request()->get('to') ?? request()->get('to') }}">
+        @if (request()->get('from') || request()->get('to'))
             <a href="/pajak/pph" class="btn bg-red-600 text-white">
                 Reset
             </a>
@@ -116,9 +118,17 @@
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/pajak.js') }}" defer></script>
 <script>
-    function filterByDate(date) {
-        window.location.href = `?date=${date}`;
-    }
+    let dateFrom, dateTo
+    document.getElementById('from_date').addEventListener('change', function() {
+        dateFrom = this.value
+        document.getElementById('to_date').disabled = false
+        document.getElementById('to_date').min = dateFrom
+    })
+
+    document.getElementById('to_date').addEventListener('change', function() {
+        dateTo = this.value
+        window.location.href = `?from=${dateFrom}&to=${dateTo}`
+    })
 
     document.getElementById('filter-jenis-pajak').addEventListener('change', function() {
         const selectedJenis = this.value.toLowerCase();

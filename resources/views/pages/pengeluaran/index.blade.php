@@ -80,7 +80,7 @@
         <div class="card-header mb-5">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <h4 class="card-title">Data Penjualan</h4>
+                    <h4 class="card-title">Data Pengeluaran</h4>
                     <input type="date" class="border border-gray-300 rounded-md p-2" id="from_date" name="from_date" value="{{ request()->get('from') ?? request()->get('from') }}">
                     <span>To</span>
                     <input type="date" disabled class="border border-gray-300 rounded-md p-2" id="to_date" name="to_date" value="{{ request()->get('to') ?? request()->get('to') }}">
