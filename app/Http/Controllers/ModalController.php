@@ -15,13 +15,18 @@ use Exception;
 
 class ModalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $modal = Modal::paginate(5);
+        $filter = $request->input('filter');
+
+        $modal = Modal::when($filter, function ($query) use ($filter) {
+            return $query->where('jns_transaksi', '=', $filter);
+        })
+            ->paginate(5);
         $kasdanbank = DB::table('kas_bank')->get();
         $pemodal = DB::table('kontak')->where('jenis_kontak', '=', 'investor')->get();
         $jml_modal_disetor = Modal::where('jns_transaksi', '=', 'Penyetoran Modal')->sum('nominal');

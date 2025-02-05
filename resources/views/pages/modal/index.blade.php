@@ -60,7 +60,14 @@
     <div class="card">
         <div class="card-header">
             <div class="flex justify-between items-center">
-                <h4 class="card-title">Data Modal</h4>
+                <div class="flex items-center gap-4">
+                    <h4 class="card-title">Data Modal</h4>
+                    <select name="filter" id="filter" class="border border-gray-300 rounded-md py-1 px-3 text-gray-700 dark:text-gray-200">
+                        <option value="semua" @selected(!request()->get('filter'))>Semua</option>
+                        <option value="Penyetoran Modal" @selected(request()->get('filter') == 'Penyetoran Modal')>Penyetoran Modal</option>
+                        <option value="Penarikan Dividen" @selected(request()->get('filter') == 'Penarikan Dividen')>Penarikan Dividen</option>
+                    </select>
+                </div>
                 <div class="flex space-x-2">
                     <button class="btn bg-primary text-white" data-fc-target="tambahModal" data-fc-type="modal" type="button">
                         <i class="mgc_add_fill text-base me-1"></i> Tambah Modal
@@ -239,6 +246,16 @@
         const creditAkunContainer = document.getElementById('creditAkunContainer');
         const tambahModal = document.getElementById('tambahModal');
         const nominal = document.getElementById('nominal');
+
+        document.getElementById('filter').addEventListener('change', function() {
+            this.value
+            if (this.value === 'semua') {
+                window.location.href = `/modal`
+                return;
+            }
+
+            window.location.href = `?filter=${this.value}`
+        })
 
         // Reset form saat modal dibuka
         function resetForm() {
