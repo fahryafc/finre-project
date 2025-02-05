@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Modal;
 use App\Models\Kontak;
 use App\Models\Kasdanbank;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -23,11 +24,25 @@ class ModalController extends Controller
         $modal = Modal::paginate(5);
         $kasdanbank = DB::table('kas_bank')->get();
         $pemodal = DB::table('kontak')->where('jenis_kontak', '=', 'investor')->get();
+        $jml_modal_disetor = Modal::where('jns_transaksi', '=', 'Penyetoran Modal')->sum('nominal');
+        $jml_penarikan_deviden = Modal::where('jns_transaksi', '=', 'Penarikan Dividen')->sum('nominal');
+        // dd($jml_modal_disetor);
         return view('pages.modal.index', [
             'modal' => $modal,
             'kas_bank' => $kasdanbank,
             'pemodal' => $pemodal,
+            'jml_modal_disetor' => $jml_modal_disetor,
+            'jml_penarikan_deviden' => $jml_penarikan_deviden,
         ]);
+    }
+
+    private function parseRupiahToNumber($rupiah)
+    {
+        // Hapus karakter selain angka dan koma/titik, serta awalan "Rp" jika ada
+        $cleaned = str_replace(['Rp', '.', ' '], '', $rupiah); // Hapus "Rp", titik pemisah ribuan, dan spasi
+        $cleaned = str_replace(',', '.', $cleaned); // Ganti koma menjadi titik untuk memastikan desimal benar
+
+        return floatval($cleaned) ?: 0;
     }
 
     public function store(Request $request)
@@ -35,7 +50,7 @@ class ModalController extends Controller
         try {
             // Ambil nilai jenis transaksi dan nominal
             $jnsTransaksi = $request->input('jns_transaksi');
-            $nominal = $request->input('nominal');
+            $nominal = $this->parseRupiahToNumber($request->input('nominal'));
 
             // Tentukan kode akun berdasarkan jenis transaksi
             $kodeAkun = $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : $request->input('credit_akun');
@@ -52,11 +67,12 @@ class ModalController extends Controller
                 return redirect()->back()->with('error', 'Nominal penarikan dividen melebihi saldo yang tersedia!');
             }
 
+            // dd($request->all());
             // dd($jnsTransaksi);
 
             // Jika validasi lolos, buat record pada tabel modal
             Modal::create([
-                'tanggal' => $request->input('tanggal'),
+                'tanggal' => Carbon::parse($request->input('tanggal')),
                 'jns_transaksi' => $jnsTransaksi,
                 'nama_badan' => $request->input('nama_badan'),
                 'nominal' => $nominal,
@@ -78,6 +94,7 @@ class ModalController extends Controller
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('modal.index');
         } catch (\Exception $e) {
+            dd($e);
             // Jika terjadi kesalahan, kembalikan ke halaman sebelumnya dengan pesan error
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }

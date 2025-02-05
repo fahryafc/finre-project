@@ -20,8 +20,8 @@
                     <i class="ti ti-package text-4xl text-green-500"></i>
                 </div>
                 <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">1</h3>
-                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Tersedia</p>
+                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">{{ $modal->total() }}</h3>
+                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Investor</p>
                 </div>
             </div>
         </div>
@@ -34,22 +34,8 @@
                     <i class="ti ti-package text-4xl text-yellow-500"></i>
                 </div>
                 <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">2</h3>
-                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Hampir Habis</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="p-5">
-            <div class="flex justify-between">
-                <div class="w-20 h-20 rounded-full inline-flex items-center justify-center bg-red-100">
-                    <i class="ti ti-package text-4xl text-red-500"></i>
-                </div>
-                <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">3</h3>
-                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Habis</p>
+                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">Rp {{ number_format($jml_modal_disetor, 0, ',', '.') }}</h3>
+                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Modal Disetor</p>
                 </div>
             </div>
         </div>
@@ -62,8 +48,8 @@
                     <i class="ti ti-package text-4xl text-primary"></i>
                 </div>
                 <div class="text-right">
-                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">3</h3>
-                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Total Produk</p>
+                    <h3 class="text-gray-700 mt-1 text-2xl font-bold mb-5 dark:text-gray-300">Rp {{ number_format($jml_penarikan_deviden, 0, ',', '.') }}</h3>
+                    <p class="text-gray-500 mb-1 truncate dark:text-gray-400">Penarikan Deviden</p>
                 </div>
             </div>
         </div>
@@ -117,30 +103,29 @@
                                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                     @php $counter = 1; @endphp
                                     @foreach($modal as $key)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200"> {{ $counter + ($modal->currentPage() - 1) * $modal->perPage() }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->tanggal }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->jns_transaksi }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->nama_badan }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->nominal }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->keterangan }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                            {{ "Rp. ".number_format($key->nominal, 0, ".", ".") }}
-                                        </td>
-                                        @csrf
-                                        @method('DELETE')
-                                        <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                                            <a href="{{ route('modal.destroy', $key->id_modal) }}"
-                                                data-confirm-delete="true"
-                                                class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white"><i
-                                                    class="mgc_delete_2_line"></i></a>
-                                            <button type="button"
-                                                class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white"
-                                                data-fc-target="modalEditAkun{{$key->id_modal}}" data-fc-type="modal"><i
-                                                    class="mgc_edit_2_line"></i></button>
-                                        </td>
-                                    </tr>
-                                    @php $counter++; @endphp
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200"> {{ $counter + ($modal->currentPage() - 1) * $modal->perPage() }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ date('d-m-Y', strtotime($key->tanggal)) }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->jns_transaksi }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->nama_badan }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                                {{ "Rp. ".number_format($key->nominal, 0, ".", ".") }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->keterangan }}</td>
+                                            @csrf
+                                            @method('DELETE')
+                                            <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                                                <a href="{{ route('modal.destroy', $key->id_modal) }}"
+                                                    data-confirm-delete="true"
+                                                    class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white"><i
+                                                        class="mgc_delete_2_line"></i></a>
+                                                <button type="button"
+                                                    class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white"
+                                                    data-fc-target="modalEditAkun{{$key->id_modal}}" data-fc-type="modal"><i
+                                                        class="mgc_edit_2_line"></i></button>
+                                            </td>
+                                        </tr>
+                                        @php $counter++; @endphp
                                     @endforeach
                                 </tbody>
                             </table>
@@ -197,7 +182,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="nominal" class="text-gray-800 text-sm font-medium inline-block mb-2">Jumlah / Nominal Modal</label>
-                            <input type="number" class="form-input" id="nominal" name="nominal" aria-describedby="nominal" placeholder="Masukan Nominal Modal">
+                            <input type="text" class="form-input" id="nominal" name="nominal" aria-describedby="nominal" placeholder="Masukan Nominal Modal">
                         </div>
                     </div>
                     <!-- Kolom 2 -->
@@ -253,6 +238,7 @@
         const masukAkunContainer = document.getElementById('masukAkunContainer');
         const creditAkunContainer = document.getElementById('creditAkunContainer');
         const tambahModal = document.getElementById('tambahModal');
+        const nominal = document.getElementById('nominal');
 
         // Reset form saat modal dibuka
         function resetForm() {
@@ -262,6 +248,27 @@
             creditAkunContainer.classList.add('hidden'); // Sembunyikan Credit Akun
             creditAkunContainer.value = ""; // Reset ke default
         }
+
+        function formatRupiah(angka, prefix) {
+            let numberString = angka.replace(/[^,\d]/g, "").toString(),
+                split = numberString.split(","),
+                sisa = split[0].length % 3,
+                rupiah = split[0].substr(0, sisa),
+                ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                separator = sisa ? "." : "";
+                rupiah += separator + ribuan.join(".");
+            }
+
+            rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+            return prefix == undefined ? rupiah : (rupiah ? "Rp " + rupiah : "");
+        }
+
+        nominal.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/[^,\d]/g, "").toString();
+            e.target.value = formatRupiah(value, "Rp ");
+        });
 
         // Event listener untuk modal open
         tambahModal.addEventListener('fc.modal.open', resetForm);

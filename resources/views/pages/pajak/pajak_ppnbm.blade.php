@@ -29,7 +29,7 @@
             <div class="card h-full flex flex-col bg-green-100">
                 <div class="p-6 flex-grow flex flex-col justify-between relative">
                     <div class="flex justify-between items-start">
-                        <h3 class="text-green-800 text-xl font-bold mt-2">Pajak Diterima</h3>
+                        <h3 class="text-green-800 text-xl font-bold mt-2">Pajak Keluaran</h3>
                         <div class="w-16 h-16 rounded-full flex items-center justify-center bg-green-200">
                             <i class="mgc_arrow_left_down_fill text-3xl text-green-600"></i>
                         </div>
@@ -43,7 +43,7 @@
             <div class="card h-full flex flex-col bg-red-100">
                 <div class="p-6 flex-grow flex flex-col justify-between relative">
                     <div class="flex justify-between items-start">
-                        <h3 class="text-red-800 text-xl font-bold mt-2">Pajak Dibayarkan</h3>
+                        <h3 class="text-red-800 text-xl font-bold mt-2">Pajak Masukan</h3>
                         <div class="w-16 h-16 rounded-full flex items-center justify-center bg-red-200">
                             <i class="mgc_arrow_right_up_fill text-3xl text-red-600"></i>
                         </div>

@@ -48,7 +48,7 @@
             </div>
             <div class="p-6">
 
-                <div id="spline_area" class="apex-charts" dir="ltr"></div>
+                <div id="spline_area_2" class="apex-charts" dir="ltr"></div>
             </div>
         </div>
     </div>

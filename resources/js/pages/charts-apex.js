@@ -225,6 +225,48 @@ var chart = new ApexCharts(
 
 chart.render();
 
+
+var options = {
+    chart: {
+        height: 350,
+        type: 'area',
+        toolbar: {
+            show: false,
+        }
+    },
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        curve: 'smooth',
+        width: 3,
+    },
+    series: [{
+        name: 'series1',
+        data: [34, 40, 28, 52, 42, 109, 100]
+    }],
+    colors: ['#556ee6'],
+    xaxis: {
+        type: 'datetime',
+        categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],
+    },
+    grid: {
+        borderColor: '#9ca3af20',
+    },
+    tooltip: {
+        x: {
+            format: 'dd/MM/yy HH:mm'
+        },
+    }
+}
+
+var chart = new ApexCharts(
+    document.querySelector("#spline_area_2"),
+    options
+);
+
+chart.render();
+
 // column chart
 
 var options = {

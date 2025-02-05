@@ -21,8 +21,8 @@ class AkunController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $akun = Akun::get();
-        // dd($akun);
+        $akun = Akun::orderBy('kategori_akun', 'asc')->get();
+        // dd($akun->toArray());
         return view('pages.akun.index', compact('akun'));
     }
 
@@ -32,7 +32,6 @@ class AkunController extends Controller
         return response()->json($kategori_akun);
     }
 
-
     public function getSubAkunByKategori(Request $request)
     {
         $subakun = Subakun::where('id_kategori_akun', $request->id_kategori)->get();
@@ -41,7 +40,7 @@ class AkunController extends Controller
 
     public function store(Request $request)
     {
-        
+
         try {
             // $request->validate([
             //     'nama_akun' => 'string',
@@ -66,6 +65,24 @@ class AkunController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function show($id)
+    {
+        $data = Akun::find($id);
+
+        // Jika data tidak ditemukan
+        if (!$data) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data,
+        ]);
     }
 
     public function update(Request $request, Akun $akun)

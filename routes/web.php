@@ -89,6 +89,7 @@ Route::get('/akun', [AkunController::class, 'index'])->name('akun.index');
 Route::post('/akun', [AkunController::class, 'store'])->name('akun.store');
 Route::put('/akun/{akun}', [AkunController::class, 'update'])->name('akun.update');
 Route::delete('/akun/{akun}', [AkunController::class, 'destroy'])->name('akun.destroy');
+Route::get('/akun/{id}', [AkunController::class, 'show']);
 Route::get('/get-kategori-akun', [AkunController::class, 'getKategoriAkun'])->name('get-kategori-akun');
 Route::get('/get-subakun-by-kategori', [AkunController::class, 'getSubAkunByKategori'])->name('get-subakun-by-kategori');
 

@@ -25,6 +25,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Akun</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saldo</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,12 +36,19 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->kode_akun}}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->nama_akun}}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->kategori_akun}}</td>
-
                         @if (!empty($key->saldo))
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->saldo, 0, ".", ".") }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->saldo, 0, ".", ".") }}</td>
                         @else
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">Rp. 0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">Rp. 0</td>
                         @endif
+                        @csrf
+                        @method('DELETE')
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            @if ($key->saldo < 1)
+                                <a href="{{ route('akun.destroy', $key->id_akun) }}" data-confirm-delete="true" class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white"><i class="mgc_delete_2_line"></i></a>
+                            @endif
+                            <button type="button" data-id="{{ $key->id_akun }}" data-fc-target="modalTambahAkun" data-fc-type="modal" class="edit btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white"><i class="mgc_edit_2_line"></i></button>
+                        </td>
                     </tr>
                     @php $counter++; @endphp
                     @endforeach
@@ -107,19 +115,19 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script>
-if (document.getElementById("akun-table") && typeof simpleDatatables.DataTable !== 'undefined') {
-    const dataTable = new simpleDatatables.DataTable("#akun-table", {
-        paging: true,
-        perPage: 5,
-        perPageSelect: [5, 10, 15, 20, 25],
-        sortable: false,
-        labels: {
-            perPage: "",
-            noRows: "Tidak ada data",
-            info: "Menampilkan {start} sampai {end} dari {rows} entri"
-        }
-    });
-}
+    if (document.getElementById("akun-table") && typeof simpleDatatables.DataTable !== 'undefined') {
+        const dataTable = new simpleDatatables.DataTable("#akun-table", {
+            paging: true,
+            perPage: 5,
+            perPageSelect: [5, 10, 15, 20, 25],
+            sortable: false,
+            labels: {
+                perPage: "",
+                noRows: "Tidak ada data",
+                info: "Menampilkan {start} sampai {end} dari {rows} entri"
+            }
+        });
+    }
 
     $(document).ready(function() {
         // Muat data kategori akun saat modal dibuka
@@ -170,6 +178,36 @@ if (document.getElementById("akun-table") && typeof simpleDatatables.DataTable !
                 $('#subakun').empty().append('<option value="">-- Pilih Sub Kategori Akun --</option>');
             }
         });
+
+        $('.edit').click(async function() {
+            const id = $(this).data('id');
+            const res = await fetch(`/akun/${id}`);
+            const result = await res.json();
+            const { data } = result;
+            $('#nama_akun').val(data.nama_akun);
+            $('#kode_akun').val(data.kode_akun);
+
+            $.ajax({
+                url: "{{ route('get-kategori-akun') }}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    let kategoriSelect = $('#kategori_akun');
+                    kategoriSelect.empty().append('<option value="">-- Pilih Kategori Akun --</option>');
+
+                    response.forEach(function(kategori) {
+                        if (kategori.id_kategori_akun == data.id_kategori_akun) {
+                            kategoriSelect.append('<option value="' + kategori.id_kategori_akun + '" selected>' + kategori.nama_kategori + '</option>');
+                        } else {
+                            kategoriSelect.append('<option value="' + kategori.id_kategori_akun + '">' + kategori.nama_kategori + '</option>');
+                        }
+                    });
+                },
+                error: function() {
+                    alert('Gagal memuat kategori akun.');
+                }
+            });
+        })
     });
 </script>
 @endsection

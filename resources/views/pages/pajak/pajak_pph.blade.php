@@ -4,7 +4,7 @@
 <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
 @endsection
 @section('content')
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="grid grid-cols-1">
     <div class="card-wrapper">
         <div class="card h-full flex flex-col bg-white">
             <div class="p-6 flex-grow flex flex-col justify-center">
@@ -14,7 +14,7 @@
             </div>
         </div>
     </div>
-    <div class="grid grid-rows-2 gap-6">
+    {{-- <div class="grid grid-rows-2 gap-6">
         <div class="card-wrapper">
             <div class="card h-full flex flex-col bg-green-100">
                 <div class="p-6 flex-grow flex flex-col justify-between relative">
@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 
 

@@ -72,7 +72,7 @@
                                     <span class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">{{ $data->status }}</span>
                                 </td>
                             @endif
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $data->tgl_jatuh_tempo }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ date('d-m-Y', strtotime($data->tgl_jatuh_tempo)) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
                                 <button type="button" class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white" data-fc-behavior="static" data-fc-target="modalHutang{{$data->id_hutangpiutang}}" data-fc-type="modal" data-type="hutang" data-id-hutang="{{$data->id_hutangpiutang}}" onclick="openDetailHutang(this)">Detail</button>
                                 @if ($data->status == 'Belum Lunas')
@@ -92,47 +92,47 @@
 
         <!-- Modal Riwayat Pembayaran Hutang -->
         @foreach ($hutang as $index)
-        <div id="modalHutang{{$index->id_hutangpiutang}}" class="w-full h-auto max-h-[70vh] mt-5 fixed top-0 left-0 z-50 transition-all duration-500 fc-modal hidden">
-            <div class="max-w-[60rem] fc-modal-open:opacity-100 duration-500 opacity-0 ease-out transition-all sm:w-full m-3 sm:mx-auto flex flex-col bg-white border shadow-sm rounded-md dark:bg-slate-800 dark:border-gray-700">
-                <div class="flex justify-between items-center py-2.5 px-4 border-b dark:border-gray-700">
-                    <div>
-                        <h3 class="font-bold text-gray-900 dark:text-white text-xl">
-                            Riwayat Pembayaran Hutang - <span class="namaKontak">{{ $index->nama_kontak }}</span>
-                        </h3>
-                        <span class="text-sm text-gray-600 dark:text-gray-400 nmPerusahaan">{{ $index->nm_perusahaan }}</span>
-                    </div>
-                    <button class="inline-flex flex-shrink-0 justify-center items-center h-8 w-8 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full" data-fc-dismiss type="button">
-                        <span class="material-symbols-rounded">close</span>
-                    </button>
-                </div>
-
-                <div class="loading-spinner hidden animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-primary rounded-full mx-auto mt-4" role="status" aria-label="loading">
-                    <span class="sr-only">Loading...</span>
-                </div>
-
-                <div class="card-body p-5">
-                    <table id="detail-hutang">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Pembayaran</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal Dibayarkan</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sisa Pembayaran</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Catatan</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Masuk Akun</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data rows akan diisi oleh JavaScript -->
-                        </tbody>
-                    </table>
-                    <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
-                        <button class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white transition-all" data-fc-dismiss type="button">Close
+            <div id="modalHutang{{$index->id_hutangpiutang}}" class="w-full h-auto max-h-[70vh] mt-5 fixed top-0 left-0 z-50 transition-all duration-500 fc-modal hidden">
+                <div class="max-w-[60rem] fc-modal-open:opacity-100 duration-500 opacity-0 ease-out transition-all sm:w-full m-3 sm:mx-auto flex flex-col bg-white border shadow-sm rounded-md dark:bg-slate-800 dark:border-gray-700">
+                    <div class="flex justify-between items-center py-2.5 px-4 border-b dark:border-gray-700">
+                        <div>
+                            <h3 class="font-bold text-gray-900 dark:text-white text-xl">
+                                Riwayat Pembayaran Hutang - <span class="namaKontak">{{ $index->nama_kontak }}</span>
+                            </h3>
+                            <span class="text-sm text-gray-600 dark:text-gray-400 nmPerusahaan">{{ $index->nm_perusahaan }}</span>
+                        </div>
+                        <button class="inline-flex flex-shrink-0 justify-center items-center h-8 w-8 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full" data-fc-dismiss type="button">
+                            <span class="material-symbols-rounded">close</span>
                         </button>
+                    </div>
+
+                    <div class="loading-spinner hidden animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-primary rounded-full mx-auto mt-4" role="status" aria-label="loading">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+
+                    <div class="card-body p-5">
+                        <table id="detail-hutang">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Pembayaran</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nominal Dibayarkan</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sisa Pembayaran</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Catatan</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Masuk Akun</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data rows akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                        <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
+                            <button class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white transition-all" data-fc-dismiss type="button">Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         @endforeach
         <!-- end modal -->
 
@@ -238,32 +238,32 @@
                     <tbody>
                         @php $counter = 1; @endphp
                         @foreach($piutang as $data)
-                        <tr data-kategori="{{ $data->kategori }}" data-status="{{ $data->status }}">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $counter }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $data->nama_kontak }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $data->nm_perusahaan }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $data->kategori }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ "Rp ".number_format($data->total_hutang, 0, ".", ".") }}</td>
-                            @if ($data->status == 'Belum Lunas')
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                    <span class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">{{ $data->status }}</span>
-                                </td>
-                            @else
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                    <span class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">{{ $data->status }}</span>
-                                </td>
-                            @endif
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $data->tgl_jatuh_tempo }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                <button type="button" class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white" data-fc-behavior="static" data-fc-target="riwayatPiutang{{$data->id_hutangpiutang}}" data-fc-type="modal" data-type="piutang" data-id-piutang="{{$data->id_hutangpiutang}}" onclick="riwayatPiutang(this)">Detail</button>
+                            <tr data-kategori="{{ $data->kategori }}" data-status="{{ $data->status }}">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $counter }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $data->nama_kontak }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $data->nm_perusahaan }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $data->kategori }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ "Rp ".number_format($data->total_hutang, 0, ".", ".") }}</td>
                                 @if ($data->status == 'Belum Lunas')
-                                    <button type="button" class="btn rounded-full bg-info/25 text-info hover:bg-info hover:text-white" data-fc-behavior="static" data-fc-target="modalPelunasanPiutang{{$data->id_hutangpiutang}}" data-fc-type="modal">Bayar Piutang</button>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        <span class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-500 text-white">{{ $data->status }}</span>
+                                    </td>
                                 @else
-
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        <span class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-green-500 text-white">{{ $data->status }}</span>
+                                    </td>
                                 @endif
-                            </td>
-                        </tr>
-                        @php $counter++; @endphp
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ date('d-m-Y', strtotime($data->tgl_jatuh_tempo)) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                    <button type="button" class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white" data-fc-behavior="static" data-fc-target="riwayatPiutang{{$data->id_hutangpiutang}}" data-fc-type="modal" data-type="piutang" data-id-piutang="{{$data->id_hutangpiutang}}" onclick="riwayatPiutang(this)">Detail</button>
+                                    @if ($data->status == 'Belum Lunas')
+                                        <button type="button" class="btn rounded-full bg-info/25 text-info hover:bg-info hover:text-white" data-fc-behavior="static" data-fc-target="modalPelunasanPiutang{{$data->id_hutangpiutang}}" data-fc-type="modal">Bayar Piutang</button>
+                                    @else
+
+                                    @endif
+                                </td>
+                            </tr>
+                            @php $counter++; @endphp
                         @endforeach
                     </tbody>
                 </table>
