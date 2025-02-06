@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Modal;
 use App\Models\Akun;
+use App\Models\Kasdanbank;
 use App\Models\Subakun;
 use App\Models\Kategori_akun;
 use Illuminate\Support\Facades\DB;
@@ -34,8 +35,12 @@ class AkunController extends Controller
 
     public function getSubAkunByKategori(Request $request)
     {
-        $subakun = Subakun::where('id_kategori_akun', $request->id_kategori)->get();
-        return response()->json($subakun);
+        $kategori = $request->input('kategori_akun'); // Ambil kategori dari request
+        $subkategori = Akun::where('kategori_akun', $kategori)
+            ->groupBy('subakun')
+            ->get();
+
+        return response()->json($subkategori);
     }
 
     public function store(Request $request)
@@ -87,6 +92,7 @@ class AkunController extends Controller
 
     public function update(Request $request, Akun $akun)
     {
+        // dd($akun);
         try {
             $request->validate([
                 'nama_akun' => 'string',

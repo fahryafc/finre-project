@@ -155,9 +155,11 @@ class PenjualanController extends Controller
             ]);
 
             // Menyimpan detail penjualan dan pajak
+            // dd($request->all());
             foreach ($request->produk as $key => $nm_produk) {
                 // Cari kategori produk
-                $kategori_produk = Produk::where('nama_produk', $request->produk[$key])->first();
+                $kategori_produk = Produk::find($request->produk[$key]);
+
                 if (!$kategori_produk) {
                     throw new \Exception('Produk tidak ditemukan!');
                 }
@@ -170,9 +172,7 @@ class PenjualanController extends Controller
                 // Simpan detail produk penjualan
                 $produkPenjualan = ProdukPenjualan::create([
                     'id_penjualan'      => $data->id_penjualan,
-                    'produk'            => $request->produk[$key],
-                    'kategori_produk'   => $kategori_produk->kategori,
-                    'satuan'            => $request->satuan[$key],
+                    'id_produk'         => $request->produk[$key],
                     'harga'             => $request->harga[$key],
                     'kuantitas'         => $request->kuantitas[$key],
                     'kode_reff_pajak'   => $kodeReff,
@@ -213,7 +213,7 @@ class PenjualanController extends Controller
 
             // Mengurangi kuantitas produk di tabel produk
             foreach ($request->produk as $key => $nm_produk) {
-                $produk = Produk::where('nama_produk', $request->produk[$key])->first();
+                $produk = Produk::where('id_produk', $request->produk[$key])->first();
                 if ($produk->kuantitas >= $request->kuantitas[$key]) {
                     $produk->kuantitas -= $request->kuantitas[$key];
                     $produk->save();
@@ -246,6 +246,7 @@ class PenjualanController extends Controller
             Alert::success('Data Added!', 'Tambah Data Penjualan Berhasil');
             return redirect()->route('penjualan.index');
         } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
             Alert::error('Error', 'Tambah Data Penjualan Gagal: ' . $e->getMessage());
             return redirect()->back();
@@ -345,10 +346,14 @@ class PenjualanController extends Controller
             // Menyimpan detail penjualan dan pajak
             foreach ($request->produk as $key => $nm_produk) {
                 // Cari kategori produk
-                $kategori_produk = Produk::where('nama_produk', $request->produk[$key])->first();
-                if (!$kategori_produk) {
-                    throw new \Exception('Produk tidak ditemukan!');
-                }
+                // $kategori_produk = Produk::where('nama_produk', $request->produk[$key])
+                //     ->get();
+
+                // dd($kategori_produk->toArray());
+
+                // if (!$kategori_produk) {
+                //     throw new \Exception('Produk tidak ditemukan!');
+                // }
 
                 // Generate kode reff untuk pajak
                 $kodeReff = $request->jns_pajak[$key] === 'ppnbm'
@@ -356,10 +361,11 @@ class PenjualanController extends Controller
                     : $this->generateKodeReff('PPN');
 
                 // Simpan detail produk penjualan
-                $produkPenjualan =  DB::table('produk_penjualan')->update([
+                $produkPenjualan = DB::table('produk_penjualan')->updateOrInsert([
                     'id_penjualan'      => $penjualan->id_penjualan,
+                    'id_produk' => $request->id_produk,
                     'produk'            => $request->produk[$key],
-                    'kategori_produk'   => $kategori_produk->kategori,
+                    // 'kategori_produk'   => $kategori_produk->kategori,
                     'satuan'            => $request->satuan[$key],
                     'harga'             => $request->harga[$key],
                     'kuantitas'         => $request->kuantitas[$key],
@@ -371,7 +377,7 @@ class PenjualanController extends Controller
                     'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
                 ]);
 
-                dd($request->all());
+                // dd($request->all());
 
                 // Menambahkan pajak jika ada
                 if ($produkPenjualan->jns_pajak) {

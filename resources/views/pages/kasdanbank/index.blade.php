@@ -199,8 +199,8 @@
 <script src="{{ asset('js/custom-js/kasbank.js') }}" defer></script>
 <script>
     $(document).ready(function() {
-        $('.edit').on('click', async function() {
-            const id = $(this).data('id');
+        $(document).on('click', '.edit', async function() {
+            const id = $(this).attr('data-id');
             const subakunSelect = document.getElementById('subakun');
             $("#formKasBank").prepend('<input type="hidden" name="_method" id="method" value="PUT">');
             $("#formKasBank").attr('action', `/kasdanbank/${id}`);
@@ -214,6 +214,7 @@
             const result = await res.json();
             const { data } = result;
 
+            $('#formKasBank')[0].reset();
             $('#nama_akun').val(data.nama_akun);
             $('#kode_akun').val(data.kode_akun);
             $('#kategori_akun').val(data.kategori_akun);
@@ -244,10 +245,7 @@
 
             $("#formKasBank").attr('action', `{{ route('kasdanbank.store') }}`);
             $("#method").remove();
-            $('#nama_akun').val('');
-            $('#kode_akun').val('');
-            $('#kategori_akun').val('');
-            $('#subakun').val('');
+            $('#formKasBank')[0].reset();
         })
     })
 </script>

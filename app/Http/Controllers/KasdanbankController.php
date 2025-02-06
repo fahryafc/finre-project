@@ -61,10 +61,9 @@ class KasdanbankController extends Controller
         }
     }
 
-
     public function getKategoriAkun()
     {
-        $kategori_akun = Kategori_akun::where('id_kategori_akun', '=', 1)->get();
+        $kategori_akun = Kategori_akun::all();
         return response()->json($kategori_akun);
     }
 
