@@ -80,52 +80,53 @@
                         <label class="text-gray-800 text-sm font-medium inline-block mb-2"></label>
                     </div>
                 </div>
-
-                <div id="productRows" class="productRows">
-                    <!-- Initial product row -->
-                    <div class="product-row grid grid-cols-8 grid-rows-1 gap-4">
-                        <div class="mb-3">
-                            <select id="produk" name="produk[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                <option value="" selected>-- Pilih Produk --</option>
-                                @foreach ($produk as $produks)
-                                <option value="{{ $produks->id_produk }}" data-harga="{{ $produks->harga_jual }}" data-satuan="{{ $produks->satuan }}">{{ $produks->nama_produk }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" class="form-input satuan" id="satuan" name="satuan[]" placeholder="Masukan satuan" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" class="form-input kuantitas" id="kuantitas" name="kuantitas[]" placeholder="Masukan Kuantitas">
-                        </div>
-                        <div class="mb-3">
-                            <select id="jns_pajak" name="jns_pajak[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                <option value="jns_pajak" selected>-- Jenis Pajak --</option>
-                                <option value="ppn11">PPN (11%)</option>
-                                <option value="ppn12">PPN (12%)</option>
-                                <option value="ppnbm">PPnBM</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" id="persen_pajak" name="persen_pajak[]" placeholder="Masukan Pajak (%)" class="form-input persen_pajak" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" id="diskon" name="diskon[]" placeholder="Masukan Diskon" class="form-input diskon"/>
-                        </div>
-                        <div class="mb-3">
-                            <button type="button" class="delete-row btn bg-red-500 text-white hover:bg-red-600 p-2 rounded-lg" onclick="deleteRow(this)">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
+                <div id="productRowsContainer">
+                    <div id="productRows" class="productRows">
+                        <!-- Initial product row -->
+                        <div class="product-row grid grid-cols-8 grid-rows-1 gap-4">
+                            <div class="mb-3">
+                                <select id="produk" name="produk[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                    <option value="" selected>-- Pilih Produk --</option>
+                                    @foreach ($produk as $produks)
+                                        <option value="{{ $produks->id_produk }}" data-harga="{{ $produks->harga_jual }}" data-satuan="{{ $produks->satuan }}">{{ $produks->nama_produk }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-input satuan" id="satuan" name="satuan[]" placeholder="Masukan satuan" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-input kuantitas" id="kuantitas" name="kuantitas[]" placeholder="Masukan Kuantitas">
+                            </div>
+                            <div class="mb-3">
+                                <select id="jns_pajak" name="jns_pajak[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                    <option value="jns_pajak" selected>-- Jenis Pajak --</option>
+                                    <option value="ppn11">PPN (11%)</option>
+                                    <option value="ppn12">PPN (12%)</option>
+                                    <option value="ppnbm">PPnBM</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" id="persen_pajak" name="persen_pajak[]" placeholder="Masukan Pajak (%)" class="form-input persen_pajak" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" id="diskon" name="diskon[]" placeholder="Masukan Diskon" class="form-input diskon"/>
+                            </div>
+                            <div class="mb-3">
+                                <button type="button" class="delete-row btn bg-red-500 text-white hover:bg-red-600 p-2 rounded-lg" onclick="deleteRow(this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <button type="button" onclick="addProductRow()" class="btn bg-blue-500 text-white hover:bg-blue-600 mb-4">
+                <button type="button" onclick="addProductRow({{ $produk->count() }})" class="btn bg-blue-500 text-white hover:bg-blue-600 mb-4">
                     + Tambah Baris
                 </button>
                 <hr class="border-1 border-gray-300 my-1">

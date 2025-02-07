@@ -225,50 +225,36 @@ document.getElementById('productRows').addEventListener('change', function (even
 });
 document.getElementById('persen_pajak').setAttribute('readonly', 'readonly');
 
-// function addProductRow(jmlProduk) {
-//     const productRowsContainer = document.getElementById('productRowsContainer');
-//     const container = document.getElementById('productRows');
-
-//     if(jmlProdukPenjualan < jmlProduk) {
-//         // Get the first row template
-//         const template = document.querySelector('.product-row').cloneNode(true);
-
-//         // Clear any values in the inputs
-//         template.querySelectorAll('input').forEach(input => input.value = '');
-//         template.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
-
-//         container.appendChild(template);
-
-//         return
-//     }
-
-//     alert('Produk yang ingin ditambahkan sudah ada di daftar produk penjualan!');
-//     return;
-// }
-
 function addProductRow(jmlProduk) {
-    const container = document.getElementById('productRows'); // Container tempat baris produk ditambahkan
-    const productRows = container.children.length; // Hitung jumlah child yang ada
-
-    if (productRows + 1 < jmlProduk) {
-        // Ambil template dari baris pertama
-        const template = document.querySelector('.product-row').cloneNode(true);
-
-        // Reset input & select dalam template
-        template.querySelectorAll('input').forEach(input => input.value = '');
-        template.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
-
-        container.appendChild(template); // Tambahkan template ke container
-
-        // Hitung ulang jumlah child setelah penambahan
-        const newTotalChild = container.children.length + 1;
-        // console.log("Jumlah child setelah penambahan:", newTotalChild, "dari", jmlProduk);
+    const container = document.getElementById('productRowsContainer');
+    if (!container) {
+        console.error("Elemen dengan ID 'productRows' tidak ditemukan.");
         return;
     }
 
-    alert('Produk yang ingin ditambahkan sudah ada di daftar produk penjualan!');
-}
+    const existingRows = container.querySelectorAll('.product-row').length; // Hitung jumlah baris yang sudah ada
 
+    if (existingRows < jmlProduk) {
+        const template = document.querySelector('.product-row');
+        if (!template) {
+            console.error("Template baris produk dengan class 'product-row' tidak ditemukan.");
+            return;
+        }
+
+        const newRow = template.cloneNode(true);
+
+        // Reset input & select dalam template
+        newRow.querySelectorAll('input').forEach(input => input.value = '');
+        newRow.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+        container.appendChild(newRow);
+
+        console.log(`Baris produk berhasil ditambahkan (${existingRows + 1}/${jmlProduk}).`);
+        return;
+    }
+
+    alert(`Jumlah maksimal produk (${jmlProduk}) telah tercapai!`);
+}
 
 function deleteRow(button) {
     const totalRows = document.querySelectorAll('.product-row').length;
@@ -285,16 +271,48 @@ function deleteRow(button) {
     }
 }
 
-document.getElementById('productRows').addEventListener('change', function (event) {
+document.getElementById('productRowsContainer').addEventListener('change', function (event) {
     if (event.target && event.target.matches('select[name="produk[]"]')) {
         const selectedOption = event.target.options[event.target.selectedIndex];
 
+        // Ambil parent row dari select yang dipilih
         const productRow = event.target.closest('.product-row');
+        if (!productRow) return;
 
-        const harga = selectedOption.getAttribute('data-harga');
-        const satuan = selectedOption.getAttribute('data-satuan');
+        // Ambil harga & satuan dari atribut data-harga & data-satuan
+        const harga = selectedOption.getAttribute('data-harga') || '0';
+        const satuan = selectedOption.getAttribute('data-satuan') || '';
 
-        productRow.querySelector('input[name="harga[]"]').value = formatRupiah(harga) || '';
-        productRow.querySelector('input[name="satuan[]"]').value = satuan || '';
+        // Temukan input terkait dalam baris yang sama
+        const hargaInput = productRow.querySelector('input[name="harga[]"]');
+        const satuanInput = productRow.querySelector('input[name="satuan[]"]');
+
+        if (hargaInput) hargaInput.value = formatRupiah(harga);
+        if (satuanInput) satuanInput.value = satuan;
+    }
+
+    // Ketika pengguna memilih jenis pajak
+    if (event.target && event.target.matches('select[name="jns_pajak[]"]')) {
+        const productRow = event.target.closest('.product-row');
+        if (!productRow) return;
+
+        const persenPajakInput = productRow.querySelector('input[name="persen_pajak[]"]');
+
+        let persenPajak = ''; // Default kosong
+        switch (event.target.value) {
+            case 'ppn11':
+                persenPajak = 11;
+                break;
+            case 'ppn12':
+                persenPajak = 12;
+                break;
+            case 'ppnbm':
+                persenPajak = 'Varies';
+                break;
+            default:
+                persenPajak = '';
+        }
+
+        if (persenPajakInput) persenPajakInput.value = persenPajak;
     }
 });

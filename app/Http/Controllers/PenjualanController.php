@@ -38,13 +38,14 @@ class PenjualanController extends Controller
             $penjualan = DB::table('penjualan')
                 ->join('kontak', 'kontak.id_kontak', '=', 'penjualan.id_kontak')
                 ->join('produk_penjualan', 'produk_penjualan.id_penjualan', '=', 'penjualan.id_penjualan')
+                ->join('produk', 'produk.id_produk', '=', 'produk_penjualan.id_produk')
                 ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
                     return $query->whereBetween('penjualan.tanggal', [$from_date, $to_date]);
                 })
                 ->select(
                     'kontak.nama_kontak',
                     'penjualan.*',
-                    DB::raw('SUM(produk_penjualan.harga * produk_penjualan.kuantitas) AS total_harga')
+                    DB::raw('SUM(produk.harga_jual * produk.kuantitas) AS total_harga')
                 )
                 ->groupBy(
                     'penjualan.id_penjualan'
@@ -154,16 +155,10 @@ class PenjualanController extends Controller
                 'tgl_jatuh_tempo'   => $request->tgl_jatuh_tempo,
             ]);
 
+            // dd($request->produk);
+
             // Menyimpan detail penjualan dan pajak
-            // dd($request->all());
             foreach ($request->produk as $key => $nm_produk) {
-                // Cari kategori produk
-                $kategori_produk = Produk::find($request->produk[$key]);
-
-                if (!$kategori_produk) {
-                    throw new \Exception('Produk tidak ditemukan!');
-                }
-
                 // Generate kode reff untuk pajak
                 $kodeReff = $request->jns_pajak[$key] === 'ppnbm'
                     ? $this->generateKodeReff('PPNBM')
@@ -173,7 +168,7 @@ class PenjualanController extends Controller
                 $produkPenjualan = ProdukPenjualan::create([
                     'id_penjualan'      => $data->id_penjualan,
                     'id_produk'         => $request->produk[$key],
-                    'harga'             => $request->harga[$key],
+                    // 'harga'             => $request->harga[$key],
                     'kuantitas'         => $request->kuantitas[$key],
                     'kode_reff_pajak'   => $kodeReff,
                     'jns_pajak'         => $request->jns_pajak[$key],
@@ -288,7 +283,7 @@ class PenjualanController extends Controller
     public function edit($id)
     {
         try {
-            $penjualan = Penjualan::with('produkPenjualan')
+            $penjualan = Penjualan::with('produkPenjualan.produk')
                 ->where('id_penjualan', $id)
                 ->first();
 
@@ -325,6 +320,13 @@ class PenjualanController extends Controller
         }
     }
 
+    private function checkProdukPenjualanExists($id_penjualan, $id_produk)
+    {
+        return ProdukPenjualan::where('id_penjualan', $id_penjualan)
+            ->where('id_produk', $id_produk)
+            ->exists();
+    }
+
     public function update(Request $request, $id): RedirectResponse
     {
         try {
@@ -343,65 +345,98 @@ class PenjualanController extends Controller
                 'tgl_jatuh_tempo'   => $request->tgl_jatuh_tempo,
             ]);
 
+            // Ambil semua ID produk dari UI
+            $id_produk_ui = array_map(function ($produk) {
+                return explode("-", $produk)[0]; // Ambil ID produk sebelum "-"
+            }, $request->produk);
+
+            // Ambil semua ID produk yang sudah ada di database untuk transaksi ini
+            $id_produk_db = DB::table('produk_penjualan')
+                ->where('id_penjualan', $penjualan->id_penjualan)
+                ->pluck('id_produk')
+                ->toArray();
+
+            // Cari ID produk yang harus dihapus (ada di DB tapi tidak ada di UI)
+            $id_produk_dihapus = array_diff($id_produk_db, $id_produk_ui);
+
+            // Hapus produk yang tidak ada di UI dari database
+            if (!empty($id_produk_dihapus)) {
+                DB::table('produk_penjualan')
+                    ->where('id_penjualan', $penjualan->id_penjualan)
+                    ->whereIn('id_produk', $id_produk_dihapus)
+                    ->delete();
+            }
+
+
             // Menyimpan detail penjualan dan pajak
             foreach ($request->produk as $key => $nm_produk) {
-                // Cari kategori produk
-                // $kategori_produk = Produk::where('nama_produk', $request->produk[$key])
-                //     ->get();
-
-                // dd($kategori_produk->toArray());
-
-                // if (!$kategori_produk) {
-                //     throw new \Exception('Produk tidak ditemukan!');
-                // }
+                // dd($request->kuantitas[$key]);
+                $id_produk = explode("-", $request->produk[$key])[0];
+                $nm_produk = explode("-", $request->produk[$key])[1];
 
                 // Generate kode reff untuk pajak
                 $kodeReff = $request->jns_pajak[$key] === 'ppnbm'
                     ? $this->generateKodeReff('PPNBM')
                     : $this->generateKodeReff('PPN');
 
-                // Simpan detail produk penjualan
-                $produkPenjualan = DB::table('produk_penjualan')->updateOrInsert([
-                    'id_penjualan'      => $penjualan->id_penjualan,
-                    'id_produk' => $request->id_produk,
-                    'produk'            => $request->produk[$key],
-                    // 'kategori_produk'   => $kategori_produk->kategori,
-                    'satuan'            => $request->satuan[$key],
-                    'harga'             => $request->harga[$key],
-                    'kuantitas'         => $request->kuantitas[$key],
-                    'kode_reff_pajak'   => $kodeReff,
-                    'jns_pajak'         => $request->jns_pajak[$key],
-                    'persen_pajak'      => $request->persen_pajak[$key] ?? 0,
-                    'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100) ?? 0,
-                    'persen_diskon'     => $request->diskon[$key],
-                    'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
-                ]);
-
-                // dd($request->all());
+                if ($this->checkProdukPenjualanExists($penjualan->id_penjualan, $id_produk)) {
+                    // Simpan detail produk penjualan
+                    DB::table('produk_penjualan')->where('id_penjualan', $penjualan->id_penjualan)
+                        ->where('id_produk', $id_produk)
+                        ->update([
+                            'id_produk'         => $id_produk,
+                            'id_penjualan'      => $penjualan->id_penjualan,
+                            // 'produk'            => $request->produk[$key],
+                            // 'kategori_produk'   => $kategori_produk->kategori,
+                            // 'satuan'            => $request->satuan[$key],
+                            // 'harga'             => $request->harga[$key],
+                            'kuantitas'         => $request->kuantitas[$key],
+                            'kode_reff_pajak'   => $kodeReff,
+                            'jns_pajak'         => $request->jns_pajak[$key],
+                            'persen_pajak'      => $request->persen_pajak[$key] ?? 0,
+                            'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100) ?? 0,
+                            'persen_diskon'     => $request->diskon[$key],
+                            'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
+                        ]);
+                } else {
+                    // Simpan detail produk penjualan
+                    ProdukPenjualan::create([
+                        'id_penjualan'      => $penjualan->id_penjualan,
+                        'id_produk'         => $request->produk[$key],
+                        // 'harga'             => $request->harga[$key],
+                        'kuantitas'         => $request->kuantitas[$key],
+                        'kode_reff_pajak'   => $kodeReff,
+                        'jns_pajak'         => $request->jns_pajak[$key],
+                        'persen_pajak'      => $request->persen_pajak[$key] ?? 0,
+                        'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100) ?? 0,
+                        'persen_diskon'     => $request->diskon[$key],
+                        'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
+                    ]);
+                }
 
                 // Menambahkan pajak jika ada
-                if ($produkPenjualan->jns_pajak) {
-                    if ($produkPenjualan->jns_pajak == 'ppn11' || $produkPenjualan->jns_pajak == 'ppn12') {
+                if ($request->jns_pajak[$key]) {
+                    if ($request->jns_pajak[$key] == 'ppn11' || $request->jns_pajak[$key] == 'ppn12') {
                         // Insert pajak untuk PPN
                         DB::table('pajak_ppn')->insert([
-                            'kode_reff'       => $produkPenjualan->kode_reff_pajak,
+                            'kode_reff'       => $kodeReff,
                             'jenis_transaksi' => 'penjualan',
-                            'keterangan'      => $produkPenjualan->produk,
-                            'nilai_transaksi' => $produkPenjualan->harga * $produkPenjualan->kuantitas,
-                            'persen_pajak'    => $produkPenjualan->persen_pajak,
+                            'keterangan'      => $nm_produk,
+                            'nilai_transaksi' => $request->harga[$key] * $request->kuantitas[$key],
+                            'persen_pajak'    => $request->persen_pajak[$key],
                             'jenis_pajak'     => 'Pajak Keluaran',
-                            'saldo_pajak'     => $produkPenjualan->harga * $produkPenjualan->kuantitas * ($produkPenjualan->persen_pajak / 100),
+                            'saldo_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100),
                         ]);
-                    } elseif ($produkPenjualan->jns_pajak == 'ppnbm') {
+                    } else if ($request->jns_pajak[$key]->jns_pajak == 'ppnbm') {
                         // Insert pajak untuk PPNBM
                         DB::table('pajak_ppnbm')->insert([
-                            'kode_reff'       => $produkPenjualan->kode_reff_pajak,
-                            'deskripsi_barang' => $produkPenjualan->produk,
-                            'harga_barang'    => $produkPenjualan->harga,
-                            'tarif_ppnbm'     => $produkPenjualan->persen_pajak,
-                            'ppnbm_dikenakan' => $produkPenjualan->harga * $produkPenjualan->kuantitas * ($produkPenjualan->persen_pajak / 100),
+                            'kode_reff'       => $kodeReff,
+                            'deskripsi_barang' => $nm_produk,
+                            'harga_barang'    => $request->harga[$key],
+                            'tarif_ppnbm'     => $request->persen_pajak[$key],
+                            'ppnbm_dikenakan' => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100),
                             'jenis_pajak'     => 'Pajak Masukan',
-                            'tgl_transaksi'   => $data->tanggal,
+                            'tgl_transaksi'   => $request->tanggal,
                         ]);
                     }
                 }
@@ -416,17 +451,19 @@ class PenjualanController extends Controller
             }
 
             // Mengupdate kuantitas produk
-            $produk = Produk::where('nama_produk', $penjualan->produk)->first();
+            $produk = Produk::where('nama_produk', 'LIKE', '%' . $penjualan->produk . '%')->first();
             if ($produk) {
-                // Pastikan kuantitas produk mencukupi
-                if ($produk->kuantitas >= $request->kuantitas) {
-                    // Jika kuantitas berubah, update kuantitas produk
-                    $produk->kuantitas += $penjualan->kuantitas - $request->kuantitas; // Sesuaikan kuantitas
-                    $produk->save();
-                } else {
-                    // Jika kuantitas tidak cukup, berikan pesan kesalahan
-                    Alert::error('Error', 'Kuantitas produk tidak mencukupi!');
-                    return redirect()->route('penjualan.index');
+                foreach ($request->kuantitas as $kuantitas) {
+                    // Pastikan kuantitas produk mencukupi
+                    if ($produk->kuantitas >= $kuantitas) {
+                        // Jika kuantitas berubah, update kuantitas produk
+                        $produk->kuantitas += $penjualan->kuantitas - $kuantitas; // Sesuaikan kuantitas
+                        $produk->save();
+                    } else {
+                        // Jika kuantitas tidak cukup, berikan pesan kesalahan
+                        Alert::error('Error', 'Kuantitas produk tidak mencukupi!');
+                        return redirect()->route('penjualan.index');
+                    }
                 }
             } else {
                 // Jika produk tidak ditemukan, berikan pesan kesalahan

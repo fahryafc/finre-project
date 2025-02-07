@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Produk extends Model
 {
@@ -37,4 +39,14 @@ class Produk extends Model
         'created_by',
         'updated_by',
     ];
+
+    /**
+     * Get the produk_penjualan that owns the Produk
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function produk_penjualan(): HasMany
+    {
+        return $this->hasMany(ProdukPenjualan::class, 'id_produk');
+    }
 }

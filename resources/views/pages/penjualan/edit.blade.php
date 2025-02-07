@@ -90,16 +90,16 @@
                                 <div class="mb-3">
                                     <select id="produk" name="produk[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                         <option value="" selected>-- Pilih Produk --</option>
-                                        @foreach ( $produk as $nm_produk)
-                                        <option value="{{ $nm_produk->nama_produk }}" {{ old('nama_produk', $produks->produk) == $nm_produk->nama_produk ? 'selected' : '' }}>{{ $nm_produk->nama_produk }}</option>
+                                        @foreach ( $produk as $item)
+                                            <option value="{{ $item->id_produk }}-{{ $item->nama_produk }}" {{ old('nama_produk', $produks->produk) == $item->nama_produk ? 'selected' : '' }} data-harga="{{ $item->harga_jual }}" data-satuan="{{ $item->satuan }}">{{ $item->nama_produk }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-input satuan" id="satuan" name="satuan[]" placeholder="Masukan satuan" value="{{ $produks->satuan }}" readonly>
+                                    <input type="text" class="form-input satuan" id="satuan" name="satuan[]" placeholder="Masukan satuan" value="{{ $produks->produk->satuan }}" @readonly($produks->produk->satuan)>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" value="{{ old('harga','Rp '.number_format($produks->harga, 0, '.', '.')) }}" readonly>
+                                    <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" value="{{ old('harga','Rp '.number_format($produks->produk->harga_jual, 0, '.', '.')) }}" readonly>
                                 </div>
                                 <div class="mb-3">
                                     <input type="text" class="form-input kuantitas" id="kuantitas" name="kuantitas[]" placeholder="Masukan Kuantitas" value="{{ $produks->kuantitas }}">
@@ -107,9 +107,9 @@
                                 <div class="mb-3">
                                     <select id="jns_pajak" name="jns_pajak[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                         <option value="jns_pajak" selected>-- Jenis Pajak --</option>
-                                        <option value="ppn11" {{ $produks->jns_pajak == 'ppn11' ? 'selected' : '' }}>PPN (11%)</option>
-                                        <option value="ppn12" {{ $produks->jns_pajak == 'ppn12' ? 'selected' : '' }}>PPN (12%)</option>
-                                        <option value="ppnbm" {{ $produks->jns_pajak == 'ppnbm' ? 'selected' : '' }}>PPnBM</option>
+                                        <option value="ppn11" @selected($produks->jns_pajak == 'ppn11')>PPN (11%)</option>
+                                        <option value="ppn12" @selected($produks->jns_pajak == 'ppn12')>PPN (12%)</option>
+                                        <option value="ppnbm" @selected($produks->jns_pajak == 'ppnbm')>PPnBM</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -186,7 +186,15 @@
                     <div class="mb-4">
                         <div class="flex w-full items-center">
                             <label class="text-gray-800 text-sm font-medium p-2 w-1/3">Total Pajak</label>
-                            <input type="text" id="nominal_pajak" name="nominal_pajak" class="form-input bg-gray-300 text-gray-500 rounded flex-1 pajak-output" value="{{ old('nominal_pajak','Rp '.number_format($penjualan->nominal_pajak, 0, '.', '.')) }}" readonly>
+                            @php
+                                $total_pajak = 0;
+                            @endphp
+                            @foreach ($penjualan->produkPenjualan as $item)
+                                @php
+                                    $total_pajak += $item->nominal_pajak;
+                                @endphp
+                            @endforeach
+                            <input type="text" id="nominal_pajak" name="nominal_pajak" class="form-input bg-gray-300 text-gray-500 rounded flex-1 pajak-output" value="{{ old('nominal_pajak','Rp '.number_format($total_pajak, 0, '.', '.')) }}" readonly>
                         </div>
                     </div>
                 </div>
@@ -195,7 +203,7 @@
                     <div class="mb-4">
                         <div class="flex w-full items-center">
                             <label class="text-gray-800 text-sm font-medium p-2 w-1/3">Total Diskon</label>
-                            <input type="text" id="diskon_output" name="diskon_output" class="form-input bg-gray-300 text-gray-500 rounded flex-1 diskon_output" readonly>
+                            <input type="text" id="diskon_output" name="diskon_output" class="form-input bg-gray-300 text-gray-500 rounded flex-1 diskon_output" value="{{ old('nominal_pajak','Rp '.number_format($penjualan->total_diskon, 0, '.', '.')) }}" readonly>
                         </div>
                     </div>
                 </div>
