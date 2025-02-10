@@ -308,6 +308,7 @@ document.getElementById('productRowsContainer').addEventListener('change', funct
                 break;
             case 'ppnbm':
                 persenPajak = 'Varies';
+                persenPajakInput.removeAttribute('readonly');
                 break;
             default:
                 persenPajak = '';

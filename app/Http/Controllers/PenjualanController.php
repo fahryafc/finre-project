@@ -361,12 +361,30 @@ class PenjualanController extends Controller
 
             // Hapus produk yang tidak ada di UI dari database
             if (!empty($id_produk_dihapus)) {
+                $kode_ref = DB::table('produk_penjualan')
+                    ->where('id_penjualan', $penjualan->id_penjualan)
+                    ->whereIn('id_produk', $id_produk_dihapus)
+                    ->get();
+
+                foreach ($kode_ref as $key => $value) {
+                    // Substring di jns_pajak
+                    $parts = preg_split('/(?<=\D)(?=\d)/', $value->jns_pajak);
+                    $pajak = $parts[0]; // "ppn"
+
+                    if ($pajak === 'ppn') {
+                        DB::table('pajak_ppn')->where('kode_ref_pajak', $kode_ref->kode_reff_pajak)
+                            ->delete();
+                    } else if ($pajak === 'ppnbm') {
+                        DB::table('pajak_ppnbm')->where('kode_ref', $kode_ref->kode_reff_pajak)
+                            ->delete();
+                    }
+                }
+
                 DB::table('produk_penjualan')
                     ->where('id_penjualan', $penjualan->id_penjualan)
                     ->whereIn('id_produk', $id_produk_dihapus)
                     ->delete();
             }
-
 
             // Menyimpan detail penjualan dan pajak
             foreach ($request->produk as $key => $nm_produk) {
