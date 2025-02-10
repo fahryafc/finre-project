@@ -366,16 +366,19 @@ class PenjualanController extends Controller
                     ->whereIn('id_produk', $id_produk_dihapus)
                     ->get();
 
+                // dd($kode_ref->toArray());
+
                 foreach ($kode_ref as $key => $value) {
                     // Substring di jns_pajak
                     $parts = preg_split('/(?<=\D)(?=\d)/', $value->jns_pajak);
                     $pajak = $parts[0]; // "ppn"
+                    // dd($pajak);
 
                     if ($pajak === 'ppn') {
-                        DB::table('pajak_ppn')->where('kode_ref_pajak', $kode_ref->kode_reff_pajak)
+                        DB::table('pajak_ppn')->where('kode_reff', 'LIKE', '%' . $value->kode_reff_pajak . '%')
                             ->delete();
                     } else if ($pajak === 'ppnbm') {
-                        DB::table('pajak_ppnbm')->where('kode_ref', $kode_ref->kode_reff_pajak)
+                        DB::table('pajak_ppnbm')->where('kode_reff', 'LIKE', '%' . $value->kode_reff_pajak . '%')
                             ->delete();
                     }
                 }
@@ -411,8 +414,8 @@ class PenjualanController extends Controller
                             'kuantitas'         => $request->kuantitas[$key],
                             'kode_reff_pajak'   => $kodeReff,
                             'jns_pajak'         => $request->jns_pajak[$key],
-                            'persen_pajak'      => $request->persen_pajak[$key] ?? 0,
-                            'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100) ?? 0,
+                            'persen_pajak'      => (int)$request->persen_pajak[$key] ?? 0,
+                            'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100) ?? 0,
                             'persen_diskon'     => $request->diskon[$key],
                             'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
                         ]);
@@ -425,8 +428,8 @@ class PenjualanController extends Controller
                         'kuantitas'         => $request->kuantitas[$key],
                         'kode_reff_pajak'   => $kodeReff,
                         'jns_pajak'         => $request->jns_pajak[$key],
-                        'persen_pajak'      => $request->persen_pajak[$key] ?? 0,
-                        'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100) ?? 0,
+                        'persen_pajak'      => (int)$request->persen_pajak[$key] ?? 0,
+                        'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100) ?? 0,
                         'persen_diskon'     => $request->diskon[$key],
                         'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
                     ]);
@@ -441,18 +444,18 @@ class PenjualanController extends Controller
                             'jenis_transaksi' => 'penjualan',
                             'keterangan'      => $nm_produk,
                             'nilai_transaksi' => $request->harga[$key] * $request->kuantitas[$key],
-                            'persen_pajak'    => $request->persen_pajak[$key],
+                            'persen_pajak'    => (int)$request->persen_pajak[$key],
                             'jenis_pajak'     => 'Pajak Keluaran',
-                            'saldo_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100),
+                            'saldo_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100),
                         ]);
-                    } else if ($request->jns_pajak[$key]->jns_pajak == 'ppnbm') {
+                    } else if ($request->jns_pajak[$key] == 'ppnbm') {
                         // Insert pajak untuk PPNBM
                         DB::table('pajak_ppnbm')->insert([
                             'kode_reff'       => $kodeReff,
                             'deskripsi_barang' => $nm_produk,
                             'harga_barang'    => $request->harga[$key],
-                            'tarif_ppnbm'     => $request->persen_pajak[$key],
-                            'ppnbm_dikenakan' => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100),
+                            'tarif_ppnbm'     => (int)$request->persen_pajak[$key],
+                            'ppnbm_dikenakan' => $request->harga[$key] * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100),
                             'jenis_pajak'     => 'Pajak Masukan',
                             'tgl_transaksi'   => $request->tanggal,
                         ]);

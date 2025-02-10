@@ -307,7 +307,7 @@ document.getElementById('productRowsContainer').addEventListener('change', funct
                 persenPajak = 12;
                 break;
             case 'ppnbm':
-                persenPajak = 'Varies';
+                persenPajak = 0;
                 persenPajakInput.removeAttribute('readonly');
                 break;
             default:
