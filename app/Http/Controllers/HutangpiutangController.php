@@ -66,8 +66,43 @@ class HutangpiutangController extends Controller
 
             $kasdanbank = DB::table('kas_bank')->get();
 
+            $months = range(1, 12); // Buat array bulan 1-12
+
+            $hutangData = DB::table('hutangpiutang')
+                ->where('jenis', 'hutang')
+                ->whereYear('tgl_jatuh_tempo', date('Y'))
+                ->select(
+                    DB::raw('SUM(hutangpiutang.nominal) as total_hutang'),
+                    DB::raw('MONTH(tgl_jatuh_tempo) as bulan')
+                )
+                ->groupBy('bulan')
+                ->pluck('total_hutang', 'bulan') // Ambil sebagai key-value (bulan => total_hutang)
+                ->toArray();
+
+            $piutangData = DB::table('hutangpiutang')
+                ->where('jenis', 'piutang')
+                ->whereYear('tgl_jatuh_tempo', date('Y'))
+                ->select(
+                    DB::raw('SUM(hutangpiutang.nominal) as total_hutang'),
+                    DB::raw('MONTH(tgl_jatuh_tempo) as bulan')
+                )
+                ->groupBy('bulan')
+                ->pluck('total_hutang', 'bulan') // Ambil sebagai key-value (bulan => total_hutang)
+                ->toArray();
+
+            // Mengisi bulan yang kosong dengan 0
+            $chart['hutang'] = array_map(function ($month) use ($hutangData) {
+                return $hutangData[$month] ?? 0;
+            }, $months);
+
+
+            $chart['piutang'] = array_map(function ($month) use ($piutangData) {
+                return $piutangData[$month] ?? 0;
+            }, $months);
+
             return view('pages.hutangdanpiutang.index', [
                 'piutang' => $piutang,
+                'chart' => $chart,
                 'hutang' => $hutang,
                 'kategoriHutang' => $kategoriHutang,
                 'kas_bank' => $kasdanbank

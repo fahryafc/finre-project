@@ -21,7 +21,7 @@
                 <h4 class="card-title"> Overview Hutang dan Piutang</h4>
             </div>
             <div class="p-6">
-                <div id="column_chart" class="apex-charts" dir="ltr"></div>
+                <div id="column_chart_hutang_piutang" class="apex-charts" dir="ltr"></div>
             </div>
         </div>
         <!-- end chart -->
@@ -401,9 +401,84 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/hutangpiutang.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    const hutang = {{ Js::from($chart['hutang']) }}
+    const piutang = {{ Js::from($chart['piutang']) }}
+
+    var options = {
+        chart: {
+            height: 350,
+            type: 'bar',
+            toolbar: {
+                show: false,
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '45%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        series: [{
+            name: 'Piutang',
+            data: piutang
+        }, {
+            name: 'Hutang',
+            data: hutang
+        }],
+        colors: ['#34c38f', '#f46a6a'],
+        xaxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Des'],
+        },
+        yaxis: {
+            title: {
+                text: 'Rp (Rupiah)',
+                style: {
+                    fontWeight: '500',
+                },
+            }
+        },
+        grid: {
+            borderColor: '#9ca3af20',
+        },
+        fill: {
+            opacity: 1
+
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    let toRupiah = Intl.NumberFormat({
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                    }).format(val)
+
+                    return "Rp " + toRupiah
+                }
+            }
+        }
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#column_chart_hutang_piutang"),
+        options
+    );
+
+    chart.render();
+</script>
 @endsection

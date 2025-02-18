@@ -225,50 +225,7 @@ var chart = new ApexCharts(
 
 chart.render();
 
-
-var options = {
-    chart: {
-        height: 350,
-        type: 'area',
-        toolbar: {
-            show: false,
-        }
-    },
-    dataLabels: {
-        enabled: false
-    },
-    stroke: {
-        curve: 'smooth',
-        width: 3,
-    },
-    series: [{
-        name: 'series1',
-        data: [34, 40, 28, 52, 42, 109, 100]
-    }],
-    colors: ['#556ee6'],
-    xaxis: {
-        type: 'datetime',
-        categories: ["2018-09-19T00:00:00", "2018-09-19T01:30:00", "2018-09-19T02:30:00", "2018-09-19T03:30:00", "2018-09-19T04:30:00", "2018-09-19T05:30:00", "2018-09-19T06:30:00"],
-    },
-    grid: {
-        borderColor: '#9ca3af20',
-    },
-    tooltip: {
-        x: {
-            format: 'dd/MM/yy HH:mm'
-        },
-    }
-}
-
-var chart = new ApexCharts(
-    document.querySelector("#spline_area_2"),
-    options
-);
-
-chart.render();
-
 // column chart
-
 var options = {
     chart: {
         height: 350,
@@ -328,75 +285,11 @@ var options = {
 }
 
 var chart = new ApexCharts(
-    document.querySelector("#column_chart"),
+    document.querySelector("#column_chart_hutang_piutang"),
     options
 );
 
 chart.render();
-
-
-var options = {
-    chart: {
-        height: 350,
-        type: 'bar',
-        toolbar: {
-            show: false,
-        }
-    },
-    plotOptions: {
-        bar: {
-            horizontal: false,
-            columnWidth: '45%',
-            endingShape: 'rounded'
-        },
-    },
-    dataLabels: {
-        enabled: false
-    },
-    stroke: {
-        show: true,
-        width: 2,
-        colors: ['transparent']
-    },
-    series: [{
-        name: 'PPH',
-        data: [46, 57, 59, 54, 62, 58, 64, 60, 66]
-    }],
-    colors: ['#037ffc'],
-    xaxis: {
-        categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-    },
-    yaxis: {
-        title: {
-            text: 'Nominal',
-            style: {
-                fontWeight: '500',
-            },
-        }
-    },
-    grid: {
-        borderColor: '#9ca3af20',
-    },
-    fill: {
-        opacity: 1
-
-    },
-    tooltip: {
-        y: {
-            formatter: function (val) {
-                return "Rp " + val
-            }
-        }
-    }
-}
-
-var chart = new ApexCharts(
-    document.querySelector("#column_chart_2"),
-    options
-);
-
-chart.render();
-
 
 // column chart with datalabels
 

@@ -48,7 +48,7 @@
             </div>
             <div class="p-6">
 
-                <div id="spline_area_2" class="apex-charts" dir="ltr"></div>
+                <div id="spline_area" class="apex-charts" dir="ltr"></div>
             </div>
         </div>
     </div>
@@ -195,7 +195,7 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+{{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/table-gridjs.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
@@ -204,6 +204,7 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/penjualan.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     let dateFrom, dateTo
     document.getElementById('from_date').addEventListener('change', function() {
@@ -273,5 +274,107 @@
             });
         });
     });
+</script>
+
+<script>
+    let colors = []
+
+    for(let i = 0; i < {{ Js::from(count($produkList)) }}; i++) {
+        colors.push('#' + Math.floor(Math.random() * 16777215).toString(16))
+    }
+    var options = {
+        chart: {
+            height: 320,
+            type: 'pie',
+        },
+        series: {{ Js::from($produkListValue) }},
+        labels: {{ Js::from($produkList) }},
+        colors: colors,
+        legend: {
+            show: true,
+            position: 'bottom',
+            horizontalAlign: 'center',
+            verticalAlign: 'middle',
+            floating: false,
+            fontSize: '14px',
+            offsetX: 0,
+        },
+        stroke: {
+            colors: ['transparent']
+        },
+        responsive: [{
+            breakpoint: 600,
+            options: {
+                chart: {
+                    height: 240
+                },
+                legend: {
+                    show: false
+                },
+            }
+        }]
+
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#pie_chart"),
+        options
+    );
+
+    chart.render();
+</script>
+
+<script>
+    var options = {
+        chart: {
+            height: 350,
+            type: 'area',
+            toolbar: {
+                show: false,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3,
+        },
+        series: [{
+            name: 'Pemasukan',
+            data: {{ Js::from($chart['pemasukan']) }}
+        }],
+        colors: ['#556ee6'],
+        xaxis: {
+            type: 'month',
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Des'],
+        },
+        grid: {
+            borderColor: '#9ca3af20',
+        },
+        tooltip: {
+            x: {
+                format: 'dd/MM/yy HH:mm'
+            },
+            y: {
+                formatter: function (val) {
+                    let toRupiah = Intl.NumberFormat({
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                    }).format(val)
+
+                    return "Rp " + toRupiah
+                }
+            }
+        }
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#spline_area"),
+        options
+    );
+
+    chart.render();
 </script>
 @endsection

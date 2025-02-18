@@ -9,7 +9,7 @@
         <div class="card h-full flex flex-col bg-white">
             <div class="p-6 flex-grow flex flex-col justify-center">
                 <h4 class="card-title mb-4">Golongan Pajak</h4>
-                <div id="column_chart_2" class="apex-charts my-4 flex-grow flex items-center justify-center">
+                <div id="column_chart" class="apex-charts my-4 flex-grow flex items-center justify-center">
                 </div>
             </div>
         </div>
@@ -112,11 +112,82 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+{{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/highlight.js'])
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/pajak.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script>
+    var options = {
+        chart: {
+            height: 350,
+            type: 'bar',
+            toolbar: {
+                show: false,
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '45%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        series: [{
+            name: 'PPH',
+            data: {{ Js::from($chart) }}
+        }],
+        colors: ['#037ffc'],
+        xaxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Des'],
+        },
+        yaxis: {
+            title: {
+                text: 'Nominal',
+                style: {
+                    fontWeight: '500',
+                },
+            }
+        },
+        grid: {
+            borderColor: '#9ca3af20',
+        },
+        fill: {
+            opacity: 1
+
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    const toRupiah = Intl.NumberFormat({
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                    }).format(val)
+                    return "Rp " + toRupiah
+                }
+            }
+        }
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#column_chart"),
+        options
+    );
+
+    chart.render();
+</script>
+
 <script>
     let dateFrom, dateTo
     document.getElementById('from_date').addEventListener('change', function() {

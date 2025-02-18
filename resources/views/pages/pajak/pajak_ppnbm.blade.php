@@ -118,7 +118,7 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+{{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/table-gridjs.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
@@ -127,6 +127,7 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/penjualan.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     let dateFrom, dateTo
     document.getElementById('from_date').addEventListener('change', function() {
@@ -139,5 +140,53 @@
         dateTo = this.value
         window.location.href = `?from=${dateFrom}&to=${dateTo}`
     })
+</script>
+<script>
+    let colors = []
+
+    for (let i = 0; i < {{ count($jenisPajakList) }}; i++) {
+        colors.push("#" + Math.floor(Math.random() * 16777215).toString(16));
+    }
+
+    var options = {
+        chart: {
+            height: 320,
+            type: 'pie',
+        },
+        series: {{ Js::from($jenisPajakValue) }},
+        labels: {{ Js::from($jenisPajakList) }},
+        colors: colors,
+        legend: {
+            show: true,
+            position: 'bottom',
+            horizontalAlign: 'center',
+            verticalAlign: 'middle',
+            floating: false,
+            fontSize: '14px',
+            offsetX: 0,
+        },
+        stroke: {
+            colors: ['transparent']
+        },
+        responsive: [{
+            breakpoint: 600,
+            options: {
+                chart: {
+                    height: 240
+                },
+                legend: {
+                    show: false
+                },
+            }
+        }]
+
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#pie_chart"),
+        options
+    );
+
+    chart.render();
 </script>
 @endsection

@@ -32,25 +32,30 @@ class KasdanbankController extends Controller
                 ->groupBy('kas_bank.id_kas_bank') // Pastikan untuk group by berdasarkan primary key tabel kas_bank
                 ->paginate(5);
 
-            // dd($kasdanbank->toArray());
-
             $kategoriAkun = DB::table('kategori_akun')->get();
             $subakunKategori = DB::table('subakun_kategori')->get();
 
             // Ambil total_pemasukan berdasarkan kode_akun
-            $totalPemasukan = DB::table('penjualan')
-                ->join('kas_bank', 'penjualan.pembayaran', '=', 'kas_bank.kode_akun')
-                ->select('kas_bank.kode_akun', 'total_pemasukan')
-                ->groupBy('kas_bank.kode_akun')
-                ->get();
+            // $totalPemasukan = DB::table('penjualan')
+            //     ->join('kas_bank', 'penjualan.pembayaran', '=', 'kas_bank.kode_akun')
+            //     ->select('kas_bank.kode_akun', 'total_pemasukan')
+            //     ->groupBy('kas_bank.kode_akun')
+            //     ->get();
 
-            // dd($totalPemasukan);
+            // Total saldo akhir / total semua saldo akhir * 100%
+            $chart['uang_masuk'] = DB::table('kas_bank')
+                ->whereYear('kas_bank.created_at', date('Y'))
+                ->sum('uang_masuk');
+
+            $chart['uang_keluar'] = DB::table('kas_bank')
+                ->whereYear('kas_bank.created_at', date('Y'))
+                ->sum('uang_keluar');
 
             return view('pages.kasdanbank.index', [
                 'kas_bank' => $kasdanbank,
+                'chart' => $chart,
                 'kategoriAkun' => $kategoriAkun,
                 'subakunKategori' => $subakunKategori,
-                'totalPemasukan' => $totalPemasukan, // Kirim data total_pemasukan ke view
             ]);
         } catch (\Exception $e) {
             return response()->json([

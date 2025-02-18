@@ -193,10 +193,11 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+{{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/highlight.js'])
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('js/custom-js/kasbank.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     $(document).ready(function() {
         $(document).on('click', '.edit', async function() {
@@ -248,5 +249,47 @@
             $('#formKasBank')[0].reset();
         })
     })
+</script>
+<script>
+    var options = {
+        chart: {
+            height: 320,
+            type: 'pie',
+        },
+        series: [{{ Js::from((int)$chart['uang_masuk']) }}, {{ Js::from((int)$chart['uang_keluar']) }}],
+        labels: ["Uang Masuk", "Uang Keluar"],
+        colors: ["#34c38f", "#556ee6"],
+        legend: {
+            show: true,
+            position: 'bottom',
+            horizontalAlign: 'center',
+            verticalAlign: 'middle',
+            floating: false,
+            fontSize: '14px',
+            offsetX: 0,
+        },
+        stroke: {
+            colors: ['transparent']
+        },
+        responsive: [{
+            breakpoint: 600,
+            options: {
+                chart: {
+                    height: 240
+                },
+                legend: {
+                    show: false
+                },
+            }
+        }]
+
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#pie_chart"),
+        options
+    );
+
+    chart.render();
 </script>
 @endsection

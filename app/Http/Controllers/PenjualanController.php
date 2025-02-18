@@ -61,11 +61,57 @@ class PenjualanController extends Controller
             $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
             $pelanggan = DB::table('kontak')->where('jenis_kontak', '=', 'pelanggan')->get();
 
-            // $data_penjualan = response()->json($penjualan);
-            // dd($akun);
+            $months = range(1, 12);
+            $produkList = [];
+            $produkListValue = [];
+            $totalPemasukan = 0;
+
+            $getDataPenjualan = DB::table('penjualan')
+                ->whereYear('tanggal', date('Y'))
+                ->select(
+                    DB::raw('SUM(penjualan.total_pemasukan) as total_penjualan'),
+                    DB::raw('MONTH(penjualan.created_at) as bulan')
+                )
+                ->groupBy('bulan')
+                ->pluck('total_penjualan', 'bulan')
+                ->toArray();
+
+            $chart['pemasukan'] = array_map(function ($month) use ($getDataPenjualan) {
+                return $getDataPenjualan[$month] ?? 0;
+            }, $months);
+
+            // Pemasukan produk = harga(harga_jual) * kuantitas - diskon(nominal_diskon)
+            // Presentase produk = total pemasukan produk / total pemasukan semua produk * 100%
+            // Total_Pemasukkan dari tabel penjualan
+            $getDataProdukPenjualan = DB::table('produk_penjualan')
+                ->join('produk', 'produk_penjualan.id_produk', '=', 'produk.id_produk')
+                ->whereYear('produk_penjualan.created_at', date('Y'))
+                ->select(
+                    // DB::raw('SUM(penjualan.total_pemasukan) as total_pemasukan'),
+                    'produk_penjualan.id_produk_penjualan as id_produk_penjualan',
+                    'produk.nama_produk as nama_produk',
+                    'produk.harga_jual as harga_jual',
+                    'produk.kuantitas as kuantitas',
+                    'produk_penjualan.nominal_diskon as nominal_diskon',
+                    DB::raw('(produk.harga_jual * produk.kuantitas) - produk_penjualan.nominal_diskon as pemasukan_produk')
+                )
+                ->get();
+
+            foreach ($getDataProdukPenjualan as $item) {
+                $totalPemasukan += $item->pemasukan_produk;
+            }
+
+            foreach ($getDataProdukPenjualan as $item) {
+                $persentase = ($item->pemasukan_produk / $totalPemasukan) * 100;
+                array_push($produkList, $item->nama_produk);
+                array_push($produkListValue, round($persentase, 2));
+            }
 
             return view('pages.penjualan.index', [
                 'penjualan' => $penjualan,
+                'chart' => $chart,
+                'produkList' => $produkList,
+                'produkListValue' => $produkListValue,
                 'akun' => $akun,
                 'kas_bank' => $kasdanbank,
                 'satuan' => $satuan,

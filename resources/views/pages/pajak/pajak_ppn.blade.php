@@ -132,11 +132,54 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+{{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/highlight.js'])
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/pajak.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    var options = {
+        chart: {
+            height: 320,
+            type: 'pie',
+        },
+        series: [{{ Js::from($chart['masukan']) }}, {{ Js::from($chart['keluaran']) }}],
+        labels: ["Pajak Masukan", "Pajak Keluaran"],
+        colors: ["#851701", "#05eb6c"],
+        legend: {
+            show: true,
+            position: 'bottom',
+            horizontalAlign: 'center',
+            verticalAlign: 'middle',
+            floating: false,
+            fontSize: '14px',
+            offsetX: 0,
+        },
+        stroke: {
+            colors: ['transparent']
+        },
+        responsive: [{
+            breakpoint: 600,
+            options: {
+                chart: {
+                    height: 240
+                },
+                legend: {
+                    show: false
+                },
+            }
+        }]
+
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#pie_chart"),
+        options
+    );
+
+    chart.render();
+</script>
 <script>
     let dateFrom, dateTo
     document.getElementById('from_date').addEventListener('change', function() {
