@@ -22,25 +22,12 @@ class KasdanbankController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
         try {
-            // Mengambil data dari tabel kas_bank dengan join ke tabel penjualan
-            $kasdanbank = DB::table('kas_bank')
-                ->leftJoin('penjualan', 'kas_bank.kode_akun', '=', 'penjualan.pembayaran')
-                ->select(
-                    'kas_bank.*', // ambil semua field dari kas_bank
-                    'penjualan.total_pemasukan' // ambil total_pemasukan
-                )
-                ->groupBy('kas_bank.id_kas_bank') // Pastikan untuk group by berdasarkan primary key tabel kas_bank
+            $kasdanbank = Akun::where('type', 'Kas & Bank')
+                ->orderBy('kategori_akun', 'asc')
                 ->paginate(5);
-
+            
             $kategoriAkun = DB::table('kategori_akun')->get();
             $subakunKategori = DB::table('subakun_kategori')->get();
-
-            // Ambil total_pemasukan berdasarkan kode_akun
-            // $totalPemasukan = DB::table('penjualan')
-            //     ->join('kas_bank', 'penjualan.pembayaran', '=', 'kas_bank.kode_akun')
-            //     ->select('kas_bank.kode_akun', 'total_pemasukan')
-            //     ->groupBy('kas_bank.kode_akun')
-            //     ->get();
 
             // Total saldo akhir / total semua saldo akhir * 100%
             $chart['uang_masuk'] = DB::table('kas_bank')
@@ -85,14 +72,16 @@ class KasdanbankController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'nama_akun' => 'string',
-                'kode_akun' => 'string',
-                'kategori_akun' => 'string',
-                'subakun' => 'string',
+            $data_akun = Akun::where('kategori_akun', $request->kategori_akun)->first();
+            $akun = Akun::create([
+                'id_kategori_akun'      => $data_akun->id_kategori_akun,
+                'type'                  => "Kas & Bank",
+                'nama_akun'             => $request->nama_akun,
+                'kode_akun'             => $request->kode_akun,
+                'kategori_akun'         => $request->kategori_akun,
+                'subakun'               => $data_akun->subakun,
             ]);
-
-            Kasdanbank::create($request->all());
+            dd($akun);
 
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('kasdanbank.index');
@@ -103,7 +92,7 @@ class KasdanbankController extends Controller
 
     public function show($id)
     {
-        $data = Kasdanbank::find($id);
+        $data = Akun::find($id);
 
         // Jika data tidak ditemukan
         if (!$data) {

@@ -13,7 +13,7 @@ class Akun extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['id_kategori_akun','nama_akun', 'kode_akun', 'kategori_akun', 'subakun'];
+    protected $fillable = ['id_kategori_akun','type','nama_akun', 'kode_akun', 'kategori_akun', 'subakun'];
 
     public function kategoriAkun()
     {
