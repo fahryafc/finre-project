@@ -225,6 +225,7 @@ document.getElementById('productRows').addEventListener('change', function (even
 });
 document.getElementById('persen_pajak').setAttribute('readonly', 'readonly');
 
+<<<<<<< HEAD
 function addProductRow(jmlProduk) {
     const container = document.getElementById('productRowsContainer');
     if (!container) {
@@ -233,6 +234,20 @@ function addProductRow(jmlProduk) {
     }
 
     const existingRows = container.querySelectorAll('.product-row').length; // Hitung jumlah baris yang sudah ada
+=======
+function addProductRow() {
+    const container = document.getElementById('productRows');
+
+    // Get the first row template
+    const template = document.querySelector('.product-row').cloneNode(true);
+
+    // Clear any values in the inputs
+    template.querySelectorAll('input').forEach(input => input.value = '');
+    template.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+
+    container.appendChild(template);
+}
+>>>>>>> 290e6b894f8c769d88a265f843e2932a3eee6fab
 
     if (existingRows < jmlProduk) {
         const template = document.querySelector('.product-row');
