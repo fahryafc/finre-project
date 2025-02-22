@@ -15,6 +15,7 @@ class ProdukPenjualan extends Model
 
     protected $fillable = [
         'id_penjualan',
+        'id_produk',
         'produk',
         'kategori_produk',
         'satuan',
@@ -36,5 +37,10 @@ class ProdukPenjualan extends Model
     public function penjualan()
     {
         return $this->belongsTo(Penjualan::class, 'id_penjualan', 'id_penjualan');
+    }
+
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'id_produk');
     }
 }

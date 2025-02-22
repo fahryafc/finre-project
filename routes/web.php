@@ -63,6 +63,7 @@ Route::resource('/pajak', PajakController::class);
 
 Route::get('/produkdaninventori/edit{id}', [ProdukdaninventoriController::class, 'ppn'])->name('produkdaninventori.edit');
 Route::resource('/produkdaninventori', ProdukdaninventoriController::class);
+Route::post('/check-hampir-habis', [ProdukdaninventoriController::class, 'check_hampir_habis']);
 
 Route::get('/asset/asset_tersedia', [AssetController::class, 'asset_tersedia'])->name('asset.asset_tersedia');
 Route::get('/asset/asset_terjual', [AssetController::class, 'asset_terjual'])->name('asset.asset_terjual');
@@ -88,6 +89,7 @@ Route::get('/akun', [AkunController::class, 'index'])->name('akun.index');
 Route::post('/akun', [AkunController::class, 'store'])->name('akun.store');
 Route::put('/akun/{akun}', [AkunController::class, 'update'])->name('akun.update');
 Route::delete('/akun/{akun}', [AkunController::class, 'destroy'])->name('akun.destroy');
+Route::get('/akun/{id}', [AkunController::class, 'show']);
 Route::get('/get-kategori-akun', [AkunController::class, 'getKategoriAkun'])->name('get-kategori-akun');
 Route::get('/get-subakun-by-kategori', [AkunController::class, 'getSubAkunByKategori'])->name('get-subakun-by-kategori');
 

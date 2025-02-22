@@ -55,7 +55,7 @@
         <div class="overflow-x-auto mt-5">
             <div class="min-w-full inline-block align-middle">
                 <div class="border rounded-lg divide-y divide-gray-200 dark:border-gray-700 dark:divide-gray-700">
-                    <div class="overflow-hidden p-5">              
+                    <div class="overflow-hidden p-5">
                         <table id="search-table">
                             <thead>
                                 <tr>

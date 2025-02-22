@@ -226,7 +226,6 @@ var chart = new ApexCharts(
 chart.render();
 
 // column chart
-
 var options = {
     chart: {
         height: 350,
@@ -286,12 +285,11 @@ var options = {
 }
 
 var chart = new ApexCharts(
-    document.querySelector("#column_chart"),
+    document.querySelector("#column_chart_hutang_piutang"),
     options
 );
 
 chart.render();
-
 
 // column chart with datalabels
 

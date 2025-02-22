@@ -34,7 +34,7 @@ class KategoriController extends Controller
                 'nama_kategori' => $request->nama_kategori
             ]);
             Alert::success('Data Added!', 'Data Created Successfully');
-            return redirect()->route('produkdaninventori.index');
+            return redirect()->back();
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error creating kategori: ' . $e->getMessage())->withInput();
         }

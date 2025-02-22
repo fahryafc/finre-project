@@ -4,17 +4,17 @@
 <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
 @endsection
 @section('content')
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="grid grid-cols-1">
     <div class="card-wrapper">
         <div class="card h-full flex flex-col bg-white">
             <div class="p-6 flex-grow flex flex-col justify-center">
                 <h4 class="card-title mb-4">Golongan Pajak</h4>
-                <div id="pie_chart" class="apex-charts my-4 flex-grow flex items-center justify-center">
+                <div id="column_chart" class="apex-charts my-4 flex-grow flex items-center justify-center">
                 </div>
             </div>
         </div>
     </div>
-    <div class="grid grid-rows-2 gap-6">
+    {{-- <div class="grid grid-rows-2 gap-6">
         <div class="card-wrapper">
             <div class="card h-full flex flex-col bg-green-100">
                 <div class="p-6 flex-grow flex flex-col justify-between relative">
@@ -42,20 +42,28 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 
 
 <!-- table pajak -->
 <div class="card mt-10 p-5">
-    <div class="card-header mb-5 flex justify-between items-center">
+    <div class="flex items-center gap-3">
         <h4 class="card-title">Data Pajak</h4>
+        <input type="date" class="border border-gray-300 rounded-md p-2" id="from_date" name="from_date" value="{{ request()->get('from') ?? request()->get('from') }}">
+        <span>To</span>
+        <input type="date" disabled class="border border-gray-300 rounded-md p-2" id="to_date" name="to_date" value="{{ request()->get('to') ?? request()->get('to') }}">
+        @if (request()->get('from') || request()->get('to'))
+            <a href="/pajak/pph" class="btn bg-red-600 text-white">
+                Reset
+            </a>
+        @endif
     </div>
     <div class="card-body">
         <div class="overflow-x-auto mt-5">
             <div class="min-w-full inline-block align-middle">
                 <div class="border rounded-lg divide-y divide-gray-200 dark:border-gray-700 dark:divide-gray-700">
-                    <div class="overflow-hidden p-5">              
+                    <div class="overflow-hidden p-5">
                         <table id="search-table">
                             <thead>
                                 <tr>
@@ -104,12 +112,95 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+{{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/highlight.js'])
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/pajak.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
 <script>
+    var options = {
+        chart: {
+            height: 350,
+            type: 'bar',
+            toolbar: {
+                show: false,
+            }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '45%',
+                endingShape: 'rounded'
+            },
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+        },
+        series: [{
+            name: 'PPH',
+            data: {{ Js::from($chart) }}
+        }],
+        colors: ['#037ffc'],
+        xaxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Des'],
+        },
+        yaxis: {
+            title: {
+                text: 'Nominal',
+                style: {
+                    fontWeight: '500',
+                },
+            }
+        },
+        grid: {
+            borderColor: '#9ca3af20',
+        },
+        fill: {
+            opacity: 1
+
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    const toRupiah = Intl.NumberFormat({
+                        style: 'currency',
+                        currency: 'IDR',
+                        minimumFractionDigits: 0
+                    }).format(val)
+                    return "Rp " + toRupiah
+                }
+            }
+        }
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#column_chart"),
+        options
+    );
+
+    chart.render();
+</script>
+
+<script>
+    let dateFrom, dateTo
+    document.getElementById('from_date').addEventListener('change', function() {
+        dateFrom = this.value
+        document.getElementById('to_date').disabled = false
+        document.getElementById('to_date').min = dateFrom
+    })
+
+    document.getElementById('to_date').addEventListener('change', function() {
+        dateTo = this.value
+        window.location.href = `?from=${dateFrom}&to=${dateTo}`
+    })
+
     document.getElementById('filter-jenis-pajak').addEventListener('change', function() {
         const selectedJenis = this.value.toLowerCase();
         document.querySelectorAll('#search-table .pajak-row').forEach(row => {

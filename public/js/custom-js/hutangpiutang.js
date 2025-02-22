@@ -98,10 +98,11 @@ function openDetailHutang(button) {
                     tbody.innerHTML = emptyRow;
                 } else {
                     data.forEach((data, index) => {
+                        const date = new Date(data.tanggal_pembayaran);
                         const row = `
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${index + 1}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${data.tanggal_pembayaran}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat('id-ID').format(data.dibayarkan)}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat('id-ID').format(data.sisa_pembayaran)}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${data.catatan}</td>
@@ -145,10 +146,11 @@ function riwayatPiutang(button) {
                     tbody.innerHTML = emptyRow;
                 } else {
                     data.forEach((data, index) => {
+                        const date = new Date(data.tanggal_pembayaran);
                         const row = `
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${index + 1}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${data.tanggal_pembayaran}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat('id-ID').format(data.dibayarkan)}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat('id-ID').format(data.sisa_pembayaran)}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${data.catatan}</td>

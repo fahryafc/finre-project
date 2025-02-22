@@ -31,13 +31,14 @@ class PengeluaranController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $filter_date = $request->input('date');
+        $from_date = $request->input('from');
+        $to_date = $request->input('to');
 
         try {
             // $pengeluaran = DB::table('pengeluaran')->get();
             $pengeluaran = Pengeluaran::join('kontak', 'pengeluaran.id_kontak', '=', 'kontak.id_kontak')
-                ->when($filter_date, function ($query, $filter_date) {
-                    return $query->whereDate('tanggal', $filter_date);
+                ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
+                    return $query->whereBetween('tanggal', [$from_date, $to_date]);
                 })
                 ->select('pengeluaran.*', 'kontak.nama_kontak')
                 ->paginate(5);
@@ -49,10 +50,55 @@ class PengeluaranController extends Controller
             $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
             $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
 
-            // dd($pengeluaran);
+            $months = range(1, 12); // Buat array bulan 1-12
+            $categoryList = [];
+            $categoryValue = [];
+            $totalBiayaKategori = 0;
+
+            // KATEGORI PEMBAYARAN
+            // Presentase pengeluaran = Total pemasukan kategori / total pemasukan semua kategori * 100%
+            // Kolom biaya dari tabel pengeluaran
+            $getKategoriPembayaran = DB::table('pengeluaran')
+                ->whereYear('tanggal', date('Y'))
+                ->select(
+                    DB::raw('SUM(pengeluaran.biaya) as total'),
+                    'pengeluaran.kategori'
+                )
+                ->groupBy('kategori')
+                ->get(); // Ambil sebagai key-value (bulan => total_hutang)
+
+            foreach ($getKategoriPembayaran as $key => $value) {
+                $totalBiayaKategori += $value->total;
+            }
+
+            foreach ($getKategoriPembayaran as $key => $value) {
+                array_push($categoryList, $value->kategori);
+                $count = ($value->total / $totalBiayaKategori) * 100;
+                array_push($categoryValue, round($count, 2));
+            }
+
+            // OVERVIEW PENGELUARAN
+            // Total dari table pengeluaran, kolom biaya
+            $pengeluaranChartGet = DB::table('pengeluaran')
+                ->whereYear('created_at', date('Y'))
+                ->select(
+                    DB::raw('SUM(pengeluaran.biaya) as total'),
+                    DB::raw('MONTH(created_at) as bulan')
+                )
+                ->groupBy('bulan')
+                ->pluck('total', 'bulan') // Ambil sebagai key-value (bulan => total_hutang)
+                ->toArray();
+
+            // Mengisi bulan yang kosong dengan 0
+            $pengeluaranChart = array_map(function ($month) use ($pengeluaranChartGet) {
+                return $pengeluaranChartGet[$month] ?? 0;
+            }, $months);
 
             return view('pages.pengeluaran.index', [
                 'pengeluaran' => $pengeluaran,
+                'pengeluaranChart' => $pengeluaranChart,
+                'categoryList' => $categoryList,
+                'categoryValue' => $categoryValue,
                 'akun' => $akun,
                 'satuan' => $satuan,
                 'produk' => $produk,

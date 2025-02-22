@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Modal;
 use App\Models\Akun;
+use App\Models\Kasdanbank;
 use App\Models\Subakun;
 use App\Models\Kategori_akun;
 use Illuminate\Support\Facades\DB;
@@ -21,8 +22,8 @@ class AkunController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $akun = Akun::get();
-        // dd($akun);
+        $akun = Akun::orderBy('kategori_akun', 'asc')->get();
+        // dd($akun->toArray());
         return view('pages.akun.index', compact('akun'));
     }
 
@@ -32,16 +33,19 @@ class AkunController extends Controller
         return response()->json($kategori_akun);
     }
 
-
     public function getSubAkunByKategori(Request $request)
     {
-        $subakun = Subakun::where('id_kategori_akun', $request->id_kategori)->get();
-        return response()->json($subakun);
+        $kategori = $request->input('kategori_akun'); // Ambil kategori dari request
+        $subkategori = Akun::where('kategori_akun', $kategori)
+            ->groupBy('subakun')
+            ->get();
+
+        return response()->json($subkategori);
     }
 
     public function store(Request $request)
     {
-        
+
         try {
             // $request->validate([
             //     'nama_akun' => 'string',
@@ -68,8 +72,27 @@ class AkunController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        $data = Akun::find($id);
+
+        // Jika data tidak ditemukan
+        if (!$data) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data,
+        ]);
+    }
+
     public function update(Request $request, Akun $akun)
     {
+        // dd($akun);
         try {
             $request->validate([
                 'nama_akun' => 'string',

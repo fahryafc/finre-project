@@ -29,7 +29,7 @@
             <div class="card h-full flex flex-col bg-green-100">
                 <div class="p-6 flex-grow flex flex-col justify-between relative">
                     <div class="flex justify-between items-start">
-                        <h3 class="text-green-800 text-xl font-bold mt-2">Pajak Diterima</h3>
+                        <h3 class="text-green-800 text-xl font-bold mt-2">Pajak Keluaran</h3>
                         <div class="w-16 h-16 rounded-full flex items-center justify-center bg-green-200">
                             <i class="mgc_arrow_left_down_fill text-3xl text-green-600"></i>
                         </div>
@@ -43,7 +43,7 @@
             <div class="card h-full flex flex-col bg-red-100">
                 <div class="p-6 flex-grow flex flex-col justify-between relative">
                     <div class="flex justify-between items-start">
-                        <h3 class="text-red-800 text-xl font-bold mt-2">Pajak Dibayarkan</h3>
+                        <h3 class="text-red-800 text-xl font-bold mt-2">Pajak Masukan</h3>
                         <div class="w-16 h-16 rounded-full flex items-center justify-center bg-red-200">
                             <i class="mgc_arrow_right_up_fill text-3xl text-red-600"></i>
                         </div>
@@ -59,7 +59,17 @@
     <div class="card mt-10 p-5">
         <div class="card-header mb-5">
             <div class="flex justify-between items-center">
-                <h4 class="card-title">Data Pajak PPnBM</h4>
+                <div class="flex items-center gap-3">
+                    <h4 class="card-title">Data Pajak PPnBM</h4>
+                    <input type="date" class="border border-gray-300 rounded-md p-2" id="from_date" name="from_date" value="{{ request()->get('from') ?? request()->get('from') }}">
+                    <span>To</span>
+                    <input type="date" disabled class="border border-gray-300 rounded-md p-2" id="to_date" name="to_date" value="{{ request()->get('to') ?? request()->get('to') }}">
+                    @if (request()->get('from') || request()->get('to'))
+                        <a href="/pajak/ppnbm" class="btn bg-red-600 text-white">
+                            Reset
+                        </a>
+                    @endif
+                </div>
                 <!-- <button class="btn bg-[#307487] text-white" data-fc-target="modalTambahAkun" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
                     Tambah Data
                 </button> -->
@@ -108,7 +118,7 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+{{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/table-gridjs.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
@@ -117,4 +127,66 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="{{ asset('js/custom-js/penjualan.js') }}" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    let dateFrom, dateTo
+    document.getElementById('from_date').addEventListener('change', function() {
+        dateFrom = this.value
+        document.getElementById('to_date').disabled = false
+        document.getElementById('to_date').min = dateFrom
+    })
+
+    document.getElementById('to_date').addEventListener('change', function() {
+        dateTo = this.value
+        window.location.href = `?from=${dateFrom}&to=${dateTo}`
+    })
+</script>
+<script>
+    let colors = []
+
+    for (let i = 0; i < {{ count($jenisPajakList) }}; i++) {
+        colors.push("#" + Math.floor(Math.random() * 16777215).toString(16));
+    }
+
+    var options = {
+        chart: {
+            height: 320,
+            type: 'pie',
+        },
+        series: {{ Js::from($jenisPajakValue) }},
+        labels: {{ Js::from($jenisPajakList) }},
+        colors: colors,
+        legend: {
+            show: true,
+            position: 'bottom',
+            horizontalAlign: 'center',
+            verticalAlign: 'middle',
+            floating: false,
+            fontSize: '14px',
+            offsetX: 0,
+        },
+        stroke: {
+            colors: ['transparent']
+        },
+        responsive: [{
+            breakpoint: 600,
+            options: {
+                chart: {
+                    height: 240
+                },
+                legend: {
+                    show: false
+                },
+            }
+        }]
+
+    }
+
+    var chart = new ApexCharts(
+        document.querySelector("#pie_chart"),
+        options
+    );
+
+    chart.render();
+</script>
 @endsection
