@@ -94,28 +94,28 @@ function aturPajakDanHitung() {
 
     if (jenisPajak === 'ppn') {
         pajakPersenInput.value = '11';
-        pajakPersenInput.disabled = true;
+        pajakPersenInput.readOnly = true;
         pajakPersenContainer.classList.remove('hidden');
         pajakDibayarkanInput.readOnly = true;
         pajakDibayarkanInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
         pajakDibayarkanInput.value = ''; // Reset nilai pajak dibayarkan
     } else if (jenisPajak === 'ppnbm') {
         pajakPersenInput.value = '';
-        pajakPersenInput.disabled = false;
+        pajakPersenInput.readOnly = false;
         pajakPersenContainer.classList.remove('hidden');
         pajakDibayarkanInput.readOnly = true;
         pajakDibayarkanInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
         pajakDibayarkanInput.value = ''; // Reset nilai pajak dibayarkan
     } else if (jenisPajak === 'pph') {
         pajakPersenInput.value = '';
-        pajakPersenInput.disabled = true;
+        pajakPersenInput.readOnly = true;
         pajakPersenContainer.classList.add('hidden');
         pajakDibayarkanInput.readOnly = false;
         pajakDibayarkanInput.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
         pajakDibayarkanInput.placeholder = "Masukan Nominal Pajak Dibayarkan";
     } else {
         pajakPersenInput.value = '';
-        pajakPersenInput.disabled = false;
+        pajakPersenInput.readOnly = false;
         pajakPersenContainer.classList.remove('hidden');
         pajakDibayarkanInput.readOnly = true;
         pajakDibayarkanInput.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');

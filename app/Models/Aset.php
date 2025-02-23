@@ -33,7 +33,10 @@ class Aset extends Model
         'akun_pembayaran',
         'akun_aset',
         'penyusutan',
+        'user_id',
     ];
+
+    const CODE_JURNAL = 'AS';
 
     public function assetPenyusutan()
     {

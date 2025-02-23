@@ -25,6 +25,7 @@ class CreatePengeluaranTable extends Migration
             $table->string('akun_pembayaran'); // Payment account reference
             $table->string('akun_pemasukan'); // Income account reference
             $table->date('tgl_jatuh_tempo'); // Due date for the payment of the debt
+            $table->string('user_id');
             $table->timestamps(); // Timestamps (created_at, updated_at)
 
             // Primary key

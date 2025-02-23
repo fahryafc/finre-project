@@ -12,6 +12,7 @@ use App\Models\Akun;
 use App\Models\Produk;
 use App\Models\Kontak;
 use App\Models\PenjualanAsset;
+use App\Models\Jurnal;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Exception;
@@ -19,10 +20,18 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
-
+use App\Repositories\JurnalRepository;
+use Illuminate\Support\Facades\Auth;
 
 class AssetController extends Controller
 {
+    protected $jurnalRepository;
+
+    public function __construct(JurnalRepository $jurnalRepository)
+    {
+        $this->jurnalRepository = $jurnalRepository;
+    }
+    
      /* Fungsi untuk generate kode reff pajak unik */
     private function generateKodeReff(string $prefix): string
     {
@@ -152,6 +161,7 @@ class AssetController extends Controller
         // confirmDelete($title, $text);
 
         try {
+            $user_id = 1; // Auth::user()->id;
             // Mengambil data aset dan melakukan join dengan tabel asset_penyusutan
             $asset = Aset::leftJoin('asset_penyusutan', 'asset.id_aset', '=', 'asset_penyusutan.id_aset')
                 ->select(
@@ -183,6 +193,7 @@ class AssetController extends Controller
                         '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat') // Persentase masa manfaat per tahun
                 )
+                ->where('asset.user_id', $user_id)
                 ->paginate(5);
 
             $assetTerjual = Aset::leftJoin('asset_penyusutan', 'asset.id_aset', '=', 'asset_penyusutan.id_aset')
@@ -208,6 +219,7 @@ class AssetController extends Controller
                     'penjualan_asset.kuantitas AS kuantitas_terjual'
                 )
                 ->where('asset.asset_terjual', 1)
+                ->where('penjualan_asset.user_id', $user_id)
                 ->paginate(5);
 
             // Ambil data tambahan lainnya
@@ -261,6 +273,7 @@ class AssetController extends Controller
         // confirmDelete($title, $text);
 
         try {
+            $user_id = 1; // Auth::user()->id;
             // Mengambil data aset dan melakukan join dengan tabel asset_penyusutan
             $asset = Aset::leftJoin('asset_penyusutan', 'asset.id_aset', '=', 'asset_penyusutan.id_aset')
                 ->select(
@@ -292,6 +305,7 @@ class AssetController extends Controller
                         '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat') // Persentase masa manfaat per tahun
                 )
+                ->where('asset.user_id', $user_id)
                 ->paginate(5);
 
             $assetTerjual = Aset::leftJoin('asset_penyusutan', 'asset.id_aset', '=', 'asset_penyusutan.id_aset')
@@ -317,6 +331,7 @@ class AssetController extends Controller
                     'penjualan_asset.kuantitas AS kuantitas_terjual'
                 )
                 ->where('asset.asset_terjual', 1)
+                ->where('penjualan_asset.user_id', $user_id)
                 ->paginate(5);
 
             // Ambil data tambahan lainnya
@@ -502,11 +517,13 @@ class AssetController extends Controller
                 'harga_beli'        => $request->harga_beli,
                 'akun_pembayaran'   => $request->akun_pembayaran,
                 'akun_aset'         => $request->akun_aset,
-                'penyusutan'        => $request->penyusutan ? 1 : 0 // Jika checked, isi dengan 1
+                'penyusutan'        => $request->penyusutan ? 1 : 0, // Jika checked, isi dengan 1
+                'user_id'           => 1, // Auth::user()->id,
             ]);
 
             // Jika penyusutan diisi dengan 1, masukkan data ke tabel asset_penyusutan
             $total_harga = $aset->harga_beli * $aset->kuantitas;
+            $asset_penyusutan = new AssetPenyusutan;
             if ($request->penyusutan) {
                 // Hitung nominal berdasarkan masa manfaat atau nilai tahun
                 $nominalMasaManfaat = $request->masa_manfaat ? $total_harga / $request->masa_manfaat : null;
@@ -524,7 +541,7 @@ class AssetController extends Controller
                 }
 
                 // Simpan data penyusutan ke tabel asset_penyusutan
-                AssetPenyusutan::create([
+                $asset_penyusutan = AssetPenyusutan::create([
                     'id_aset'               => $aset->id_aset, // Menggunakan id_aset sebagai foreign key untuk asset_penyusutan
                     'tanggal_penyusutan'    => $request->tanggal_penyusutan,
                     'masa_manfaat'          => $request->masa_manfaat ?: null, // Jika ada input masa manfaat, isi, jika tidak null
@@ -532,10 +549,11 @@ class AssetController extends Controller
                     'nominal_masa_manfaat'  => $nominalMasaManfaat, // Nominal dari harga_beli dibagi masa manfaat
                     'nominal_nilai_tahun'   => $nominalNilaiTahun, // Nominal dari persen dikali harga beli
                     'akun_penyusutan'       => $request->akun_penyusutan,
-                    'akumulasi_akun'        => $akumulasiAkun
+                    'akumulasi_akun'        => $akumulasiAkun,
+                    'akun_akumulasi'        => $request->akumulasi_akun,
                 ]);
 
-                // dd($request->tanggal_penyusutan);
+                // dd($asset_penyusutan);
 
                 // Update saldo pada tabel akun untuk akun_penyusutan
                 $akun_penyusutan = Akun::where('kode_akun', $request->akun_penyusutan)->first();
@@ -593,6 +611,9 @@ class AssetController extends Controller
                     ]);
                 }
             }
+
+            // Insert Jurnal
+            $this->jurnalRepository->storeAsset($aset, $asset_penyusutan);
             
             // Commit transaksi jika tidak ada kesalahan
             DB::commit();
@@ -646,17 +667,20 @@ class AssetController extends Controller
 
     public function store_penjualan(Request $request)
     {
+        // dd($request->all());
+        // Memulai transaksi agar jika terjadi kesalahan, semua perubahan akan di-rollback
+        DB::beginTransaction();
         try {
-
             // Membuat data baru untuk penjualan asset
+            $pelanggan = DB::table('kontak')->where('id_kontak', '=', $request->id_kontak)->first();
             $PenjualanAsset = PenjualanAsset::create([
                 'id_aset'                       => $request->id_aset,
-                'nm_pelanggan'                  => $request->nm_pelanggan,
-                'nm_perusahaan'                 => $request->nm_perusahaan,
-                'no_hp'                         => $request->no_hp,
-                'gender'                        => $request->gender,
-                'email'                         => $request->email,
-                'alamat'                        => $request->alamat,
+                'nm_pelanggan'                  => $pelanggan->nama_kontak,
+                'nm_perusahaan'                 => $pelanggan->nm_perusahaan,
+                'no_hp'                         => $pelanggan->no_hp,
+                'gender'                        => '', //$pelanggan->gender,
+                'email'                         => $pelanggan->email,
+                'alamat'                        => $pelanggan->alamat,
                 'kuantitas'                     => $request->kuantitas,
                 'tgl_penjualan'                 => $request->tgl_penjualan,
                 'harga_pelepasan'               => $request->harga_pelepasan,
@@ -665,7 +689,11 @@ class AssetController extends Controller
                 'akun_deposit'                  => $request->akun_deposit,
                 'nominal_deposit'               => $request->nominal_deposit,
                 'akun_keuntungan_kerugian'      => $request->akun_keuntungan_kerugian,
-                'nominal_keuntungan_kerugian'   => $request->nominal_keuntungan_kerugian
+                'nominal_keuntungan_kerugian'   => $request->nominal_keuntungan_kerugian,
+                'jns_pajak'                     => $request->jns_pajak,
+                'pajak_dibayarkan'              => $request->pajak_dibayarkan,
+                'pajak'                         => $request->buttonPajakPenjualan ? 1 : 0, // Jika checked, isi dengan 1
+                'user_id'                       => 1, // Auth::user()->id,
             ]);
 
             // dd($PenjualanAsset);
@@ -730,14 +758,19 @@ class AssetController extends Controller
                 }
             }
 
+            // Insert Jurnal
+            $this->jurnalRepository->storePenjualanAsset($PenjualanAsset);
+
             // Redirect atau response jika penyimpanan berhasil
+            DB::commit();
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('asset.asset_terjual');
         } catch (\Exception $e) {
             Log::error('Error saving penjualan asset: ' . $e->getMessage());
-            // Menangani kesalahan jika terjadi exception
-            Alert::error('Error', 'Failed Created Penjualan');
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollback();
+            Alert::error('Error!', 'Failed to create data: ' . $e->getMessage());
+            return redirect()->route('asset.asset_terjual');
         }
     }
 
@@ -880,6 +913,14 @@ class AssetController extends Controller
         try {
             $asset = aset::findOrFail($id);
             AssetPenyusutan::where('id_aset', $id)->delete();
+
+            // Delete Jurnal
+            $prefix = Aset::CODE_JURNAL;
+            $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $asset->id_aset)->first();
+            if ($jurnal) {
+                $this->jurnalRepository->delete($jurnal->id_jurnal);
+            }
+
             $asset->delete();
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('asset.index');

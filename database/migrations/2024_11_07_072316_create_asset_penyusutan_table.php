@@ -22,6 +22,7 @@ class CreateAssetPenyusutanTable extends Migration
             $table->decimal('nominal_nilai_tahun', 15, 2)->nullable();
             $table->unsignedBigInteger('akun_penyusutan')->nullable();
             $table->decimal('akumulasi_akun', 15, 2)->nullable();
+            $table->string('user_id');
             $table->timestamps();
 
             // Foreign key constraint

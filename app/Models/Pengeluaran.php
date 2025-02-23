@@ -29,8 +29,11 @@ class Pengeluaran extends Model
         'nominal_hutang',
         'akun_pembayaran',
         'akun_pemasukan',
-        'tgl_jatuh_tempo'
+        'tgl_jatuh_tempo',
+        'user_id'
     ];
+
+    const CODE_JURNAL = 'BL';
 
     public function kontak()
     {

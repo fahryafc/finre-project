@@ -114,14 +114,14 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="masuk_akun" class="text-gray-800 text-sm font-medium inline-block mb-2"> Masuk Akun </label>
                         <select id="masuk_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="masuk_akun">
                             @foreach ( $akun as $key)
                             <option value="{{ $key->kode_akun }}">{{ $key->nama_akun }}</option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> -->
                 </div>
                 <hr class="border-2 border-gray-300 my-2">
 

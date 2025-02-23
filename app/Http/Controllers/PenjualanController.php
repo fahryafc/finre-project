@@ -12,6 +12,8 @@ use App\Models\ProdukPenjualan;
 use App\Models\Pajakppn;
 use App\Models\Pajakppnbm;
 use App\Models\Arusuang;
+use App\Models\Jurnal;
+use App\Models\JurnalDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -20,14 +22,24 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Exception;
+use App\Repositories\JurnalRepository;
+use Illuminate\Support\Facades\Auth;
 
 class PenjualanController extends Controller
 {
+    protected $jurnalRepository;
+
+    public function __construct(JurnalRepository $jurnalRepository)
+    {
+        $this->jurnalRepository = $jurnalRepository;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        $user_id = 1; // Auth::user()->id;
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
@@ -50,6 +62,7 @@ class PenjualanController extends Controller
                 ->groupBy(
                     'penjualan.id_penjualan'
                 )
+                ->where('user_id', $user_id)
                 ->get();
 
             $akun = DB::table('akun')->where('kategori_akun', '=', 'Aset/Harta')->get();
@@ -199,6 +212,7 @@ class PenjualanController extends Controller
                 'total_diskon'      => $request->diskon_output,
                 'total_pemasukan'   => $request->total_pemasukan,
                 'tgl_jatuh_tempo'   => $request->tgl_jatuh_tempo,
+                'user_id'           => 1, // Auth::user()->id,
             ]);
 
             // dd($request->produk);
@@ -273,15 +287,21 @@ class PenjualanController extends Controller
             }
 
             // Menambahkan data piutang jika ada
+            $piutang = 0;
             if ($data->piutang == 1) {
+                $piutang = $request->piutang;
                 DB::table('hutangpiutang')->insert([
                     'id_kontak'     => $data->id_kontak,
-                    'kategori'      => $data->kategori_produk,
+                    'kategori'      => 'Penjualan',//$data->kategori_produk,
                     'jenis'         => 'piutang',
-                    'nominal'       => $request->piutang,
+                    'nominal'       => $piutang,
                     'status'        => 'Belum Lunas',
+                    'tgl_jatuh_tempo' => $request->tgl_jatuh_tempo,
                 ]);
             }
+            
+            // Insert Jurnal
+            $this->jurnalRepository->storePenjualan($data, $piutang);
 
             DB::commit();
             Alert::success('Data Added!', 'Tambah Data Penjualan Berhasil');
@@ -538,17 +558,22 @@ class PenjualanController extends Controller
                 return redirect()->route('penjualan.index');
             }
 
-            // added data piutang jika ada
+            $piutang = 0;
             if ($penjualan->piutang == 1) {
+                $piutang = $request->piutang;
                 // Masukkan data ke tabel hutangpiutang
                 DB::table('hutangpiutang')->insert([
                     'id_kontak'     => $penjualan->id_kontak, // Contoh field, sesuaikan dengan struktur tabel Anda
-                    'kategori'      => $penjualan->kategori_produk,
+                    'kategori'      => 'Penjualan',
                     'jenis'         => 'piutang',
-                    'nominal'       => $request->piutang,
+                    'nominal'       => $piutang,
                     'status'        => 'Belum Lunas',
+                    'tgl_jatuh_tempo' => $request->tgl_jatuh_tempo,
                 ]);
             }
+
+            // Insert Jurnal
+            $this->jurnalRepository->storePenjualan($data, $piutang);
 
             Alert::success('Data Updated!', 'Data Updated Successfully');
             return redirect()->route('penjualan.index');
@@ -566,6 +591,13 @@ class PenjualanController extends Controller
             Pajakppn::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
             Pajakppnbm::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
 
+             // Delete Jurnal
+             $prefix = Penjualan::CODE_JURNAL;
+             $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $penjualan->id_penjualan)->first();
+             if ($jurnal) {
+                 $this->jurnalRepository->delete($jurnal->id_jurnal);
+             }
+             
             $penjualan->delete();
 
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
