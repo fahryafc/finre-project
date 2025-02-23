@@ -29,6 +29,7 @@ class CreateAssetTable extends Migration
             $table->string('akun_aset'); // Account code for the asset
             $table->boolean('penyusutan'); // Depreciation flag (1 if depreciable, 0 if not)
             $table->string('kategori'); // Asset category (e.g., office equipment, machinery)
+            $table->string('user_id');
             $table->timestamps();
 
             // Primary key

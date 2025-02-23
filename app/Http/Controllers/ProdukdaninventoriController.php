@@ -18,9 +18,18 @@ use Illuminate\Support\Facades\Validator;
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\JurnalRepository;
+use Illuminate\Support\Facades\Auth;
 
 class ProdukdaninventoriController extends Controller
 {
+    protected $jurnalRepository;
+
+    public function __construct(JurnalRepository $jurnalRepository)
+    {
+        $this->jurnalRepository = $jurnalRepository;
+    }
+
     public function index()
     {
         $title = 'Hapus Data!';
@@ -130,6 +139,8 @@ class ProdukdaninventoriController extends Controller
             $kodeReff = null;
         }
         $pemasok = Kontak::where('id_kontak', $request->pemasok)->first();
+        
+        db::beginTransaction();
         try {
             $data = Produk::create([
                 'id_kontak'         => $request->pemasok,
@@ -172,9 +183,14 @@ class ProdukdaninventoriController extends Controller
                 ]);
             }
 
+            // Insert Jurnal
+            $this->jurnalRepository->storeProduk($data);
+
+            DB::commit();
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('produkdaninventori.index');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()->with('error', 'Error creating product: ' . $e->getMessage());
         }
     }
@@ -222,6 +238,7 @@ class ProdukdaninventoriController extends Controller
         // Ambil pemasok berdasarkan id_kontak
         $pemasok = Kontak::where('id_kontak', $request->id_kontak)->first();
 
+        db::beginTransaction();
         try {
             // Cari produk berdasarkan ID dan update datanya
             $produk = Produk::findOrFail($id_produk);
@@ -256,10 +273,15 @@ class ProdukdaninventoriController extends Controller
                 ]);
             }
 
+            // Insert Jurnal
+            $this->jurnalRepository->storeProduk($produk);
+
             // Redirect dengan pesan sukses
+            DB::commit();
             Alert::success('Data Edited!', 'Data Edited Successfully');
             return redirect()->route('produkdaninventori.index');
         } catch (\Exception $e) {
+            DB::rollBack();
             // Redirect dengan pesan error
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
         }
@@ -269,6 +291,14 @@ class ProdukdaninventoriController extends Controller
     {
         try {
             $produk = Produk::find($id_produk);
+
+            // Delete Jurnal
+            $prefix = Produk::CODE_JURNAL;
+            $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $produk->id_produk)->first();
+            if ($jurnal) {
+                $this->jurnalRepository->delete($jurnal->id_jurnal);
+            }
+            
             $produk->delete();
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('produkdaninventori.index');

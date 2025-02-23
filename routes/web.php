@@ -13,6 +13,7 @@ use App\Http\Controllers\HutangpiutangController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\KontakController;
 use App\Http\Controllers\PajakController;
+use App\Http\Controllers\JurnalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +50,7 @@ Route::get('/pengeluaran/edit{id}', [PengeluaranController::class, 'edit'])->nam
 Route::get('/pengeluaran/pengeluaran', [PengeluaranController::class, 'pengeluaran'])->name('pengeluaran.pengeluaran');
 Route::resource('/pengeluaran', PengeluaranController::class);
 
-// Route::post('/hutangpiutang/storePembayaranHutang', [HutangPiutangController::class, 'storePembayaranHutang'])->name('hutangpiutang.store');
+Route::post('/hutangpiutang/storePembayaranHutang', [HutangPiutangController::class, 'storePembayaranHutang'])->name('hutangpiutang.store');
 Route::get('/hutangpiutang/detail/{idKontak}', [HutangpiutangController::class, 'getHutangDetail']);
 Route::resource('/hutangpiutang', HutangpiutangController::class);
 
@@ -97,3 +98,12 @@ Route::get('/get-subakun-by-kategori', [AkunController::class, 'getSubAkunByKate
 Route::get('/kontak/export-pdf', [KontakController::class, 'exportKontakToPDF'])->name('export.kontak.pdf');
 Route::get('/kontak/export-kontak', [KontakController::class, 'exportKontakToExcel'])->name('export.kontak');
 Route::resource('/kontak', KontakController::class);
+
+// route jurnal
+Route::get('/jurnal', [JurnalController::class, 'index'])->name('jurnal.index');
+Route::get('/aruskas', [JurnalController::class, 'aruskas'])->name('aruskas.index');
+Route::get('/neraca', [JurnalController::class, 'neraca'])->name('neraca.index');
+Route::get('/labarugi', [JurnalController::class, 'labarugi'])->name('labarugi.index');
+Route::get('/jurnal/detail/{id}/{code}', [JurnalController::class, 'detail'])->name('jurnal.detail');
+Route::get('/jurnal/export-pdf', [JurnalController::class, 'exportToPDF'])->name('jurnal.export.pdf');
+Route::get('/jurnal/export-excel', [JurnalController::class, 'exportToExcel'])->name('jurnal.export.excel');

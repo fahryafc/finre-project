@@ -11,7 +11,7 @@ class RiwayatPembayaranHutangPiutang extends Model
     protected $table = 'riwayat_pembayaran_hutangpiutang';
     protected $primaryKey = 'id_pembayaran_hutangpiutang';
 
-    public $incrementing = false;
+    // public $incrementing = false;
 
     protected $fillable = [
         'id_hutangpiutang',
@@ -26,6 +26,8 @@ class RiwayatPembayaranHutangPiutang extends Model
     protected $casts = [
         'tanggal_pembayaran' => 'datetime:Y-m-d',
     ];
+
+    const CODE_JURNAL = 'PHP';
 
     public function hutangpiutang()
     {

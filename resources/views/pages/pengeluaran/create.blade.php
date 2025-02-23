@@ -112,7 +112,7 @@
                         <div class="mb-3">
                             <label for="akun_pemasukan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pengeluaran masuk akun</label>
                             <select id="akun_pemasukan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pemasukan">
-                                @foreach ( $kas_bank as $a )
+                                @foreach ( $akun_pemasukan as $a )
                                 <option value="{{ $a->kode_akun }}">
                                     <span class="flex justify-between w-full">
                                         <span>{{ $a->nama_akun }}</span>

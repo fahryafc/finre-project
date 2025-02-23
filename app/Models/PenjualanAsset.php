@@ -30,7 +30,13 @@ class PenjualanAsset extends Model
         'akun_keuntungan_kerugian',
         'nominal_keuntungan_kerugian',
         'kategori',
+        'jns_pajak',
+        'pajak_dibayarkan',
+        'pajak',
+        'user_id',
     ];
+
+    const CODE_JURNAL = 'PA';
 
     public function asset()
     {

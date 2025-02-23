@@ -13,7 +13,7 @@ class Produk extends Model
     protected $table = 'produk';
     protected $primaryKey = 'id_produk';
 
-    public $incrementing = false;
+    // public $incrementing = false;
 
     protected $fillable = [
         'id_produk',
@@ -39,6 +39,8 @@ class Produk extends Model
         'created_by',
         'updated_by',
     ];
+
+    const CODE_JURNAL = 'PI';
 
     /**
      * Get the produk_penjualan that owns the Produk

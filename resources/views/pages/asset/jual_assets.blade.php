@@ -45,6 +45,7 @@
         <div class="p-6">
             <form action="{{ route('penjualan-asset.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+                    <input type="hidden" id="id_aset" name="id_aset" value="{{ $asset->id_aset }}">
                     <div class="grid grid-cols-3 gap-4">
                         <div class="mb-3">
                             <label for="id_kontak" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Pelanggan</label>
@@ -133,13 +134,13 @@
                                 <label for="pajak_dibayarkan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pajak Dibayarkan</label>
                                 <input type="text" class="form-input bg-gray-300 text-gray-500 cursor-not-allowed" id="pajak_dibayarkan" name="pajak_dibayarkan" aria-describedby="pajak_dibayarkan" placeholder="Pajak Dibayarkan" readonly>
                             </div>
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="akun_pajak_penjualan" class="text-gray-800 text-sm font-medium inline-block mb-2">Akun Pajak</label>
                                 <select id="akun_pajak_penjualan" name="akun_pajak_penjualan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                     <option value="" selected>-- Pilih Akun Pajak --</option>
                                     <option value="ppn">Ex Akun Pajak</option>
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
 

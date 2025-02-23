@@ -17,6 +17,7 @@ class CreateModalTable extends Migration
             $table->string('masuk_akun'); // Account for the incoming funds (linked to kas_bank or similar)
             $table->string('credit_akun'); // Account for the outgoing funds (linked to kas_bank or similar)
             $table->text('keterangan')->nullable(); // Description of the transaction (optional)
+            $table->string('user_id');
             $table->timestamps(); // Timestamps (created_at, updated_at)
 
             // Primary key

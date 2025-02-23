@@ -22,8 +22,11 @@ class Penjualan extends Model
         'total_pemasukan',
         'tgl_jatuh_tempo',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'user_id'
     ];
+
+    const CODE_JURNAL = 'JL';
 
     public function kontak()
     {
