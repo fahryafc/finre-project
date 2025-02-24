@@ -213,56 +213,72 @@ class JurnalRepository implements JurnalInterface
 
         // Insert jurnal Penjualan
         $akun_kas = Akun::where('kode_akun',$penjualan->pembayaran)->first();
-        DB::table('jurnal_detail')->insert([
-            'id_jurnal'       => $jurnal->id_jurnal,
-            'id_akun'         => $akun_kas->id_akun,
-            'debit'           => $total_penjualan - $piutang,
-            'kredit'          => 0,
-            'keterangan'      => 'Kas/Bank',
-            'created_at'      => Carbon::now(),
-            'updated_at'      => Carbon::now(),
-        ]);
+        if ($akun_kas) {
+            DB::table('jurnal_detail')->insert([
+                'id_jurnal'       => $jurnal->id_jurnal,
+                'id_akun'         => $akun_kas->id_akun,
+                'debit'           => $total_penjualan - $piutang,
+                'kredit'          => 0,
+                'keterangan'      => 'Kas/Bank',
+                'created_at'      => Carbon::now(),
+                'updated_at'      => Carbon::now(),
+            ]);
+        } else{
+            throw new \Exception('Akun Kas/Bank tidak ditemukan!');
+        }
 
         // Insert jurnal piutang usaha
         if ($penjualan->piutang == 1) {
             $akun_piutang_usaha = Akun::where('kode_akun','1-103')->first();
-            DB::table('jurnal_detail')->insert([
-                'id_jurnal'       => $jurnal->id_jurnal,
-                'id_akun'         => $akun_piutang_usaha->id_akun,
-                'debit'           => $piutang,
-                'kredit'          => 0,
-                'keterangan'      => 'Piutang Usaha',
-                'created_at'      => Carbon::now(),
-                'updated_at'      => Carbon::now(),
-            ]);
+            if ($akun_piutang_usaha) {
+                DB::table('jurnal_detail')->insert([
+                    'id_jurnal'       => $jurnal->id_jurnal,
+                    'id_akun'         => $akun_piutang_usaha->id_akun,
+                    'debit'           => $piutang,
+                    'kredit'          => 0,
+                    'keterangan'      => 'Piutang Usaha',
+                    'created_at'      => Carbon::now(),
+                    'updated_at'      => Carbon::now(),
+                ]);
+            } else{
+                throw new \Exception('Akun Piutang Usaha tidak ditemukan!');
+            }
         }
 
         // Insert jurnal pendapatan barang/jasa
         if ($penjualan->total_pemasukan) {
             $akun_pendapatan_barang = Akun::where('kode_akun','4-101')->first();
-            DB::table('jurnal_detail')->insert([
-                'id_jurnal'       => $jurnal->id_jurnal,
-                'id_akun'         => $akun_pendapatan_barang->id_akun,
-                'debit'           => 0,
-                'kredit'          => $penjualan->total_pemasukan,
-                'keterangan'      => 'Pendapatan Barang/Jasa',
-                'created_at'      => Carbon::now(),
-                'updated_at'      => Carbon::now(),
-            ]);
+            if ($akun_pendapatan_barang) {
+                DB::table('jurnal_detail')->insert([
+                    'id_jurnal'       => $jurnal->id_jurnal,
+                    'id_akun'         => $akun_pendapatan_barang->id_akun,
+                    'debit'           => 0,
+                    'kredit'          => $penjualan->total_pemasukan,
+                    'keterangan'      => 'Pendapatan Barang/Jasa',
+                    'created_at'      => Carbon::now(),
+                    'updated_at'      => Carbon::now(),
+                ]);
+            } else{
+                throw new \Exception('Akun Pendapatan Barang/Jasa tidak ditemukan!');
+            }
         }
 
         // Insert jurnal pendapatan biaya pengiriman
         if ($penjualan->ongkir) {
             $akun_pendapatan_ongkir = Akun::where('kode_akun','4-103')->first();
-            DB::table('jurnal_detail')->insert([
-                'id_jurnal'       => $jurnal->id_jurnal,
-                'id_akun'         => $akun_pendapatan_ongkir->id_akun,
-                'debit'           => 0,
-                'kredit'          => $penjualan->ongkir,
-                'keterangan'      => 'Pendapatan Biaya Pengiriman',
-                'created_at'      => Carbon::now(),
-                'updated_at'      => Carbon::now(),
-            ]);
+            if ($akun_pendapatan_ongkir) {
+                DB::table('jurnal_detail')->insert([
+                    'id_jurnal'       => $jurnal->id_jurnal,
+                    'id_akun'         => $akun_pendapatan_ongkir->id_akun,
+                    'debit'           => 0,
+                    'kredit'          => $penjualan->ongkir,
+                    'keterangan'      => 'Pendapatan Biaya Pengiriman',
+                    'created_at'      => Carbon::now(),
+                    'updated_at'      => Carbon::now(),
+                ]);
+            } else{
+                throw new \Exception('Akun Pendapatan Biaya Pengiriman tidak ditemukan!');
+            }
         }
 
         $total_pajak_ppn = 0;
@@ -281,29 +297,37 @@ class JurnalRepository implements JurnalInterface
         // Insert jurnal pajak untuk PPN Keluaran
         if ($total_pajak_ppn > 0) {
             $akun_pajak_ppn = Akun::where('kode_akun','2-106')->first();
-            DB::table('jurnal_detail')->insert([
-                'id_jurnal'       => $jurnal->id_jurnal,
-                'id_akun'         => $akun_pajak_ppn->id_akun,
-                'debit'           => 0,
-                'kredit'          => $total_pajak_ppn,
-                'keterangan'      => 'PPN Keluaran',
-                'created_at'      => Carbon::now(),
-                'updated_at'      => Carbon::now(),
-            ]);
+            if ($akun_pajak_ppn) {
+                DB::table('jurnal_detail')->insert([
+                    'id_jurnal'       => $jurnal->id_jurnal,
+                    'id_akun'         => $akun_pajak_ppn->id_akun,
+                    'debit'           => 0,
+                    'kredit'          => $total_pajak_ppn,
+                    'keterangan'      => 'PPN Keluaran',
+                    'created_at'      => Carbon::now(),
+                    'updated_at'      => Carbon::now(),
+                ]);
+            } else{
+                throw new \Exception('Akun PPN Keluaran tidak ditemukan!');
+            }
         }
 
         // Insert jurnal pajak untuk PPNBM Keluaran
         if ($total_pajak_ppnbm > 0) {
             $akun_pajak_ppnbm = Akun::where('kode_akun','2-107')->first();
-            DB::table('jurnal_detail')->insert([
-                'id_jurnal'       => $jurnal->id_jurnal,
-                'id_akun'         => $akun_pajak_ppnbm->id_akun,
-                'debit'           => 0,
-                'kredit'          => $total_pajak_ppnbm,
-                'keterangan'      => 'PPNBM Keluaran',
-                'created_at'      => Carbon::now(),
-                'updated_at'      => Carbon::now(),
-            ]);
+            if ($akun_pajak_ppnbm) {
+                DB::table('jurnal_detail')->insert([
+                    'id_jurnal'       => $jurnal->id_jurnal,
+                    'id_akun'         => $akun_pajak_ppnbm->id_akun,
+                    'debit'           => 0,
+                    'kredit'          => $total_pajak_ppnbm,
+                    'keterangan'      => 'PPNBM Keluaran',
+                    'created_at'      => Carbon::now(),
+                    'updated_at'      => Carbon::now(),
+                ]);
+            } else{
+                throw new \Exception('Akun PPNBM Keluaran tidak ditemukan!');
+            }
         }
 
         return $jurnal;   

@@ -1,6 +1,7 @@
 @extends('layouts.vertical', ['title' => 'Produk & Inventori', 'mode' => $mode ?? '', 'demo' => $demo ?? ''])
 
 @section('css')
+<link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
 @vite(['node_modules/gridjs/dist/theme/mermaid.min.css'])
 @vite(['node_modules/nice-select2/dist/css/nice-select2.css'])
 @vite([
@@ -278,13 +279,12 @@
 @endsection
 
 @section('script')
-@vite('resources/js/pages/charts-apex.js')
+{{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/table-gridjs.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
-@vite('resources/js/pages/custom.js')
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script>
