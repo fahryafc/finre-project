@@ -152,7 +152,7 @@ class PenjualanController extends Controller
                 ->paginate(5);
 
             $akun = DB::table('akun')->where('kategori_akun', '=', 'Aset/Harta')->get();
-            $kasdanbank = DB::table('kas_bank')->get();
+            $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
             $satuan = DB::table('satuan')->get();
             $produk = DB::table('produk')->get();
             $kategori = DB::table('kategori')->get();
@@ -228,7 +228,7 @@ class PenjualanController extends Controller
                 $produkPenjualan = ProdukPenjualan::create([
                     'id_penjualan'      => $data->id_penjualan,
                     'id_produk'         => $request->produk[$key],
-                    // 'harga'             => $request->harga[$key],
+                    'harga'             => $request->harga[$key],
                     'kuantitas'         => $request->kuantitas[$key],
                     'kode_reff_pajak'   => $kodeReff,
                     'jns_pajak'         => $request->jns_pajak[$key],
@@ -278,7 +278,7 @@ class PenjualanController extends Controller
             }
 
             // Mengupdate saldo akun kas & bank
-            $akun = Kasdanbank::where('kode_akun', $request->pembayaran)->first();
+            $akun = Akun::where('type','Kas & Bank')->where('kode_akun', $request->pembayaran)->first();
             if ($akun) {
                 $akun->saldo += $request->total_pemasukan;
                 $akun->save();
@@ -307,7 +307,7 @@ class PenjualanController extends Controller
             Alert::success('Data Added!', 'Tambah Data Penjualan Berhasil');
             return redirect()->route('penjualan.index');
         } catch (\Exception $e) {
-            dd($e);
+            // dd($e);
             DB::rollBack();
             Alert::error('Error', 'Tambah Data Penjualan Gagal: ' . $e->getMessage());
             return redirect()->back();
@@ -355,7 +355,7 @@ class PenjualanController extends Controller
 
             $penjualan->tanggal = Carbon::parse($penjualan->tanggal)->format('d-m-Y');
             $akun = DB::table('akun')->where('kategori_akun', '=', 'Aset/Harta')->get();
-            $kasdanbank = DB::table('kas_bank')->get();
+            $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
             $satuan = DB::table('satuan')->get();
             $produk = DB::table('produk')->get();
             $kategori = DB::table('kategori')->get();
@@ -476,7 +476,7 @@ class PenjualanController extends Controller
                             // 'produk'            => $request->produk[$key],
                             // 'kategori_produk'   => $kategori_produk->kategori,
                             // 'satuan'            => $request->satuan[$key],
-                            // 'harga'             => $request->harga[$key],
+                            'harga'             => $request->harga[$key],
                             'kuantitas'         => $request->kuantitas[$key],
                             'kode_reff_pajak'   => $kodeReff,
                             'jns_pajak'         => $request->jns_pajak[$key],
@@ -490,7 +490,7 @@ class PenjualanController extends Controller
                     ProdukPenjualan::create([
                         'id_penjualan'      => $penjualan->id_penjualan,
                         'id_produk'         => $request->produk[$key],
-                        // 'harga'             => $request->harga[$key],
+                        'harga'             => $request->harga[$key],
                         'kuantitas'         => $request->kuantitas[$key],
                         'kode_reff_pajak'   => $kodeReff,
                         'jns_pajak'         => $request->jns_pajak[$key],
@@ -530,7 +530,7 @@ class PenjualanController extends Controller
             }
 
             // update saldo akun kas & bank
-            $akun = Kasdanbank::where('kode_akun', $request->pembayaran)->first();
+            $akun = Akun::where('type','Kas & Bank')->where('kode_akun', $request->pembayaran)->first();
             if ($akun) {
                 // Contoh: Menambah nilai ke saldo yang ada
                 $akun->saldo += $penjualan->total_pemasukan;

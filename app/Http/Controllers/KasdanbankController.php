@@ -16,11 +16,12 @@ use Exception;
 
 class KasdanbankController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
+        
         try {
             $kasdanbank = Akun::where('type', 'Kas & Bank')
                 ->orderBy('kategori_akun', 'asc')
