@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\RoutingController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InvitesController;
+use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ModalController;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\PenjualanController;
@@ -14,6 +17,10 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\KontakController;
 use App\Http\Controllers\PajakController;
 use App\Http\Controllers\JurnalController;
+use App\Http\Controllers\SubscriptionController;
+use App\Models\Invites;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,15 +33,55 @@ use App\Http\Controllers\JurnalController;
 |
 */
 
-require __DIR__ . '/auth.php';
+Route::get('/', function () {
+    if (Auth::check()) {
+        // Jika role user owner
+        if (Auth::user()->hasRole('owner')) {
+            // return redirect('/dashboard-owner');
+            echo "Berhasil Login Sebagai Owner";
+        }
 
-// Route::group(['prefix' => '/', 'middleware' => 'auth'], function () {
-//     Route::get('', [RoutingController::class, 'index'])->name('root');
-//     Route::get('/home', fn() => view('index'))->name('home');
-//     Route::get('{first}/{second}/{third}', [RoutingController::class, 'thirdLevel'])->name('third');
-//     Route::get('{first}/{second}', [RoutingController::class, 'secondLevel'])->name('second');
-//     Route::get('{any}', [RoutingController::class, 'root'])->name('any');
-// });
+        // Jika role user inviter
+        if (Auth::user()->hasRole('inviter')) {
+            // return redirect('/dashboard');
+            echo "Berhasil Login Sebagai Inviter";
+
+        }
+
+        $user = Auth::user();
+        // Jika status member accepted
+        $invite_status = Invites::where('email', $user->email)->where('status', 'accepted')->first();
+
+        // Jika user terinvite
+        if ($invite_status) {
+            // JIka user memiliki permission
+            if (count($user->permissions) > 0) {
+                return redirect()->intended('/' . $user->permissions->toArray()[0]['name']);
+            } else {
+                return redirect()->intended('/waiting-permission');
+            }
+        } else {
+            return redirect('/daftar-paket');
+        }
+    }
+    return redirect()->route('login');
+});
+
+Route::group(['middleware' => ['guest']], function () {
+    Route::get('/login', [PagesController::class, 'login'])->name('login');
+    Route::get('/register', [PagesController::class, 'register']);
+    Route::get('/forget-password', [PagesController::class, 'forget_password']);
+    Route::get('/reset-password/{slug}', [PagesController::class, 'reset_password']);
+
+    // ---------------------------------------------------------------------------------------------
+
+    Route::post('/forget-password-process', [AuthController::class, 'forget_password']);
+    Route::post('/reset-password-process', [AuthController::class, 'reset_password']);
+    Route::post('/register-process', [AuthController::class, 'register']);
+    Route::post('/login-process', [AuthController::class, 'login']);
+});
+
+Route::get('/join', [PagesController::class, 'join_from_afiliate']);
 
 Route::get('/', function () {
     return view('pages.dashboard.index');
