@@ -203,7 +203,8 @@ class AuthController extends Controller
 
             // Jika user memiliki role owner
             if (Auth::user()->hasRole('owner')) {
-                return redirect()->intended('/dashboard-owner');
+                // return redirect()->intended('/dashboard-owner');
+                echo "berhasil login";
             }
 
             $user = User::where('id', Auth::user()->id)->first();
