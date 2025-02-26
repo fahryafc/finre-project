@@ -38,7 +38,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->kategori_akun}}</td>
 
                             @php 
-                                $saldo = $key::getSaldo(date('Y-m-d', strtotime('tomorrow')),$key->id_akun)->saldo;
+                                $saldo = $key->saldo;
                             @endphp
                             @if (!empty($saldo))
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($saldo, 0, ".", ".") }}</td>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Jurnal;
+use App\Models\Modal;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -36,9 +37,16 @@ class JurnalController extends Controller
         $tanggal_mulai = Carbon::parse($request->tanggal_mulai)->format('Y-m-d');
         $tanggal_selesai = Carbon::parse($request->tanggal_selesai)->format('Y-m-d');
         $aruskas = $this->jurnalRepository->getArusKasByTanggal($tanggal_mulai, $tanggal_selesai);
+        $saldo_awal = Modal::leftJoin('jurnal', 'jurnal.no_reff', 'modal.id_modal')
+            ->leftJoin('jurnal_detail', 'jurnal_detail.id_jurnal', 'jurnal.id_jurnal')
+            ->join('akun', 'jurnal_detail.id_akun', 'akun.id_akun')
+            ->where('modal.jns_transaksi', 'Penyetoran Modal')
+            ->where('jurnal.code', Modal::CODE_JURNAL)
+            ->where('akun.type', 'Kas & Bank')
+            ->sum('jurnal_detail.debit');
         
         $tipe_periode = Jurnal::typePeriode();
-        return view('pages.aruskas.index', compact('aruskas','tipe_periode'));
+        return view('pages.aruskas.index', compact('aruskas','tipe_periode','saldo_awal'));
     }
 
     public function neraca(Request $request)

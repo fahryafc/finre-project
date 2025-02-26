@@ -24,18 +24,7 @@
                             <i class="mgc_arrow_left_down_fill text-3xl text-green-600"></i>
                         </div>
                     </div>
-                    @php
-                        $total_uang_masuk = 0;
-                        $total_uang_keluar = 0;
-                    @endphp
-                    @foreach($kas_bank as $key)
-                        @php
-                            $transaksi = $key::getTransaksi(request()->get('from'),request()->get('to'),$key->id_akun);
-                            $total_uang_masuk += $transaksi->debit;
-                            $total_uang_keluar += $transaksi->kredit;
-                        @endphp
-                    @endforeach
-                    <p class="text-green-700 font-bold text-3xl truncate mt-auto pt-4">{{ 'Rp. ' . number_format($total_uang_masuk, 0, ',', '.') }}</p>
+                    <p class="text-green-700 font-bold text-3xl truncate mt-auto pt-4">{{ 'Rp. ' . number_format($chart['uang_masuk'], 0, ',', '.') }}</p>
                 </div>
             </div>
         </div>
@@ -49,7 +38,7 @@
                             <i class="mgc_arrow_right_up_fill text-3xl text-red-600"></i>
                         </div>
                     </div>
-                    <p class="text-red-700 font-bold text-3xl truncate mt-auto pt-4">{{ 'Rp. ' . number_format($total_uang_keluar, 0, ',', '.') }}</p>
+                    <p class="text-red-700 font-bold text-3xl truncate mt-auto pt-4">{{ 'Rp. ' . number_format($chart['uang_keluar'], 0, ',', '.') }}</p>
                 </div>
             </div>
         </div>
@@ -62,14 +51,6 @@
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <h4 class="card-title">Kas & Bank</h4>
-                <input type="date" class="border border-gray-300 rounded-md p-2" id="from_date" name="from_date" value="{{ request()->get('from') ? request()->get('from') : date('Y-m-d') }}">
-                <span>To</span>
-                <input type="date" disabled class="border border-gray-300 rounded-md p-2" id="to_date" name="to_date" value="{{ request()->get('to') ? request()->get('to') : date('Y-m-d') }}">
-                @if (request()->get('from') || request()->get('to'))
-                    <a href="/penjualan" class="btn bg-red-600 text-white">
-                        Reset
-                    </a>
-                @endif
             </div>
             <button id="tambahKasBank" class="btn bg-primary text-white" data-fc-target="modalKasBank" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
                 Tambah Kas & Bank
@@ -112,23 +93,13 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $counter + ($kas_bank->currentPage() - 1) * $kas_bank->perPage() }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->nama_akun }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->kode_akun }}</td>
-
-                                        @php 
-                                            $saldo = $key::getSaldo(request()->get('from'),$key->id_akun)->saldo;
-                                        @endphp
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($saldo, 0, ".", ".") }}</td>
-
-                                        @php 
-                                            $transaksi = $key::getTransaksi(request()->get('from'),request()->get('to'),$key->id_akun);
-                                            $debit = $transaksi->debit;
-                                            $kredit = $transaksi->kredit;
-                                        @endphp
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($debit ?? 0, 0, ".", ".") }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($kredit ?? 0, 0, ".", ".") }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->saldo_awal, 0, ".", ".") }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->debit ?? 0, 0, ".", ".") }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->kredit ?? 0, 0, ".", ".") }}</td>
 
                                         <!-- Perhitungan Saldo Akhir -->
                                         @php 
-                                            $saldo_akhir = $saldo + $debit - $kredit;
+                                            $saldo_akhir = $key->saldo_awal + $key->debit - $key->kredit;
                                         @endphp
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($saldo_akhir ?? 0, 0, ".", ".") }}</td>
                                         @csrf
@@ -213,23 +184,10 @@
 @section('script')
 {{-- @vite('resources/js/pages/charts-apex.js') --}}
 @vite(['resources/js/pages/highlight.js'])
-@vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('js/custom-js/kasbank.js') }}" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-    let dateFrom, dateTo
-    document.getElementById('from_date').addEventListener('change', function() {
-        dateFrom = this.value
-        document.getElementById('to_date').disabled = false
-        document.getElementById('to_date').min = dateFrom
-    })
-
-    document.getElementById('to_date').addEventListener('change', function() {
-        dateTo = this.value
-        window.location.href = `?from=${dateFrom}&to=${dateTo}`
-    })
-
     $(document).ready(function() {
         $(document).on('click', '.edit', async function() {
             const id = $(this).attr('data-id');

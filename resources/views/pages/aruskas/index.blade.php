@@ -97,10 +97,12 @@
                     </tr>
                     @php $total_debit += $value->debit; $total_kredit += $value->kredit; @endphp
                     @endforeach
+
+                    @php $total_operasional = $total_debit-$total_kredit; @endphp
                     <tr>
                         <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>Arus Kas Aktivitas Operasional</b></th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_debit-$total_kredit), 0, ".", ".") }}</b></th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_operasional > 0) ? $total_operasional : 0, 0, ".", ".") }}</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_operasional < 0) ? $total_operasional : 0, 0, ".", ".") }}</b></th>
                     </tr>
 
                     {{-- Aktivitas Investasi --}}
@@ -118,10 +120,12 @@
                     </tr>
                     @php $total_debit += $value->debit; $total_kredit += $value->kredit; @endphp
                     @endforeach
+                    
+                    @php $total_investasi = $total_debit-$total_kredit; @endphp
                     <tr>
                         <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>Arus Kas Aktivitas Investasi</b></th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_debit-$total_kredit), 0, ".", ".") }}</b></th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_investasi > 0) ? $total_investasi : 0, 0, ".", ".") }}</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_investasi < 0) ? $total_investasi : 0, 0, ".", ".") }}</b></th>
                     </tr>
 
                     {{-- Aktivitas Pendanaan --}}
@@ -139,10 +143,34 @@
                     </tr>
                     @php $total_debit += $value->debit; $total_kredit += $value->kredit; @endphp
                     @endforeach
+                    
+                    @php $total_pendanaan = $total_debit-$total_kredit; @endphp
                     <tr>
                         <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>Arus Kas Aktivitas Pendanaan</b></th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_debit-$total_kredit), 0, ".", ".") }}</b></th>
-                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_pendanaan > 0) ? $total_pendanaan : 0, 0, ".", ".") }}</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_pendanaan < 0) ? $total_pendanaan : 0, 0, ".", ".") }}</b></th>
+                    </tr>
+
+                    @php $total_naik_turun = $total_operasional+$total_investasi+$total_pendanaan; @endphp
+                    <tr>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>Kenaikan/Penurunan Kas</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_naik_turun > 0) ? $total_naik_turun : 0, 0, ".", ".") }}</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($total_naik_turun < 0) ? $total_naik_turun : 0, 0, ".", ".") }}</b></th>
+                    </tr>
+
+                    {{-- Saldo Awal --}}
+                    <tr>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>Saldo Awal Kas</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($saldo_awal > 0) ? $saldo_awal : 0, 0, ".", ".") }}</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($saldo_awal < 0) ? $saldo_awal : 0, 0, ".", ".") }}</b></th>
+                    </tr>
+                    
+                    {{-- Saldo Akhir --}}
+                    @php $saldo_akhir = (($total_naik_turun > 0) ? $total_naik_turun : ($total_naik_turun*-1))-$saldo_awal; @endphp
+                    <tr>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>Saldo Akhir Kas</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($saldo_akhir > 0) ? $saldo_akhir : 0, 0, ".", ".") }}</b></th>
+                        <th scope="col" class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200"><b>{{ "Rp. ".number_format(($saldo_akhir < 0) ? $saldo_akhir : 0, 0, ".", ".") }}</b></th>
                     </tr>
                 </tbody>
             </table>

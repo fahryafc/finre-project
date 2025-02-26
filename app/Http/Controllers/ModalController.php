@@ -7,6 +7,7 @@ use App\Models\Modal;
 use App\Models\Kontak;
 use App\Models\Kasdanbank;
 use App\Models\Jurnal;
+use App\Models\Akun;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -39,7 +40,7 @@ class ModalController extends Controller
         })
         ->where('user_id', $user_id)
         ->paginate(5);
-        $kasdanbank = DB::table('kas_bank')->get();
+        $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
         $pemodal = DB::table('kontak')->where('jenis_kontak', '=', 'investor')->get();
         $jml_modal_disetor = Modal::where('jns_transaksi', '=', 'Penyetoran Modal')->sum('nominal');
         $jml_penarikan_deviden = Modal::where('jns_transaksi', '=', 'Penarikan Dividen')->sum('nominal');
@@ -74,7 +75,7 @@ class ModalController extends Controller
             $kodeAkun = $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : $request->input('credit_akun');
 
             // Validasi bahwa kode akun harus ada di tabel kas_bank
-            $akun = Kasdanbank::where('kode_akun', $kodeAkun)->first();
+            $akun = Akun::where('type','Kas & Bank')->where('kode_akun', $kodeAkun)->first();
             if (!$akun) {
                 return redirect()->back()->with('error', 'Kode Akun tidak valid!');
             }
@@ -94,12 +95,12 @@ class ModalController extends Controller
                 'jns_transaksi' => $jnsTransaksi,
                 'nama_badan' => $request->input('nama_badan'),
                 'nominal' => $nominal,
-                'masuk_akun' => $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : null,
-                'credit_akun' => $jnsTransaksi === 'Penarikan Dividen' ? $request->input('credit_akun') : null,
+                'masuk_akun' => $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : 0,
+                'credit_akun' => $jnsTransaksi === 'Penarikan Dividen' ? $request->input('credit_akun') : 0,
                 'keterangan' => $request->input('keterangan'),
                 'user_id' => 1, // Auth::user()->id,
             ]);
-
+// dd($request->all());
             // Update saldo atau uang_keluar di tabel kas_bank berdasarkan jenis transaksi
             if ($jnsTransaksi === 'Penyetoran Modal') {
                 $akun->saldo += $nominal;  // Tambahkan nominal ke saldo jika penyetoran modal

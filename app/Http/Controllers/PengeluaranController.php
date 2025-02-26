@@ -151,7 +151,7 @@ class PengeluaranController extends Controller
             $akun = DB::table('akun')->get();
             $satuan = DB::table('satuan')->get();
             $produk = DB::table('produk')->get();
-            $kasdanbank = DB::table('kas_bank')->get();
+            $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
             $kategori = DB::table('kategori')->get();
             $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
             $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
@@ -267,7 +267,7 @@ class PengeluaranController extends Controller
         // Cek jika data pengeluaran berhasil disimpan
         if ($data_pengeluaran) {
             // Cari akun kas_bank berdasarkan kode_akun (akun_pembayaran)
-            $kas_bank = Kasdanbank::where('kode_akun', $data_pengeluaran->akun_pembayaran)->first();
+            $kas_bank = Akun::where('type','Kas & Bank')->where('kode_akun', $data_pengeluaran->akun_pembayaran)->first();
 
             // Jika akun ditemukan, tambahkan data ke tabel arus_uang
             if ($kas_bank) {
@@ -334,7 +334,7 @@ class PengeluaranController extends Controller
             $akun = DB::table('akun')->get();
             $satuan = DB::table('satuan')->get();
             $produk = DB::table('produk')->get();
-            $kasdanbank = DB::table('kas_bank')->get();
+            $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
             $kategori = DB::table('kategori')->get();
             $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
             $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
