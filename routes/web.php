@@ -2,17 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\RoutingController;
-use App\Http\Controllers\ModalController;
 use App\Http\Controllers\AkunController;
-use App\Http\Controllers\PenjualanController;
-use App\Http\Controllers\PengeluaranController;
-use App\Http\Controllers\ProdukdaninventoriController;
-use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\KasdanbankController;
-use App\Http\Controllers\HutangpiutangController;
 use App\Http\Controllers\AssetController;
-use App\Http\Controllers\KontakController;
+use App\Http\Controllers\ModalController;
 use App\Http\Controllers\PajakController;
+use App\Http\Controllers\KontakController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\KasdanbankController;
+use App\Http\Controllers\PengeluaranController;
+use App\Http\Controllers\HutangpiutangController;
+use App\Http\Controllers\ProdukdaninventoriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,11 +36,15 @@ require __DIR__ . '/auth.php';
 //     Route::get('{any}', [RoutingController::class, 'root'])->name('any');
 // });
 
-Route::get('/', function () {
-    return view('pages.dashboard.index');
-});
+// Route::get('/', function () {
+//     return view('pages.dashboard.index');
+// });
 
-Route::resource('/dashboard', \App\Http\Controllers\DashboardController::class);
+Route::prefix('dashboard')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/pendapatan', [DashboardController::class, 'pendapatan']);
+    Route::get('/pengeluaran', [DashboardController::class, 'pengeluaran']);
+});
 
 Route::get('/penjualan/edit{id}', [PenjualanController::class, 'edit'])->name('penjualan.edit');
 Route::get('/penjualan/detail/{id}', [PenjualanController::class, 'detail'])->name('penjualan.detail');
