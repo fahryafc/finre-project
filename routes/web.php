@@ -1,21 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\RoutingController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InvitesController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ModalController;
 use App\Http\Controllers\AkunController;
-use App\Http\Controllers\PenjualanController;
-use App\Http\Controllers\PengeluaranController;
-use App\Http\Controllers\ProdukdaninventoriController;
-use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\KasdanbankController;
-use App\Http\Controllers\HutangpiutangController;
 use App\Http\Controllers\AssetController;
-use App\Http\Controllers\KontakController;
 use App\Http\Controllers\PajakController;
+use App\Http\Controllers\KontakController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\KasdanbankController;
+use App\Http\Controllers\PengeluaranController;
+use App\Http\Controllers\HutangpiutangController;
+use App\Http\Controllers\ProdukdaninventoriController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\SubscriptionController;
 use App\Models\Invites;
@@ -83,11 +84,15 @@ Route::group(['middleware' => ['guest']], function () {
 
 Route::get('/join', [PagesController::class, 'join_from_afiliate']);
 
-Route::get('/', function () {
-    return view('pages.dashboard.index');
-});
+// Route::get('/', function () {
+//     return view('pages.dashboard.index');
+// });
 
-Route::resource('/dashboard', \App\Http\Controllers\DashboardController::class);
+Route::prefix('dashboard')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/pendapatan', [DashboardController::class, 'pendapatan']);
+    Route::get('/pengeluaran', [DashboardController::class, 'pengeluaran']);
+});
 
 Route::get('/penjualan/edit{id}', [PenjualanController::class, 'edit'])->name('penjualan.edit');
 Route::get('/penjualan/detail/{id}', [PenjualanController::class, 'detail'])->name('penjualan.detail');
