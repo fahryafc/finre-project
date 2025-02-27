@@ -114,10 +114,34 @@
                 </ul>
             </li>
             <li class="menu-item">
-                <a href="javascript:void(0)" class="menu-link">
-                    <span class="menu-icon"><i class="ti ti-clipboard-text"></i></span>
+                <a href="javascript:void(0)" data-fc-type="collapse" class="menu-link fc-collapse">
+                    <span class="menu-icon"><i class="ti ti-database-cog"></i></span>
                     <span class="menu-text"> Laporan </span>
+                    <span class="menu-arrow"></span>
                 </a>
+
+                <ul class="sub-menu hidden" style="">
+                    <li class="menu-item">
+                        <a href="{{ route('jurnal.index') }}" class="menu-link">
+                            <span class="menu-text">Jurnal</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('aruskas.index') }}" class="menu-link">
+                            <span class="menu-text">Arus Kas</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('neraca.index') }}" class="menu-link">
+                            <span class="menu-text">Neraca</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('labarugi.index') }}" class="menu-link">
+                            <span class="menu-text">Laba Rugi</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li class="menu-item">
                 <a href="{{ route('kontak.index') }}" class="menu-link">

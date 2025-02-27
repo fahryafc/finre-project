@@ -11,7 +11,9 @@ class Modal extends Model
     protected $table = 'modal';
     protected $primaryKey = 'id_modal';
 
-    public $incrementing = false;
+    // public $incrementing = false;
 
-    protected $fillable = ['tanggal', 'jns_transaksi', 'nama_badan', 'nominal', 'masuk_akun', 'credit_akun', 'keterangan'];
+    protected $fillable = ['id_modal', 'tanggal', 'jns_transaksi', 'nama_badan', 'nominal', 'masuk_akun', 'credit_akun', 'keterangan', 'user_id'];
+
+    const CODE_JURNAL = 'MD';
 }

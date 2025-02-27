@@ -11,45 +11,68 @@ use App\Models\Subakun;
 use App\Models\Kategori_akun;
 use App\Models\Arusuang;
 use App\Models\Penjualan;
+use App\Models\Modal;
+use App\Models\Jurnal;
 use RealRashid\SweetAlert\Facades\Alert;
 use Exception;
 
 class KasdanbankController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
+        
         try {
-            // Mengambil data dari tabel kas_bank dengan join ke tabel penjualan
-            $kasdanbank = DB::table('kas_bank')
-                ->leftJoin('penjualan', 'kas_bank.kode_akun', '=', 'penjualan.pembayaran')
-                ->select(
-                    'kas_bank.*', // ambil semua field dari kas_bank
-                    'penjualan.total_pemasukan' // ambil total_pemasukan
+            $kasdanbank = Akun::where('type', 'Kas & Bank')
+                ->leftJoinSub(
+                    Modal::select(
+                            DB::raw('jurnal_detail.id_akun as akun_id'),
+                            DB::raw('SUM(jurnal_detail.debit) as saldo_awal')
+                        )
+                        ->leftJoin('jurnal', 'jurnal.no_reff', 'modal.id_modal')
+                        ->leftJoin('jurnal_detail', 'jurnal_detail.id_jurnal', 'jurnal.id_jurnal')
+                        ->where('modal.jns_transaksi', 'Penyetoran Modal')
+                        ->where('jurnal.code', Modal::CODE_JURNAL)
+                        ->groupBy('jurnal_detail.id_akun'),
+                    'md',
+                    function ($join) {
+                        $join->on('akun.id_akun', '=', 'md.akun_id');
+                    }
                 )
-                ->groupBy('kas_bank.id_kas_bank') // Pastikan untuk group by berdasarkan primary key tabel kas_bank
+                ->leftJoinSub(
+                    Jurnal::select(
+                            DB::raw('jurnal_detail.id_akun AS akun_id'),
+                            DB::raw('SUM(jurnal_detail.debit) AS debit'),
+                            DB::raw('SUM(jurnal_detail.kredit) AS kredit')
+                        )
+                        ->leftJoin('jurnal_detail', 'jurnal_detail.id_jurnal', 'jurnal.id_jurnal')
+                        ->groupBy('jurnal_detail.id_akun'),
+                    'jl',
+                    function ($join) {
+                        $join->on('akun.id_akun', '=', 'jl.akun_id');
+                    }
+                )
+                ->orderBy('kategori_akun', 'asc')
                 ->paginate(5);
 
+            $uang_masuk = Jurnal::join('jurnal_detail', 'jurnal_detail.id_jurnal', 'jurnal.id_jurnal')
+                ->join('akun', 'jurnal_detail.id_akun', 'akun.id_akun')
+                ->where('akun.type', 'Kas & Bank')
+                ->sum('jurnal_detail.debit');
+
+            $uang_keluar = Jurnal::join('jurnal_detail', 'jurnal_detail.id_jurnal', 'jurnal.id_jurnal')
+                ->join('akun', 'jurnal_detail.id_akun', 'akun.id_akun')
+                ->where('akun.type', 'Kas & Bank')
+                ->sum('jurnal_detail.kredit');
+            
             $kategoriAkun = DB::table('kategori_akun')->get();
             $subakunKategori = DB::table('subakun_kategori')->get();
 
-            // Ambil total_pemasukan berdasarkan kode_akun
-            // $totalPemasukan = DB::table('penjualan')
-            //     ->join('kas_bank', 'penjualan.pembayaran', '=', 'kas_bank.kode_akun')
-            //     ->select('kas_bank.kode_akun', 'total_pemasukan')
-            //     ->groupBy('kas_bank.kode_akun')
-            //     ->get();
-
             // Total saldo akhir / total semua saldo akhir * 100%
-            $chart['uang_masuk'] = DB::table('kas_bank')
-                ->whereYear('kas_bank.created_at', date('Y'))
-                ->sum('uang_masuk');
-
-            $chart['uang_keluar'] = DB::table('kas_bank')
-                ->whereYear('kas_bank.created_at', date('Y'))
-                ->sum('uang_keluar');
+            $chart['uang_masuk'] = $uang_masuk;
+            $chart['uang_keluar'] = $uang_keluar;
 
             return view('pages.kasdanbank.index', [
                 'kas_bank' => $kasdanbank,
@@ -85,14 +108,16 @@ class KasdanbankController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'nama_akun' => 'string',
-                'kode_akun' => 'string',
-                'kategori_akun' => 'string',
-                'subakun' => 'string',
+            $data_akun = Akun::where('kategori_akun', $request->kategori_akun)->first();
+            $akun = Akun::create([
+                'id_kategori_akun'      => $data_akun->id_kategori_akun,
+                'type'                  => "Kas & Bank",
+                'nama_akun'             => $request->nama_akun,
+                'kode_akun'             => $request->kode_akun,
+                'kategori_akun'         => $request->kategori_akun,
+                'subakun'               => $data_akun->subakun,
             ]);
-
-            Kasdanbank::create($request->all());
+            dd($akun);
 
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('kasdanbank.index');
@@ -103,7 +128,7 @@ class KasdanbankController extends Controller
 
     public function show($id)
     {
-        $data = Kasdanbank::find($id);
+        $data = Akun::find($id);
 
         // Jika data tidak ditemukan
         if (!$data) {

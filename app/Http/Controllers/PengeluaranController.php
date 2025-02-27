@@ -12,6 +12,7 @@ use App\Models\Pajak;
 use App\Models\Pajak_ppn;
 use App\Models\Pajak_ppnbm;
 use App\Models\Pajak_pph;
+use App\Models\Jurnal;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -19,14 +20,24 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Exception;
+use App\Repositories\JurnalRepository;
+use Illuminate\Support\Facades\Auth;
 
 class PengeluaranController extends Controller
 {
+    protected $jurnalRepository;
+
+    public function __construct(JurnalRepository $jurnalRepository)
+    {
+        $this->jurnalRepository = $jurnalRepository;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        $user_id = 1; // Auth::user()->id;
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
@@ -41,6 +52,7 @@ class PengeluaranController extends Controller
                     return $query->whereBetween('tanggal', [$from_date, $to_date]);
                 })
                 ->select('pengeluaran.*', 'kontak.nama_kontak')
+                ->where('user_id', $user_id)
                 ->paginate(5);
             $akun = DB::table('akun')->get();
             $satuan = DB::table('satuan')->get();
@@ -139,10 +151,11 @@ class PengeluaranController extends Controller
             $akun = DB::table('akun')->get();
             $satuan = DB::table('satuan')->get();
             $produk = DB::table('produk')->get();
-            $kasdanbank = DB::table('kas_bank')->get();
+            $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
             $kategori = DB::table('kategori')->get();
             $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
             $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
+            $akun_pemasukan = DB::table('akun')->whereIn('id_kategori_akun', ['1','2','5'])->get();
 
             // dd($pengeluaran);
 
@@ -154,7 +167,8 @@ class PengeluaranController extends Controller
                 'kas_bank' => $kasdanbank,
                 'kategori' => $kategori,
                 'karyawanKontak' => $karyawanKontak,
-                'vendorKontak' => $vendorKontak
+                'vendorKontak' => $vendorKontak,
+                'akun_pemasukan' => $akun_pemasukan
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -210,6 +224,7 @@ class PengeluaranController extends Controller
             'akun_pembayaran'      => $request->akun_pembayaran,
             'akun_pemasukan'       => $request->akun_pemasukan,
             'tgl_jatuh_tempo'      => $request->hutangButton ? Carbon::createFromFormat('d-m-Y', $request->tgl_jatuh_tempo)->format('Y-m-d') : null, // Set to null if hutang is 0
+            'user_id'              => 1, // Auth::user()->id,
         ]);
 
         // dd($data_pengeluaran->biaya);
@@ -252,7 +267,7 @@ class PengeluaranController extends Controller
         // Cek jika data pengeluaran berhasil disimpan
         if ($data_pengeluaran) {
             // Cari akun kas_bank berdasarkan kode_akun (akun_pembayaran)
-            $kas_bank = Kasdanbank::where('kode_akun', $data_pengeluaran->akun_pembayaran)->first();
+            $kas_bank = Akun::where('type','Kas & Bank')->where('kode_akun', $data_pengeluaran->akun_pembayaran)->first();
 
             // Jika akun ditemukan, tambahkan data ke tabel arus_uang
             if ($kas_bank) {
@@ -299,6 +314,9 @@ class PengeluaranController extends Controller
             }
         }
 
+        // Insert Jurnal
+        $this->jurnalRepository->storePengeluaran($data_pengeluaran);
+
         // Tampilkan notifikasi sukses
         Alert::success('Data Added!', 'Data Created Successfully');
         return redirect()->route('pengeluaran.index');
@@ -316,7 +334,7 @@ class PengeluaranController extends Controller
             $akun = DB::table('akun')->get();
             $satuan = DB::table('satuan')->get();
             $produk = DB::table('produk')->get();
-            $kasdanbank = DB::table('kas_bank')->get();
+            $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
             $kategori = DB::table('kategori')->get();
             $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
             $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
@@ -494,6 +512,9 @@ class PengeluaranController extends Controller
                 }
             }
 
+            // Insert Jurnal
+            $this->jurnalRepository->storePengeluaran($findPengeluaran);
+
             Alert::success('Data Edited!', 'Data Edited Successfully');
             return redirect()->route('pengeluaran.index');
         } catch (\Exception $e) {
@@ -505,6 +526,14 @@ class PengeluaranController extends Controller
     {
         try {
             $pengeluaran = Pengeluaran::find($id_pengeluaran);
+
+            // Delete Jurnal
+            $prefix = Pengeluaran::CODE_JURNAL;
+            $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $pengeluaran->id_pengeluaran)->first();
+            if ($jurnal) {
+                $this->jurnalRepository->delete($jurnal->id_jurnal);
+            }
+            
             $pengeluaran->delete();
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('pengeluaran.index');

@@ -21,6 +21,7 @@ class Assetpenyusutan extends Model
         'nominal_nilai_tahun',
         'akun_penyusutan',
         'akumulasi_akun',
+        'akun_akumulasi',
     ];
 
     public function aset()

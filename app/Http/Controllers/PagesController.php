@@ -134,7 +134,7 @@ class PagesController extends Controller
 
     public function login()
     {
-        return view('pages.auth.login');
+        return view('pages.auth.index');
     }
 
     public function register()

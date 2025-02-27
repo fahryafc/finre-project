@@ -27,6 +27,10 @@ class CreatePenjualanAssetTable extends Migration
             $table->string('akun_keuntungan_kerugian'); // Account for profit/loss from the sale
             $table->decimal('nominal_keuntungan_kerugian', 15, 2); // Profit or loss amount
             $table->string('kategori'); // Category of the asset being sold
+            $table->string('jns_pajak');
+            $table->decimal('pajak', 15, 2);
+            $table->decimal('pajak_dibayarkan', 15, 2);
+            $table->string('user_id');
             $table->timestamps(); // Timestamps (created_at, updated_at)
 
             // Set the primary key

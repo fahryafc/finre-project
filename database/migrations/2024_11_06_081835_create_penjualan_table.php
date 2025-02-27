@@ -23,6 +23,7 @@ class CreatePenjualanTable extends Migration
             $table->decimal('pembayaran', 15, 2)->default(0); // Payment amount
             $table->decimal('total_pemasukan', 15, 2)->default(0); // Total income
             $table->date('tgl_jatuh_tempo'); // Due date
+            $table->string('user_id');
             $table->timestamps(); // Created and updated timestamps
 
             // Foreign key constraint

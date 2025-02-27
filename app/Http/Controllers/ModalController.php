@@ -6,17 +6,29 @@ use Illuminate\Http\Request;
 use App\Models\Modal;
 use App\Models\Kontak;
 use App\Models\Kasdanbank;
+use App\Models\Jurnal;
+use App\Models\Akun;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use App\Repositories\JurnalRepository;
+use Illuminate\Support\Facades\Auth;
 
 class ModalController extends Controller
 {
+    protected $jurnalRepository;
+
+    public function __construct(JurnalRepository $jurnalRepository)
+    {
+        $this->jurnalRepository = $jurnalRepository;
+    }
+
     public function index(Request $request)
     {
+        $user_id = 1; // Auth::user()->id;
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
@@ -26,8 +38,9 @@ class ModalController extends Controller
         $modal = Modal::when($filter, function ($query) use ($filter) {
             return $query->where('jns_transaksi', '=', $filter);
         })
-            ->paginate(5);
-        $kasdanbank = DB::table('kas_bank')->get();
+        ->where('user_id', $user_id)
+        ->paginate(5);
+        $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
         $pemodal = DB::table('kontak')->where('jenis_kontak', '=', 'investor')->get();
         $jml_modal_disetor = Modal::where('jns_transaksi', '=', 'Penyetoran Modal')->sum('nominal');
         $jml_penarikan_deviden = Modal::where('jns_transaksi', '=', 'Penarikan Dividen')->sum('nominal');
@@ -52,6 +65,7 @@ class ModalController extends Controller
 
     public function store(Request $request)
     {
+        db::beginTransaction();
         try {
             // Ambil nilai jenis transaksi dan nominal
             $jnsTransaksi = $request->input('jns_transaksi');
@@ -61,7 +75,7 @@ class ModalController extends Controller
             $kodeAkun = $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : $request->input('credit_akun');
 
             // Validasi bahwa kode akun harus ada di tabel kas_bank
-            $akun = Kasdanbank::where('kode_akun', $kodeAkun)->first();
+            $akun = Akun::where('type','Kas & Bank')->where('kode_akun', $kodeAkun)->first();
             if (!$akun) {
                 return redirect()->back()->with('error', 'Kode Akun tidak valid!');
             }
@@ -76,16 +90,17 @@ class ModalController extends Controller
             // dd($jnsTransaksi);
 
             // Jika validasi lolos, buat record pada tabel modal
-            Modal::create([
+            $modal = Modal::create([
                 'tanggal' => Carbon::parse($request->input('tanggal')),
                 'jns_transaksi' => $jnsTransaksi,
                 'nama_badan' => $request->input('nama_badan'),
                 'nominal' => $nominal,
-                'masuk_akun' => $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : null,
-                'credit_akun' => $jnsTransaksi === 'Penarikan Dividen' ? $request->input('credit_akun') : null,
+                'masuk_akun' => $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : 0,
+                'credit_akun' => $jnsTransaksi === 'Penarikan Dividen' ? $request->input('credit_akun') : 0,
                 'keterangan' => $request->input('keterangan'),
+                'user_id' => 1, // Auth::user()->id,
             ]);
-
+// dd($request->all());
             // Update saldo atau uang_keluar di tabel kas_bank berdasarkan jenis transaksi
             if ($jnsTransaksi === 'Penyetoran Modal') {
                 $akun->saldo += $nominal;  // Tambahkan nominal ke saldo jika penyetoran modal
@@ -95,10 +110,15 @@ class ModalController extends Controller
             }
             $akun->save();
 
+            // Insert Jurnal
+            $this->jurnalRepository->storeModal($modal);
+
             // Tampilkan pesan sukses
+            DB::commit();
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('modal.index');
         } catch (\Exception $e) {
+            DB::rollBack();
             dd($e);
             // Jika terjadi kesalahan, kembalikan ke halaman sebelumnya dengan pesan error
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -128,6 +148,13 @@ class ModalController extends Controller
     public function destroy(Modal $modal)
     {
         try {
+            // Delete Jurnal
+            $prefix = Modal::CODE_JURNAL;
+            $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $modal->id_modal)->first();
+            if ($jurnal) {
+                $this->jurnalRepository->delete($jurnal->id_jurnal);
+            }
+            
             $modal->delete();
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('modal.index');

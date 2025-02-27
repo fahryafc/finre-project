@@ -1,7 +1,9 @@
 @extends('layouts.vertical', ['title' => 'Modal', 'mode' => $mode ?? '', 'demo' => $demo ?? ''])
 
 @section('css')
+<link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
 @vite(['node_modules/gridjs/dist/theme/mermaid.min.css'])
+@vite(['node_modules/nice-select2/dist/css/nice-select2.css'])
 @vite([
 'node_modules/flatpickr/dist/flatpickr.min.css',
 'node_modules/@simonwep/pickr/dist/themes/classic.min.css',
@@ -10,7 +12,23 @@
 ])
 @vite(['node_modules/sweetalert2/dist/sweetalert2.min.css'])
 @endsection
+<style>
+    /* CSS untuk spinner */
+.loader {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+</style>
 @section('content')
 <div class="grid grid-rows-1 grid-flow-col gap-4 mb-5">
     <div class="card">
@@ -130,6 +148,9 @@
                                                     class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white"
                                                     data-fc-target="modalEditAkun{{$key->id_modal}}" data-fc-type="modal"><i
                                                         class="mgc_edit_2_line"></i></button>
+                                                <button data-modal-target="modal-detail-jurnal" data-modal-toggle="modal-detail-jurnal" type="button" class="btn rounded-full bg-success/25 text-success hover:bg-success hover:text-white" data-id="{{ $key->id_modal }}">
+                                                    <i class="ti ti-credit-card-pay text-base me-1"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                         @php $counter++; @endphp
@@ -231,14 +252,61 @@
         </form>
     </div>
 </div>
+<!--Modal Detail Jurnal-->
+<div id="modal-detail-jurnal" data-modal-backdrop="static" tabindex="-1" class="fixed top-0 left-[20%] z-50 hidden w-[60%] p-4 overflow-x-hidden overflow-y-auto h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-4xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+                    Detail Jurnal
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="modal-detail-jurnal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 space-y-4">
+                <table id="detail-jurnal-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Kode Akun</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Nama Akun</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Debit</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap overflow-hidden text-ellipsis">Kredit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                    <tfoot>
+
+                    </tfoot>
+                </table>
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center p-4 md:p-5 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button data-modal-hide="modal-detail-jurnal" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- end modal -->
 @endsection
 
 @section('script')
+@vite('resources/js/pages/charts-apex.js')
 @vite(['resources/js/pages/table-gridjs.js'])
+@vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-select.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const jnsTransaksi = document.getElementById('jns_transaksi');
@@ -308,6 +376,72 @@
                 creditAkunContainer.classList.remove('hidden');
             }
         }
+    });
+
+    const buttonsJurnal = document.querySelectorAll('[data-modal-target="modal-detail-jurnal"]');
+    const modalBodyJurnal = document.querySelector('#detail-jurnal-table tbody');
+    const modalFootJurnal = document.querySelector('#detail-jurnal-table tfoot');
+
+    if (document.getElementById("detail-jurnal-table") && typeof simpleDatatables.DataTable !== 'undefined') {
+        const dataTable = new simpleDatatables.DataTable("#detail-jurnal-table", {
+            paging: true,
+            perPage: 5,
+            perPageSelect: [5, 10, 15, 20, 25],
+            sortable: false,
+            labels: {
+                // perPage: "",
+                // noRows: "Tidak ada data",
+                // info: "Menampilkan {start} sampai {end} dari {rows} entri"
+            }
+        });
+    }
+
+    buttonsJurnal.forEach(button => {
+        button.addEventListener('click', async () => {
+            const modalId = button.getAttribute('data-id');
+            const code = "{!! \App\Models\Modal::CODE_JURNAL !!}";
+            try {
+                const response = await fetch(`/jurnal/detail/${modalId}/${code}`);
+                const data = await response.json();
+
+                // Clear previous table rows
+                modalBodyJurnal.innerHTML = '';
+                modalFootJurnal.innerHTML = '';
+
+                if (data && data.status === 'success') {
+                    // Loop through each detail row and populate the table
+                    var totalDebit = 0;
+                    var totalKredit = 0;
+                    data.detailJurnal.forEach((detail, index) => {
+                        const row = `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kode_akun}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.nama_akun}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.debit).toLocaleString()}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.kredit).toLocaleString()}</td>
+                            </tr>
+                        `;
+                        totalDebit += parseInt(detail.debit);
+                        totalKredit += parseInt(detail.kredit);
+                        modalBodyJurnal.innerHTML += row;
+                    });
+
+                    const rowFoot = `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200" colspan="2"><b>Total</b></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200"><b>Rp ${parseInt(totalDebit).toLocaleString()}</b></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200"><b>Rp ${parseInt(totalKredit).toLocaleString()}</b></td>
+                            </tr>
+                        `;
+                    modalFootJurnal.innerHTML += rowFoot;
+                } else {
+                    modalBodyJurnal.innerHTML = '<tr><td colspan="9" class="text-center text-gray-500">Detail tidak ditemukan</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error fetching detail:', error);
+                modalBodyJurnal.innerHTML = '<tr><td colspan="9" class="text-center text-red-500">Terjadi kesalahan saat memuat detail</td></tr>';
+            }
+        });
     });
 </script>
 @endsection

@@ -24,17 +24,7 @@
                             <i class="mgc_arrow_left_down_fill text-3xl text-green-600"></i>
                         </div>
                     </div>
-                    @php
-                        $total_uang_masuk = 0;
-                        $total_uang_keluar = 0;
-                    @endphp
-                    @foreach($kas_bank as $key)
-                        @php
-                            $total_uang_masuk += $key->total_pemasukan;
-                            $total_uang_keluar += $key->uang_keluar;
-                        @endphp
-                    @endforeach
-                    <p class="text-green-700 font-bold text-3xl truncate mt-auto pt-4">{{ 'Rp. ' . number_format($total_uang_masuk, 0, ',', '.') }}</p>
+                    <p class="text-green-700 font-bold text-3xl truncate mt-auto pt-4">{{ 'Rp. ' . number_format($chart['uang_masuk'], 0, ',', '.') }}</p>
                 </div>
             </div>
         </div>
@@ -48,7 +38,7 @@
                             <i class="mgc_arrow_right_up_fill text-3xl text-red-600"></i>
                         </div>
                     </div>
-                    <p class="text-red-700 font-bold text-3xl truncate mt-auto pt-4">{{ 'Rp. ' . number_format($total_uang_keluar, 0, ',', '.') }}</p>
+                    <p class="text-red-700 font-bold text-3xl truncate mt-auto pt-4">{{ 'Rp. ' . number_format($chart['uang_keluar'], 0, ',', '.') }}</p>
                 </div>
             </div>
         </div>
@@ -57,9 +47,11 @@
 
 <!-- table kas & Bank -->
 <div class="card mt-10 p-5">
-    <div class="card-header">
+    <div class="card-header mb-5">
         <div class="flex justify-between items-center">
-            <h4 class="card-title">Kas & Bank</h4>
+            <div class="flex items-center gap-3">
+                <h4 class="card-title">Kas & Bank</h4>
+            </div>
             <button id="tambahKasBank" class="btn bg-primary text-white" data-fc-target="modalKasBank" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
                 Tambah Kas & Bank
             </button>
@@ -101,23 +93,20 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $counter + ($kas_bank->currentPage() - 1) * $kas_bank->perPage() }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->nama_akun }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">{{ $key->kode_akun }}</td>
-
-                                        @if (!empty($key->saldo))
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->saldo, 0, ".", ".") }}</td>
-                                        @else
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">0</td>
-                                        @endif
-
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->total_pemasukan ?? 0, 0, ".", ".") }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">Rp. 0</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->saldo_awal, 0, ".", ".") }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->debit ?? 0, 0, ".", ".") }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->kredit ?? 0, 0, ".", ".") }}</td>
 
                                         <!-- Perhitungan Saldo Akhir -->
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">Rp. 0</td>
+                                        @php 
+                                            $saldo_akhir = $key->saldo_awal + $key->debit - $key->kredit;
+                                        @endphp
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($saldo_akhir ?? 0, 0, ".", ".") }}</td>
                                         @csrf
                                         @method('DELETE')
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('kasdanbank.destroy', $key->id_kas_bank) }}" data-confirm-delete="true" class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white"><i class="mgc_delete_2_line"></i></a>
-                                            <button type="button" data-id="{{ $key->id_kas_bank }}" class="edit btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white" data-fc-target="modalKasBank" data-fc-type="modal" data-fc-type="modal"><i class="mgc_edit_2_line"></i></button>
+                                            <a href="{{ route('kasdanbank.destroy', $key->id_akun) }}" data-confirm-delete="true" class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white"><i class="mgc_delete_2_line"></i></a>
+                                            <button type="button" data-id="{{ $key->id_akun }}" class="edit btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white" data-fc-target="modalKasBank" data-fc-type="modal" data-fc-type="modal"><i class="mgc_edit_2_line"></i></button>
                                         </td>
                                     </tr>
                                     @php $counter++; @endphp

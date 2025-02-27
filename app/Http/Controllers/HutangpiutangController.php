@@ -14,10 +14,18 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use RealRashid\SweetAlert\Facades\Alert;
 use Exception;
-
+use App\Repositories\JurnalRepository;
+use Illuminate\Support\Facades\Auth;
 
 class HutangpiutangController extends Controller
 {
+
+    protected $jurnalRepository;
+
+    public function __construct(JurnalRepository $jurnalRepository)
+    {
+        $this->jurnalRepository = $jurnalRepository;
+    }
 
     public function index(Request $request)
     {
@@ -225,6 +233,9 @@ class HutangpiutangController extends Controller
                 $hutangPiutang->status = 'Lunas';
                 $hutangPiutang->save();
             }
+
+            // Insert Jurnal
+            $this->jurnalRepository->storePembayaranHutangPiutang($pembayaran);
 
             DB::commit();
 
