@@ -37,15 +37,12 @@ Route::get('/', function () {
     if (Auth::check()) {
         // Jika role user owner
         if (Auth::user()->hasRole('owner')) {
-            // return redirect('/dashboard-owner');
-            echo "Berhasil Login Sebagai Owner";
+            return redirect('/dashboard-owner');
         }
 
         // Jika role user inviter
         if (Auth::user()->hasRole('inviter')) {
-            // return redirect('/dashboard');
-            echo "Berhasil Login Sebagai Inviter";
-
+            return redirect('/dashboard');
         }
 
         $user = Auth::user();
@@ -79,6 +76,26 @@ Route::group(['middleware' => ['guest']], function () {
     Route::post('/reset-password-process', [AuthController::class, 'reset_password']);
     Route::post('/register-process', [AuthController::class, 'register']);
     Route::post('/login-process', [AuthController::class, 'login']);
+});
+
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/waiting-permission', [PagesController::class, 'waiting_permission']);
+    Route::get('/daftar-paket', [PagesController::class, 'paket']);
+    Route::get('/checkout', [PagesController::class, 'checkout']);
+    Route::get('/payment-process', [SubscriptionController::class, 'store']);
+    Route::get('/pengaturan', [PagesController::class, 'settings']);
+    Route::get('/email/verify', [AuthController::class, 'email_verify'])->name('verification.notice');
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/settings-process', [AuthController::class, 'update_account']);
+});
+
+Route::group(['middleware' => ['role:owner', 'auth']], function () {
+    Route::prefix('dashboard-owner')->group(function () {
+        Route::get('/', [PagesController::class, 'dashboard_owner']);
+        Route::get('pendapatan', [PagesController::class, 'pendapatan_owner']);
+        Route::get('user-list', [PagesController::class, 'user_list']);
+        Route::get('detail/{id}', [PagesController::class, 'detail_langganan_user']);
+    });
 });
 
 Route::get('/join', [PagesController::class, 'join_from_afiliate']);

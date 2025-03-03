@@ -189,7 +189,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6'
+            'password' => 'required|min:5'
         ]);
 
         // Jika login berhasil
@@ -198,13 +198,14 @@ class AuthController extends Controller
 
             // Jika user memiliki role inviter
             if (Auth::user()->hasRole('inviter')) {
-                return redirect()->intended('/dashboard');
+                // return redirect()->intended('/dashboard');
+                echo "berhasil login inviter";
             }
 
             // Jika user memiliki role owner
             if (Auth::user()->hasRole('owner')) {
                 // return redirect()->intended('/dashboard-owner');
-                echo "berhasil login";
+                echo "berhasil login owner";
             }
 
             $user = User::where('id', Auth::user()->id)->first();

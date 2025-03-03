@@ -58,7 +58,7 @@
                 <h2 class="text-finre-teal text-3xl font-semibold mb-6 text-center">Login</h2>
                 
                 <!-- Login Form -->
-                <form action="{{ route('login') }}" method="POST">
+                <form method="POST" action="/login-process">
                     @csrf
                     <div class="mb-4">
                         <label for="email" class="block text-finre-teal mb-2">Email</label>
