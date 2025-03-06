@@ -59,7 +59,7 @@
             @if (auth()->user()->hasRole('inviter') || auth()->user()->can('penjualan') && \App\Models\Invites::where('email', auth()->user()->email)->where('status', 'accepted')->exists())
                 <li class="menu-item">
                     <a href="/penjualan" class="menu-link">
-                        <span class="menu-icon"><i class="mgc_home_3_line"></i></span>
+                        <span class="menu-icon"><i class="ti ti-report-money"></i></span>
                         <span class="menu-text"> Penjualan </span>
                     </a>
                 </li>
@@ -68,7 +68,7 @@
             @if (auth()->user()->hasRole('inviter') || auth()->user()->can('pengeluaran') && \App\Models\Invites::where('email', auth()->user()->email)->where('status', 'accepted')->exists())
                 <li class="menu-item">
                     <a href="/pengeluaran" class="menu-link">
-                        <span class="menu-icon"><i class="mgc_home_3_line"></i></span>
+                        <span class="menu-icon"><i class="ti ti-shopping-cart"></i></span>
                         <span class="menu-text"> Pengeluaran </span>
                     </a>
                 </li>
@@ -76,8 +76,8 @@
 
             @if (auth()->user()->hasRole('inviter') || auth()->user()->can('hutang-piutang') && \App\Models\Invites::where('email', auth()->user()->email)->where('status', 'accepted')->exists())
                 <li class="menu-item">
-                    <a href="/hutang-piutang" class="menu-link">
-                        <span class="menu-icon"><i class="mgc_home_3_line"></i></span>
+                    <a href="/hutangpiutang" class="menu-link">
+                        <span class="menu-icon"><i class="ti ti-chart-histogram"></i></span>
                         <span class="menu-text"> Hutang & Piutang </span>
                     </a>
                 </li>
@@ -85,8 +85,8 @@
 
             @if (auth()->user()->hasRole('inviter') || auth()->user()->can('kas-bank') && \App\Models\Invites::where('email', auth()->user()->email)->where('status', 'accepted')->exists())
                 <li class="menu-item">
-                    <a href="/kas-bank" class="menu-link">
-                        <span class="menu-icon"><i class="mgc_home_3_line"></i></span>
+                    <a href="/kasdanbank" class="menu-link">
+                        <span class="menu-icon"><i class="ti ti-wallet"></i></span>
                         <span class="menu-text"> Kas & Bank </span>
                     </a>
                 </li>
@@ -155,7 +155,7 @@
             @if (auth()->user()->hasRole('inviter') || auth()->user()->can('laporan') && \App\Models\Invites::where('email', auth()->user()->email)->where('status', 'accepted')->exists())
             <li class="menu-item">
                 <a href="javascript:void(0)" data-fc-type="collapse" class="menu-link fc-collapse">
-                    <span class="menu-icon"><i class="ti ti-database-cog"></i></span>
+                    <span class="menu-icon"><i class="mgc_chart_bar_line"></i></span>
                     <span class="menu-text"> Laporan </span>
                     <span class="menu-arrow"></span>
                 </a>
@@ -212,27 +212,36 @@
             </li>
             @endif
 
-            @if (auth()->user()->hasRole('inviter'))
-                <li class="menu-item">
-                    <a href="/paket-setting" class="menu-link">
-                        <span class="menu-icon"><i class="mgc_box_3_line"></i></span>
-                        <span class="menu-text"> Paket </span>
-                    </a>
-                </li>
-            @elseif(\App\Models\Invites::where('email', auth()->user()->email)->where('status', '!=', 'accepted')->exists() || !\App\Models\Invites::where('email', auth()->user()->email)->exists() && !auth()->user()->hasRole('owner'))
-                <li class="menu-item">
-                    <a href="/daftar-paket" class="menu-link">
-                        <span class="menu-icon"><i class="mgc_box_3_line"></i></span>
-                        <span class="menu-text"> Daftar Paket </span>
-                    </a>
-                </li>
-            @endif
-            
             <li class="menu-item">
-                <a href="javascript:void(0)" class="menu-link">
+                <a href="javascript:void(0)" data-fc-type="collapse" class="menu-link fc-collapse">
                     <span class="menu-icon"><i class="ti ti-settings"></i></span>
                     <span class="menu-text"> Pengaturan </span>
+                    <span class="menu-arrow"></span>
                 </a>
+
+                <ul class="sub-menu hidden" style="">
+                    @if (auth()->user()->hasRole('inviter'))
+                    <li class="menu-item">
+                        <a href="/paket-setting" class="menu-link">
+                            <!-- <span class="menu-icon"><i class="mgc_box_3_line"></i></span> -->
+                            <span class="menu-text"> Paket </span>
+                        </a>
+                    </li>
+                    @elseif(\App\Models\Invites::where('email', auth()->user()->email)->where('status', '!=', 'accepted')->exists() || !\App\Models\Invites::where('email', auth()->user()->email)->exists() && !auth()->user()->hasRole('owner'))
+                    <li class="menu-item">
+                        <a href="/daftar-paket" class="menu-link">
+                            <!-- <span class="menu-icon"><i class="mgc_box_3_line"></i></span> -->
+                            <span class="menu-text"> Daftar Paket </span>
+                        </a>
+                    </li>
+                    @endif
+
+                    <li class="menu-item">
+                        <a href="/pengaturan" class="menu-link">
+                            <span class="menu-text">Setting Profil</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
         </ul>
