@@ -138,7 +138,6 @@ Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permissio
 });
 
 Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permission:inviter|pajak']], function () {
-    Route::resource('/pajak', PajakController::class);
     Route::get('/pajak/ppn', [PajakController::class, 'ppn'])->name('pajak.ppn');
     Route::get('/pajak/pph', [PajakController::class, 'pph'])->name('pajak.pph');
     Route::get('/pajak/ppnbm', [PajakController::class, 'ppnbm'])->name('pajak.ppnbm');
@@ -151,7 +150,6 @@ Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permissio
 });
 
 Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permission:inviter|aset']], function () {
-    Route::resource('/asset', AssetController::class);
     Route::get('/get-asset-data/{id}', [AssetController::class, 'getAssetData']);
     Route::post('/penjualan-asset/store', [AssetController::class, 'store_penjualan'])->name('penjualan-asset.store');
     Route::get('/get-asset-detail/{id}', [AssetController::class, 'getAssetDetail']);

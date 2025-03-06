@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="p-6">
-            <form action="{{ route('asset.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="/penjualan-asset/store" method="POST" enctype="multipart/form-data">
                 @csrf
                     <!-- row pertama -->
                     <div class="grid grid-cols-3 gap-4">
