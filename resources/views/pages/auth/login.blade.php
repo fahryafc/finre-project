@@ -53,7 +53,7 @@
                     </form>
 
                     <p class="text-gray-500 dark:text-gray-400 text-center">Don't have an account ?<a
-                            href="" class="text-primary ms-1"><b>Register</b></a>
+                            href="/register" class="text-primary ms-1"><b>Register</b></a>
                     </p>
                 </div>
             </div>
