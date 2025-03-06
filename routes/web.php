@@ -191,6 +191,10 @@ Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permissio
 // route jurnal
 Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permission:inviter|laporan']], function () {
     Route::get('/jurnal', [JurnalController::class, 'index'])->name('jurnal.index');
+    Route::get('/aruskas', [JurnalController::class, 'aruskas'])->name('aruskas.index');
+    Route::get('/neraca', [JurnalController::class, 'neraca'])->name('neraca.index');
+    Route::get('/labarugi', [JurnalController::class, 'labarugi'])->name('labarugi.index');
+    Route::get('/jurnal', [JurnalController::class, 'index'])->name('jurnal.index');
     Route::get('/jurnal/detail/{id}/{code}', [JurnalController::class, 'detail'])->name('jurnal.detail');
     Route::get('/jurnal/export-pdf', [JurnalController::class, 'exportToPDF'])->name('jurnal.export.pdf');
     Route::get('/jurnal/export-excel', [JurnalController::class, 'exportToExcel'])->name('jurnal.export.excel');
