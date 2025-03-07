@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\EmailVerification;
+use App\Models\User;
 use App\Models\Invites;
 use App\Models\PhoneNumber;
 use App\Models\ReferalUser;
-use App\Models\User;
 use App\Models\UserProfile;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Str;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
+use App\Jobs\EmailVerification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
@@ -46,6 +47,32 @@ class AuthController extends Controller
         $user->user_profile()->create([
             'nomor_hp' => $request->phone
         ]);
+
+        Subscription::create([
+            'user_id' => $user->id,
+            'nama_paket' => 'Free Trial',
+            'max_invite' => 0,
+            'starts_at' => now(),
+            'ends_at' => now()->addHours(24),
+            'status' => 'active'
+        ]);
+
+        $permission = [
+            'dashboard',
+            'penjualan',
+            'pengeluaran',
+            'hutang-piutang',
+            'kas-bank',
+            'pajak',
+            'produk-inventori',
+            'aset',
+            'laporan',
+            'kontak',
+            'akun',
+            'modal'
+        ];
+
+        $user->givePermissionTo($permission);
 
         // Jika ada referal code dalam session, maka kirim request ke API Referal
         if (session()->has('referal_code')) {
@@ -185,64 +212,51 @@ class AuthController extends Controller
         return redirect()->back();
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:5'
-        ]);
+public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|min:5'
+    ]);
 
-        // Jika login berhasil
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember_me ? true : false)) {
-            $request->session()->regenerate();
+    if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember_me)) {
+        $request->session()->regenerate();
 
-            // Jika user memiliki role inviter
-            if (Auth::user()->hasRole('inviter')) {
-                // return redirect()->intended('/dashboard');
-                echo "berhasil login inviter";
-            }
+        $user = Auth::user(); // Simpan dalam variabel agar tidak memanggil berkali-kali
+        $redirectTo = '/daftar-paket'; // Default redirect jika tidak ada kondisi yang terpenuhi
 
-            // Jika user memiliki role owner
-            if (Auth::user()->hasRole('owner')) {
-                // return redirect()->intended('/dashboard-owner');
-                echo "berhasil login owner";
-            }
+        if ($user->hasRole('inviter')) {
+            $redirectTo = '/dashboard';
+        } elseif ($user->hasRole('owner')) {
+            $redirectTo = '/dashboard-owner';
+        } else {
+            // Cek apakah user diundang
+            $invite_status = Invites::where('email', $user->email)->where('status', 'accepted')->exists();
 
-            $user = User::where('id', Auth::user()->id)->first();
-            $invite_status = Invites::where('email', $user->email)->where('status', 'accepted')->first();
-
-            // Jika user terinvie
             if ($invite_status) {
-                // JIka user memiliki permission
-                if (count($user->permissions) > 0) {
-                    return redirect()->intended('/' . $user->permissions->toArray()[0]['name']);
-                }
-
-                return redirect()->intended('/waiting-permission'); // Jika user belum memiliki permission
+                // Cek apakah user memiliki permission
+                $permission = $user->permissions->first(); // Lazy loading
+                $redirectTo = $permission ? '/' . $permission->name : '/waiting-permission';
             }
-
-            $check_referal = ReferalUser::where('user_id', Auth::user()->id)->exists();
-
-            // Jika ada referal code dalam session
-            if (session()->has('referal_code')) {
-                // Jika referal code tidak ada di database, maka simpan referal code ke database
-                if (!$check_referal) {
-                    ReferalUser::create([
-                        'user_id' => Auth::user()->id,
-                        'referal' => session('referal_code'),
-                    ]);
-                }
-
-                session()->forget('referal_code'); // Hapus referal code dari session
-            }
-
-            return redirect()->intended('/daftar-paket'); // jika user belum terinvite dan proses diatas sudah lewat, maka arahkan ke halaman daftar paket
         }
 
-        return back()->withErrors([
-            'email' => 'Email or password is wrong',
-        ])->onlyInput('email');
+        // Cek apakah ada referal code dalam session
+        if (session()->has('referal_code') && !ReferalUser::where('user_id', $user->id)->exists()) {
+            ReferalUser::create([
+                'user_id' => $user->id,
+                'referal' => session('referal_code'),
+            ]);
+
+            session()->forget('referal_code'); // Hapus session setelah digunakan
+        }
+
+        return redirect()->intended($redirectTo);
     }
+
+    return back()->withErrors([
+        'email' => 'Email or password is wrong',
+    ])->onlyInput('email');
+}
 
     public function forget_password(Request $request)
     {

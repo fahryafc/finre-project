@@ -36,7 +36,9 @@ class InvitesController extends Controller
     public function store(Request $request)
     {
         // Cek subscription user
-        $subsription = Subscription::where('user_id', Auth::id())->where('status', 'active')->first();
+        $subsription = Subscription::where('user_id', Auth::id())
+            ->where('status', 'active')
+            ->first();
 
         // Cek user yang diinvite
         $checkUser = User::where('email', $request->email)->first();
@@ -48,11 +50,17 @@ class InvitesController extends Controller
             return redirect()->back();
         }
 
-        // Jika user yang diinvite sudah memiliki role inviter, sudah meng acc permintaan sebelumnya atau memiliki permission, maka tidak bisa diinvite
-        if ($checkUser->hasRole('inviter') || count($checkUser->permissions) > 0 || Invites::where('email', $request->email)->where('status', 'accepted')->exists()) {
-            alert()->warning('Failed', 'User already has a role as inviter, has permissions or has accepted other invitation');
+        if (Subscription::where('user_id', $checkUser->id)->where('nama_paket', 'Free Trial')->where('status', 'active')->orWhere('status', 'expired')->exists()) {
+            foreach ($checkUser->getPermissionNames() as $permission) {
+                $checkUser->revokePermissionTo($permission);
+            }
+        } else {
+            // Jika user yang diinvite sudah memiliki role inviter, sudah meng acc permintaan sebelumnya atau memiliki permission, maka tidak bisa diinvite
+            if ($checkUser->hasRole('inviter') || count($checkUser->permissions) > 0 || Invites::where('email', $request->email)->where('status', 'accepted')->exists()) {
+                alert()->warning('Failed', 'User already has a role as inviter, has permissions or has accepted other invitation');
 
-            return redirect()->back();
+                return redirect()->back();
+            }
         }
 
         // Jika jumlah invite yang sudah dikirim lebih dari atau sama dengan maksimal invite yang diperbolehkan, maka tidak bisa menginvite
@@ -137,6 +145,15 @@ class InvitesController extends Controller
     public function update(Request $request, Invites $invites, $invitation_id)
     {
         $find = $invites->find($invitation_id); // Get invitation
+
+        $user = User::find(Auth::user()->id); // Get user
+
+        foreach ($user->getPermissionNames() as $permission) {
+            $user->revokePermissionTo($permission);
+        }
+
+        Subscription::where('user_id', $user->id)
+            ->update(['status' => 'expired']);
 
         $find->update([
             'status' => $request->status,

@@ -117,7 +117,7 @@ class SubscriptionController extends Controller
                 Invites::where('email', Auth::user()->email)->delete();
             }
 
-            // Jika user pernah atau ada menjadi member
+            // Jika subscriptions sebelumnya memiliki member, maka aktifkan lagi para anggota member
             if (Invites::where('subscription_id', $checkSubscription->id)->exists()) {
                 Invites::where('subscription_id', $checkSubscription->id)
                     ->where('status', 'inactive')
