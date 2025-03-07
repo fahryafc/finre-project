@@ -212,51 +212,51 @@ class AuthController extends Controller
         return redirect()->back();
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6'
-        ]);
+public function login(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|min:5'
+    ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember_me)) {
-            $request->session()->regenerate();
+    if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember_me)) {
+        $request->session()->regenerate();
 
-            $user = Auth::user(); // Simpan dalam variabel agar tidak memanggil berkali-kali
-            $redirectTo = '/daftar-paket'; // Default redirect jika tidak ada kondisi yang terpenuhi
+        $user = Auth::user(); // Simpan dalam variabel agar tidak memanggil berkali-kali
+        $redirectTo = '/daftar-paket'; // Default redirect jika tidak ada kondisi yang terpenuhi
 
-            if ($user->hasRole('inviter')) {
-                $redirectTo = '/dashboard';
-            } elseif ($user->hasRole('owner')) {
-                $redirectTo = '/dashboard-owner';
-            } else {
-                // Cek apakah user diundang
-                $invite_status = Invites::where('email', $user->email)->where('status', 'accepted')->exists();
+        if ($user->hasRole('inviter')) {
+            $redirectTo = '/dashboard';
+        } elseif ($user->hasRole('owner')) {
+            $redirectTo = '/dashboard-owner';
+        } else {
+            // Cek apakah user diundang
+            $invite_status = Invites::where('email', $user->email)->where('status', 'accepted')->exists();
 
-                if ($invite_status) {
-                    // Cek apakah user memiliki permission
-                    $permission = $user->permissions->first(); // Lazy loading
-                    $redirectTo = $permission ? '/' . $permission->name : '/waiting-permission';
-                }
+            if ($invite_status) {
+                // Cek apakah user memiliki permission
+                $permission = $user->permissions->first(); // Lazy loading
+                $redirectTo = $permission ? '/' . $permission->name : '/waiting-permission';
             }
-
-            // Cek apakah ada referal code dalam session
-            if (session()->has('referal_code') && !ReferalUser::where('user_id', $user->id)->exists()) {
-                ReferalUser::create([
-                    'user_id' => $user->id,
-                    'referal' => session('referal_code'),
-                ]);
-
-                session()->forget('referal_code'); // Hapus session setelah digunakan
-            }
-
-            return redirect()->intended($redirectTo);
         }
 
-        return back()->withErrors([
-            'email' => 'Email or password is wrong',
-        ])->onlyInput('email');
+        // Cek apakah ada referal code dalam session
+        if (session()->has('referal_code') && !ReferalUser::where('user_id', $user->id)->exists()) {
+            ReferalUser::create([
+                'user_id' => $user->id,
+                'referal' => session('referal_code'),
+            ]);
+
+            session()->forget('referal_code'); // Hapus session setelah digunakan
+        }
+
+        return redirect()->intended($redirectTo);
     }
+
+    return back()->withErrors([
+        'email' => 'Email or password is wrong',
+    ])->onlyInput('email');
+}
 
     public function forget_password(Request $request)
     {

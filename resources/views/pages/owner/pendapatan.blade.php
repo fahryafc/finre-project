@@ -1,0 +1,138 @@
+@extends('layouts.default')
+
+@section('content')
+    <div class="grid grid-cols-12 gap-2">
+        <div class="xl:col-span-3 sm:col-span-6 col-span-12">
+            <div class="h-full p-3 space-y-2 bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
+                <img src="{{ asset('images/salary.png') }}" alt="group" class="block mx-auto w-20">
+                <div>
+                    <h1 class="text-center text-xl">Rp {{ number_format($data['total_pendapatan'], 0, ',', '.') }}</h1>
+                    <h2 class="text-center text-xl">Total Pendapatan</h2>
+                </div>
+            </div>
+        </div>
+        <div class="xl:col-span-3 sm:col-span-6 col-span-12">
+            <div class="h-full p-3 bg-white space-y-2 dark:bg-gray-800 rounded border dark:border-gray-700">
+                <img src="{{ asset('images/income.png') }}" alt="group" class="block mx-auto w-20">
+                <div>
+                    <h1 class="text-center text-xl">Rp {{ number_format($data['pendapatan_personal'], 0, ',', '.') }}</h1>
+                    <h2 class="text-center text-xl">Pendapatan Personal</h2>
+                </div>
+            </div>
+        </div>
+        <div class="xl:col-span-3 sm:col-span-6 col-span-12">
+            <div class="h-full p-3 bg-white space-y-2 dark:bg-gray-800 rounded border dark:border-gray-700">
+                <img src="{{ asset('images/income.png') }}" alt="group" class="block mx-auto w-20">
+                <div>
+                    <h1 class="text-center text-xl">Rp {{ number_format($data['pendapatan_business'], 0, ',', '.') }}</h1>
+                    <h2 class="text-center text-xl">Pendapatan Business</h2>
+                </div>
+            </div>
+        </div>
+        <div class="xl:col-span-3 sm:col-span-6 col-span-12">
+            <div class="h-full p-3 bg-white space-y-2 dark:bg-gray-800 rounded border dark:border-gray-700">
+                <img src="{{ asset('images/income.png') }}" alt="group" class="block mx-auto w-20">
+                <div>
+                    <h1 class="text-center text-xl">Rp {{ number_format($data['pendapatan_enterprise'], 0, ',', '.') }}</h1>
+                    <h2 class="text-center text-xl">Pendapatan Enterprise</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overflow-x-auto mt-5">
+        <div class="min-w-full inline-block align-middle bg-white dark:bg-gray-800">
+            <div class="border rounded-lg divide-y divide-gray-200 dark:border-gray-700 dark:divide-gray-700">
+                <div class="flex justify-between items-end py-3 px-4">
+                    <form action="/dashboard-owner/pendapatan" class="flex items-center gap-3" method="POST" autocomplete="off">
+                        @csrf
+                        @method("GET")
+                        <div class="relative max-w-xs">
+                            <label for="table-with-pagination-search" class="sr-only">Search</label>
+                            <input type="search" name="keyword" value="{{ request()->keyword ?? '' }}" id="table-with-pagination-search" class="form-input ps-11" placeholder="Search for names">
+                            <div class="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-4">
+                                <svg class="h-3.5 w-3.5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" >
+                                </svg>
+                            </div>
+                        </div>
+                        @if (request()->keyword)
+                            <a href="/dashboard-owner/pendapatan" class="px-4 py-2 text-sm font-medium text-white bg-rose-600 border border-transparent rounded-md shadow-sm hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">Reset</a>
+                        @endif
+                    </form>
+                    <form action="/dashboard-owner/pendapatan" autocomplete="off" method="POST" class="flex items-end gap-2">
+                        @csrf
+                        @method("GET")
+                        <div>
+                            <label for="">From</label>
+                            <input type="date" value="{{ request()->from ?? '' }}" name="from" class="form-input">
+                        </div>
+                        <div>
+                            <label for="">To</label>
+                            <input type="date" value="{{ request()->to ?? '' }}" name="to" class="form-input">
+                        </div>
+                        @if (request()->from || request()->to || request()->filter)
+                            <a href="/dashboard-owner/pendapatan" class="px-4 py-2 text-sm font-medium text-white bg-rose-600 border border-transparent rounded-md shadow-sm hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500">Reset</a>
+                        @endif
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-teal-600 border border-transparent rounded-md shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">Filter</button>
+                    </form>
+                </div>
+                <div class="overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registrasi</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. HP</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Paket</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            @if ($data['all_user']->isEmpty())
+                                <tr>
+                                    <td colspan="9" class="text-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Data kosong</td>
+                                </tr>
+                            @endif
+                            @foreach ($data['all_user'] as $index => $item)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $data['all_user']->firstItem() + $index }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                                        {{ \Carbon\Carbon::parse($item->subscription_updated_at)->format('d-m-Y') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                                        {{ $item->name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                                        {{ $item->email }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                                        {{ $item->nomor_hp }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                                        {{ Str::title($item->nama_paket) ?? "-" }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                                        Rp {{ number_format($item->harga, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                                        <span @class(['text-red-600' => $item->payment_status == 'failed', 'text-green-600' => $item->payment_status == 'success'])>
+                                            {{ Str::title($item->payment_status) ?? "-" }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="py-1 px-4">
+                    {{ $data['all_user']->appends(request()->input())->links() }}
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
