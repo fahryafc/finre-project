@@ -40,7 +40,7 @@
             <div class="absolute top-0 left-0 bottom-0 w-24 bg-finre-light rounded-r-full"></div>
             
             <!-- Register Card -->
-            <div class="w-11/12 max-w-md bg-white rounded-lg shadow-lg p-8 z-10">
+            <div class="w-11/12 max-w-md bg-white rounded-lg shadow-lg p-5 z-10">
                 <!-- Logo -->
                 <div class="flex flex-col items-center">
                     <div class="mb-1">
@@ -50,38 +50,38 @@
                 </div>
 
                 @if ($errors->any())
-                    <div class="flex flex-col items-center mb-8">
+                    <div class="flex flex-col items-center m-8">
                         <div class="text-red-500 text-sm tracking-wide">{{ $errors->first() }}</div>
                     </div>
                 @endif
 
                 <!-- Register Header -->
-                <h2 class="text-finre-teal text-3xl font-semibold mb-6 text-center">Register</h2>
+                <h2 class="text-finre-teal text-3xl font-semibold mt-3 mb-3 text-center">Register</h2>
                 
                 <!-- Register Form -->
                 <form method="POST" action="/register-process">
                     @csrf
                     <div class="mb-4">
                         <label for="fullname" class="block text-finre-teal mb-2">Full Name</label>
-                        <input type="text" id="name" name="name" placeholder="Masukkan Full Name"  class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                        <input type="text" id="name" name="name" placeholder="Masukkan Full Name"  class="w-full p-2 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
                     </div>
 
                     <div class="mb-4">
                         <label for="email" class="block text-finre-teal mb-2">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Masukkan Email"  class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                        <input type="email" id="email" name="email" placeholder="Masukkan Email"  class="w-full p-2 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
                     </div>
 
                     <div class="mb-4">
                         <label for="phone" class="block text-finre-teal mb-2">Phone</label>
-                        <input type="tel" id="phone" name="phone" placeholder="Masukkan No Hp"  class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                        <input type="tel" id="phone" name="phone" placeholder="Masukkan No Hp"  class="w-full p-2 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
                     </div>
                     
                     <div class="mb-6 relative">
                         <label for="password" class="block text-finre-teal mb-2">Password</label>
                         <div class="relative">
-                            <input type="password" id="password" name="password" placeholder="Masukkan Password" class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                            <input type="password" id="password" name="password" placeholder="Masukkan Password" class="w-full p-2 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
                             <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-3 flex items-center text-gray-600">
-                                <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                                <i id="eyeIcon" class="fa-solid fa-eye-slash"></i>
                             </button>
                         </div>
                     </div>
@@ -103,12 +103,12 @@
 
             if (passwordField.type === "password") {
                 passwordField.type = "text";
-                eyeIcon.classList.remove("fa-eye");
-                eyeIcon.classList.add("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+                eyeIcon.classList.remove("fa-eye-slash");
             } else {
                 passwordField.type = "password";
-                eyeIcon.classList.remove("fa-eye-slash");
-                eyeIcon.classList.add("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+                eyeIcon.classList.remove("fa-eye");
             }
         }
     </script>
