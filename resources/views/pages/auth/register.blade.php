@@ -3,78 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Register</title>
-    @include('layouts.shared/head-css')
+    <title>FINRE - Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'finre-teal': '#2a7d8c',
+                        'finre-light': '#e6f0f3',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
 <body>
-    <div class="bg-gradient-to-r from-rose-100 to-teal-100 dark:from-gray-700 dark:via-gray-900 dark:to-black">
-        <div class="h-screen w-screen flex justify-center items-center">
-            <div class="2xl:w-1/4 lg:w-1/3 md:w-1/2 w-full">
-                <div class="card overflow-hidden sm:rounded-md rounded-none">
-                    <div class="p-6 space-y-3">
-                        <div class="block mb-4">
-                            <img class="h-10 block" src="{{ asset('images/brands/logo.png') }}" alt="">
-                        </div>
-                        @if ($errors->any())
-                            <div class="bg-red-500 text-sm text-white rounded-md p-4" role="alert">
-                                <ul class="list-disc ps-4">
-                                    @foreach ($errors->all() as $item)
-                                        <li>{{ $item }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        <form action="/register-process" method="POST" autocomplete="off">
-                            @csrf
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-600 dark:text-gray-200 mb-2" for="LoggingEmailAddress">Full Name</label>
-                                <input id="LoggingEmailAddress" name="name" class="form-input" value="{{ old('name') }}" type="text" placeholder="Enter your Name" required>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-600 dark:text-gray-200 mb-2" for="LoggingEmailAddress">Email Address</label>
-                                <input id="LoggingEmailAddress" name="email" class="form-input" value="{{ old('email') }}" type="email" placeholder="Enter your email" required>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-600 dark:text-gray-200 mb-2" for="LoggingPhone">Phone</label>
-                                <input id="LoggingPhone" name="phone" class="form-input" value="{{ old('phone') }}" type="tel" placeholder="Enter your phone" required>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-600 dark:text-gray-200 mb-2" for="loggingPassword">Password</label>
-                                <div class="flex items-center">
-                                    <input id="loggingPassword" class="form-input rounded-e-none" name="password" type="password" placeholder="Enter your password" required>
-                                    <button id="toggle-password" class="rounded-e p-2 bg-slate-500 w-10" type="button">
-                                        <i class="mgc_eye_2_fill text-lg text-white m-0 p-0"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="flex items-center">
-                                    <input type="checkbox" class="form-checkbox rounded" id="checkbox-signup" required>
-                                    <label class="ms-2 text-slate-900 dark:text-slate-200" for="checkbox-signup">I accept <a
-                                            href="#" class="text-gray-400 underline">Terms and Conditions</a></label>
-                                </div>
-                            </div>
-                            <div class="flex justify-center mb-6">
-                                <button type="submit" class="btn w-full text-white bg-primary"> Register</button>
-                            </div>
-                        </form>
-                        <p class="text-gray-500 dark:text-gray-400 text-center">Already have account ?
-                            <a href="/login" class="text-primary ms-1"><b>Log In</b></a>
-                        </p>
+    <div class="flex h-screen w-full bg-white relative overflow-hidden">
+        <!-- Left Content Area with Illustration -->
+        <div class="hidden md:flex md:w-3/5 items-center justify-center relative">
+            <div class="max-w-2xl z-10">
+                <img src="{{ asset('images/bg-login.png') }}" alt="Financial Reporting Illustration" class="w-full">
+            </div>
+        </div>
+
+        <!-- Right Side - Register Form -->
+        <div class="w-full md:w-2/5 bg-finre-teal flex items-center justify-center relative">
+            <!-- Curved Shape Overlay -->
+            <div class="absolute top-0 left-0 bottom-0 w-24 bg-finre-light rounded-r-full"></div>
+            
+            <!-- Register Card -->
+            <div class="w-11/12 max-w-md bg-white rounded-lg shadow-lg p-8 z-10">
+                <!-- Logo -->
+                <div class="flex flex-col items-center">
+                    <div class="mb-1">
+                        <img src="{{ asset('images/finre.png') }}" alt="FINRE Financial Reporting" class="h-10">
                     </div>
+                    <div class="text-gray-500 text-sm tracking-wide">FINANCIAL REPORTING</div>
                 </div>
+
+                @if ($errors->any())
+                    <div class="flex flex-col items-center mb-8">
+                        <div class="text-red-500 text-sm tracking-wide">{{ $errors->first() }}</div>
+                    </div>
+                @endif
+
+                <!-- Register Header -->
+                <h2 class="text-finre-teal text-3xl font-semibold mb-6 text-center">Register</h2>
+                
+                <!-- Register Form -->
+                <form method="POST" action="/register-process">
+                    @csrf
+                    <div class="mb-4">
+                        <label for="fullname" class="block text-finre-teal mb-2">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Masukkan Full Name"  class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="email" class="block text-finre-teal mb-2">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Masukkan Email"  class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="phone" class="block text-finre-teal mb-2">Phone</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Masukkan No Hp"  class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                    </div>
+                    
+                    <div class="mb-6 relative">
+                        <label for="password" class="block text-finre-teal mb-2">Password</label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" placeholder="Masukkan Password" class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-3 flex items-center text-gray-600">
+                                <i id="eyeIcon" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-finre-teal text-white py-3 rounded-md hover:bg-finre-teal/90 transition-colors duration-200"> Daftar </button>
+                    
+                    <div class="text-center mt-4 text-sm text-gray-600">
+                        Sudah punya akun? <a href="/login" class="text-finre-teal">Login</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    @vite(['resources/js/app.js'])
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
     <script>
-        $(document).ready(function () {
-            $("#toggle-password").click(function () {
-                $("#loggingPassword").attr('type') === 'password' ? $('#loggingPassword').attr('type', 'text') : $('#loggingPassword').attr('type', 'password');
-            })
-        })
+        function togglePassword() {
+            const passwordField = document.getElementById("password");
+            const eyeIcon = document.getElementById("eyeIcon");
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
     </script>
 </body>
 </html>

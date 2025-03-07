@@ -6,6 +6,7 @@
     <title>FINRE - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
         tailwind.config = {
             theme: {
@@ -62,14 +63,19 @@
                     @csrf
                     <div class="mb-4">
                         <label for="email" class="block text-finre-teal mb-2">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Masukkan Email"  class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30"
-                        >
+                        <input type="email" id="email" name="email" placeholder="Masukkan Email" class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
                     </div>
                     
-                    <div class="mb-6">
+                    <!-- Password Input dengan Icon -->
+                    <div class="mb-6 relative">
                         <label for="password" class="block text-finre-teal mb-2">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Masukkan Password" class="w-full p-3 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30"
-                        >
+                        <div class="relative">
+                            <input type="password" id="password" name="password" placeholder="Masukkan Password" 
+                                class="w-full p-3 pr-12 bg-finre-light/50 rounded-md focus:outline-none focus:ring-2 focus:ring-finre-teal/30">
+                            <span id="togglePassword" class="absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer text-gray-500">
+                                <i class="fas fa-eye-slash text-lg"></i>
+                            </span>
+                        </div>
                     </div>
                     
                     <button type="submit" class="w-full bg-finre-teal text-white py-3 rounded-md hover:bg-finre-teal/90 transition-colors duration-200"> Login </button>
@@ -81,5 +87,23 @@
             </div>
         </div>
     </div>
+
+    <!-- Script untuk Toggle Password -->
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function() {
+            let passwordInput = document.getElementById("password");
+            let icon = this.querySelector("i");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            }
+        });
+    </script>
 </body>
 </html>
