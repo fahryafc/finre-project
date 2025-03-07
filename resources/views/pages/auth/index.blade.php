@@ -58,7 +58,7 @@
                 <h2 class="text-finre-teal text-3xl font-semibold mb-6 text-center">Login</h2>
                 
                 <!-- Login Form -->
-                <form action="{{ route('login') }}" method="POST">
+                <form method="POST" action="/login-process">
                     @csrf
                     <div class="mb-4">
                         <label for="email" class="block text-finre-teal mb-2">Email</label>
@@ -75,7 +75,7 @@
                     <button type="submit" class="w-full bg-finre-teal text-white py-3 rounded-md hover:bg-finre-teal/90 transition-colors duration-200"> Login </button>
                     
                     <div class="text-center mt-4 text-sm text-gray-600">
-                        Belum punya akun? <a href="#" class="text-finre-teal">Register</a>
+                        Belum punya akun? <a href="/register" class="text-finre-teal">Register</a>
                     </div>
                 </form>
             </div>

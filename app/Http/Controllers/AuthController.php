@@ -21,6 +21,7 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        // Test
         $message = [
             'required' => 'The :attribute field is required.',
             'email' => 'The :attribute must be a valid email address.',
@@ -216,22 +217,25 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6'
+            'password' => 'required|min:5'
         ]);
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $request->remember_me)) {
             $request->session()->regenerate();
 
-            $user = Auth::user(); // Simpan dalam variabel agar tidak memanggil berkali-kali
-            $redirectTo = '/daftar-paket'; // Default redirect jika tidak ada kondisi yang terpenuhi
+            // Jika user memiliki role inviter
+            if (Auth::user()->hasRole('inviter')) {
+                return redirect()->intended('/dashboard');
+            }
 
-            if ($user->hasRole('inviter')) {
-                $redirectTo = '/dashboard';
-            } elseif ($user->hasRole('owner')) {
-                $redirectTo = '/dashboard-owner';
-            } else {
-                // Cek apakah user diundang
-                $invite_status = Invites::where('email', $user->email)->where('status', 'accepted')->exists();
+            // Jika user memiliki role owner
+            if (Auth::user()->hasRole('owner')) {
+                // return redirect()->intended('/dashboard-owner');
+                echo "berhasil login";
+            }
+
+            $user = User::where('id', Auth::user()->id)->first();
+            $invite_status = Invites::where('email', $user->email)->where('status', 'accepted')->first();
 
                 if ($invite_status) {
                     // Cek apakah user memiliki permission
