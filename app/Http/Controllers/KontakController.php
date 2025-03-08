@@ -62,7 +62,7 @@ class KontakController extends Controller
 
         try {
             Kontak::create($request->all());
-            return redirect()->route('kontak.index')->with('success', 'Kontak berhasil ditambahkan');
+            return redirect()->back()->with('success', 'Kontak berhasil ditambahkan');
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Gagal menambahkan kontak: ' . $e->getMessage());
         }
