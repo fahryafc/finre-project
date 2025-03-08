@@ -85,7 +85,12 @@ class PengeluaranController extends Controller
 
             foreach ($getKategoriPembayaran as $key => $value) {
                 array_push($categoryList, $value->kategori);
-                $count = ($value->total / $totalBiayaKategori) * 100;
+                // Cek apakah totalBiayaKategori tidak nol
+                if ($totalBiayaKategori != 0) {
+                    $count = ($value->total / $totalBiayaKategori) * 100;
+                } else {
+                    $count = 0;
+                }
                 array_push($categoryValue, round($count, 2));
             }
 
@@ -155,7 +160,7 @@ class PengeluaranController extends Controller
             $kategori = DB::table('kategori')->get();
             $karyawanKontak = DB::table('kontak')->where('jenis_kontak', '=', 'karyawan')->get();
             $vendorKontak = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
-            $akun_pemasukan = DB::table('akun')->whereIn('id_kategori_akun', ['1','2','5'])->get();
+            $akun_pemasukan = DB::table('akun')->whereIn('id_kategori_akun', ['1', '2', '5'])->get();
 
             // dd($pengeluaran);
 
@@ -267,7 +272,7 @@ class PengeluaranController extends Controller
         // Cek jika data pengeluaran berhasil disimpan
         if ($data_pengeluaran) {
             // Cari akun kas_bank berdasarkan kode_akun (akun_pembayaran)
-            $kas_bank = Akun::where('type','Kas & Bank')->where('kode_akun', $data_pengeluaran->akun_pembayaran)->first();
+            $kas_bank = Akun::where('type', 'Kas & Bank')->where('kode_akun', $data_pengeluaran->akun_pembayaran)->first();
 
             // Jika akun ditemukan, tambahkan data ke tabel arus_uang
             if ($kas_bank) {
@@ -529,11 +534,11 @@ class PengeluaranController extends Controller
 
             // Delete Jurnal
             $prefix = Pengeluaran::CODE_JURNAL;
-            $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $pengeluaran->id_pengeluaran)->first();
+            $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $pengeluaran->id_pengeluaran)->first();
             if ($jurnal) {
                 $this->jurnalRepository->delete($jurnal->id_jurnal);
             }
-            
+
             $pengeluaran->delete();
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('pengeluaran.index');

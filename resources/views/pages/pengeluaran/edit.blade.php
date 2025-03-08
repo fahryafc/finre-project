@@ -93,7 +93,7 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div class="mb-3">
                             <label for="biaya" class="text-gray-800 text-sm font-medium inline-block mb-2">Biaya</label>
-                            <input type="text" class="form-input" id="biaya" name="biaya" aria-describedby="biaya" placeholder="Masukan Biaya" value="{{ 'Rp. '.number_format(old('biaya', $pengeluaran->biaya, 0, '.', '.')) }}">
+                            <input type="text" class="form-input" id="biaya" name="biaya" aria-describedby="biaya" placeholder="Masukan Biaya" value="{{ 'Rp. '.number_format(old('biaya', parseRupiahToNumber($pengeluaran->biaya), 0, '.', '.')) }}">
                         </div>
                         <div class="mb-3">
                             <label for="akun_pembayaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>

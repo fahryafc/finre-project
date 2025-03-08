@@ -100,7 +100,7 @@ Route::get('/pengeluaran/edit{id}', [PengeluaranController::class, 'edit'])->nam
 Route::get('/pengeluaran/pengeluaran', [PengeluaranController::class, 'pengeluaran'])->name('pengeluaran.pengeluaran');
 Route::resource('/pengeluaran', PengeluaranController::class);
 
-Route::post('/hutangpiutang/storePembayaranHutang', [HutangPiutangController::class, 'storePembayaranHutang'])->name('hutangpiutang.store');
+Route::post('/hutangpiutang/storePembayaranHutang', [HutangPiutangController::class, 'store'])->name('hutangpiutang.store');
 Route::get('/hutangpiutang/detail/{idKontak}', [HutangpiutangController::class, 'getHutangDetail']);
 Route::resource('/hutangpiutang', HutangpiutangController::class);
 

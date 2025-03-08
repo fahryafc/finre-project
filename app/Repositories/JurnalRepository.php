@@ -10,6 +10,7 @@ use App\Models\Pengeluaran;
 use App\Models\Akun;
 use App\Models\Aset;
 use App\Models\AssetPenyusutan;
+use App\Models\Kasdanbank;
 use App\Models\Modal;
 use App\Models\PenjualanAsset;
 use App\Models\Produk;
@@ -33,17 +34,17 @@ class JurnalRepository implements JurnalInterface
         $jurnals = Jurnal::whereBetween('tanggal', [$tanggal_mulai, $tanggal_selesai])
                 ->where('user_id', $user_id)
                 ->get();
-                
+
         return $jurnals;
     }
 
     public function getArusKasByTanggal($tanggal_mulai, $tanggal_selesai)
     {
         $user_id = 1; // Auth::user()->id;
-        
+
         $result = [];
 
-        $j = DB::table('jurnal_detail')                    
+        $j = DB::table('jurnal_detail')
                     ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
                     ->join('akun', 'akun.id_akun', '=', 'jurnal_detail.id_akun')
                     ->where('jurnal.user_id', $user_id)
@@ -79,7 +80,7 @@ class JurnalRepository implements JurnalInterface
         $user_id = 1; // Auth::user()->id;
         $akun_neraca = Akun::whereIn('kategori_akun', ['Aset/Harta','Utang/Kewajiban/Liabilitas','Modal/Ekuitas (Kekayaan Peusahaan)'])->get();
         $neracas = [];
-        foreach ($akun_neraca as $akun) {    
+        foreach ($akun_neraca as $akun) {
             $total = DB::table('jurnal_detail')
                     ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
                     ->where('jurnal.user_id', $user_id)
@@ -93,9 +94,9 @@ class JurnalRepository implements JurnalInterface
                     'nama_akun' => $akun->nama_akun,
                     'total' => $total,
                 ];
-            }    
+            }
         }
- 
+
         return $neracas;
     }
 
@@ -104,7 +105,7 @@ class JurnalRepository implements JurnalInterface
         $user_id = 1; // Auth::user()->id;
         $akun_pendapatan = Akun::whereIn('kategori_akun', ['Pendapatan'])->get();
         $pendapatans = [];
-        foreach ($akun_pendapatan as $akun) {    
+        foreach ($akun_pendapatan as $akun) {
             $total = DB::table('jurnal_detail')
                     ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
                     ->where('jurnal.user_id', $user_id)
@@ -117,7 +118,7 @@ class JurnalRepository implements JurnalInterface
                     'nama_akun' => $akun->nama_akun,
                     'total' => $total,
                 ];
-            }    
+            }
         }
 
         $akun_hpp = Akun::where('kode_akun', '5-101')->first();
@@ -133,7 +134,7 @@ class JurnalRepository implements JurnalInterface
 
         $akun_beban = Akun::whereIn('kategori_akun', ['Beban'])->whereNotIn('kode_akun', ['5-101'])->get();
         $bebans = [];
-        foreach ($akun_beban as $akun) {    
+        foreach ($akun_beban as $akun) {
             $total = DB::table('jurnal_detail')
                     ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
                     ->where('jurnal.user_id', $user_id)
@@ -146,7 +147,7 @@ class JurnalRepository implements JurnalInterface
                     'nama_akun' => $akun->nama_akun,
                     'total' => $total,
                 ];
-            }    
+            }
         }
 
         $akun_pendapatan_lain = Akun::where('kode_akun', '4-104')->first();
@@ -171,7 +172,7 @@ class JurnalRepository implements JurnalInterface
             'bebans' => $bebans,
             'lains' => $total_pendapatan_lain - $total_biaya_lain,
         ];
- 
+
         return $result;
     }
 
@@ -196,7 +197,7 @@ class JurnalRepository implements JurnalInterface
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
-        
+
         $total_penjualan = $penjualan->total_pemasukan + $penjualan->total_pajak + $penjualan->ongkir;
         $data = [
             'no_jurnal'        => $this->getNextNumber($prefix),
@@ -208,7 +209,7 @@ class JurnalRepository implements JurnalInterface
             'status'           => '',
             'user_id'          => 1, // Auth::user()->id,
         ];
-        
+
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal Penjualan
@@ -330,7 +331,7 @@ class JurnalRepository implements JurnalInterface
             }
         }
 
-        return $jurnal;   
+        return $jurnal;
     }
 
     public function storePengeluaran(Pengeluaran $pengeluaran)
@@ -351,7 +352,7 @@ class JurnalRepository implements JurnalInterface
             'status'           => '',
             'user_id'          => 1, // Auth::user()->id,
         ];
-        
+
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal hutang usaha
@@ -378,7 +379,7 @@ class JurnalRepository implements JurnalInterface
             'keterangan'      => 'Kas/Bank',
             'created_at'      => Carbon::now(),
             'updated_at'      => Carbon::now(),
-        ]);        
+        ]);
 
         // Insert jurnal beban yang harus dibayar
         if ($pengeluaran->hutang == 1) {
@@ -392,7 +393,7 @@ class JurnalRepository implements JurnalInterface
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
             ]);
-        }        
+        }
 
         if ($pengeluaran->pajak == 1) {
             if ($pengeluaran->jns_pajak == 'ppn') {
@@ -434,7 +435,7 @@ class JurnalRepository implements JurnalInterface
             }
         }
 
-        return $jurnal;   
+        return $jurnal;
     }
 
     public function storeAsset(Aset $aset, AssetPenyusutan $asset_penyusutan)
@@ -456,7 +457,7 @@ class JurnalRepository implements JurnalInterface
             'status'           => '',
             'user_id'          => 1, // Auth::user()->id,
         ];
-        
+
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal Asset
@@ -483,8 +484,8 @@ class JurnalRepository implements JurnalInterface
             'keterangan'      => 'Kas/Bank',
             'created_at'      => Carbon::now(),
             'updated_at'      => Carbon::now(),
-        ]);       
-        
+        ]);
+
         if ($aset->penyusutan == 1 && $asset_penyusutan) {
             if ($asset_penyusutan->akun_penyusutan) {
                 // Insert jurnal Penyusutan
@@ -543,7 +544,7 @@ class JurnalRepository implements JurnalInterface
             }
         }
 
-        return $jurnal;   
+        return $jurnal;
     }
 
     public function storePenjualanAsset(PenjualanAsset $penjualan_asset)
@@ -565,7 +566,7 @@ class JurnalRepository implements JurnalInterface
             'status'           => '',
             'user_id'          => 1, // Auth::user()->id,
         ];
-        
+
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal Deposit
@@ -578,7 +579,7 @@ class JurnalRepository implements JurnalInterface
             'keterangan'      => 'Deposit',
             'created_at'      => Carbon::now(),
             'updated_at'      => Carbon::now(),
-        ]);  
+        ]);
 
         // Insert jurnal Nilai Asset
         $akun_aset = Akun::where('kode_akun',$penjualan_asset->asset->akun_aset)->first();
@@ -590,7 +591,7 @@ class JurnalRepository implements JurnalInterface
             'keterangan'      => 'Deposit',
             'created_at'      => Carbon::now(),
             'updated_at'      => Carbon::now(),
-        ]);  
+        ]);
 
         if ($penjualan_asset->nominal_keuntungan_kerugian > 0) {
             // Insert jurnal Keuntungan
@@ -603,7 +604,7 @@ class JurnalRepository implements JurnalInterface
                 'keterangan'      => 'Keuntungan',
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
-            ]); 
+            ]);
         } else{
             // Insert jurnal Kerugian
             $akun_keuntungan_kerugian = Akun::where('kode_akun',$penjualan_asset->akun_keuntungan_kerugian)->first();
@@ -644,9 +645,9 @@ class JurnalRepository implements JurnalInterface
                     'updated_at'      => Carbon::now(),
                 ]);
             }
-        }       
+        }
 
-        return $jurnal;   
+        return $jurnal;
     }
 
     public function storeModal(Modal $modal)
@@ -667,7 +668,7 @@ class JurnalRepository implements JurnalInterface
             'status'           => '',
             'user_id'          => 1, // Auth::user()->id,
         ];
-        
+
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal Masuk akun
@@ -720,9 +721,9 @@ class JurnalRepository implements JurnalInterface
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
             ]);
-        }        
+        }
 
-        return $jurnal;   
+        return $jurnal;
     }
 
     public function storeProduk(Produk $produk)
@@ -744,7 +745,7 @@ class JurnalRepository implements JurnalInterface
             'status'           => '',
             'user_id'          => 1, // Auth::user()->id,
         ];
-        
+
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal Persediaan barang dagang
@@ -769,7 +770,7 @@ class JurnalRepository implements JurnalInterface
             'keterangan'      => 'Kas/Bank',
             'created_at'      => Carbon::now(),
             'updated_at'      => Carbon::now(),
-        ]);  
+        ]);
 
         if ($produk->jns_pajak == 'ppn') {
             // Insert jurnal pajak untuk PPN Masukan
@@ -795,9 +796,9 @@ class JurnalRepository implements JurnalInterface
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
             ]);
-        }   
+        }
 
-        return $jurnal;   
+        return $jurnal;
     }
 
     public function storePembayaranHutangPiutang(RiwayatPembayaranHutangPiutang $pembayaran)
@@ -818,7 +819,7 @@ class JurnalRepository implements JurnalInterface
             'status'           => '',
             'user_id'          => 1, // Auth::user()->id,
         ];
-        
+
         $jurnal = Jurnal::create($data);
 
         if ($pembayaran->jenis_riwayat == 'hutang') {
@@ -832,13 +833,13 @@ class JurnalRepository implements JurnalInterface
                 'keterangan'      => 'Utang Usaha',
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
-            ]); 
+            ]);
 
             // Insert jurnal Pembayaran Masuk
-            $akun_keluar = Akun::where('kode_akun',$pembayaran->masuk_akun)->first();
+            $akun_keluar = Kasdanbank::where('kode_akun',$pembayaran->masuk_akun)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
-                'id_akun'         => $akun_keluar->id_akun,
+                'id_akun'         => $akun_keluar->id_kas_bank,
                 'debit'           => 0,
                 'kredit'          => $pembayaran->dibayarkan,
                 'keterangan'      => 'Pembayaran Keluar',
@@ -868,9 +869,9 @@ class JurnalRepository implements JurnalInterface
                 'keterangan'      => 'Piutang',
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
-            ]); 
+            ]);
         }
 
-        return $jurnal;   
+        return $jurnal;
     }
 }
