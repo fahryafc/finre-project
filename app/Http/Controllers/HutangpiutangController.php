@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Akun;
 use Illuminate\Http\Request;
 use App\Models\Penjualan;
 use App\Models\Pengeluaran;
@@ -72,7 +73,7 @@ class HutangpiutangController extends Controller
                 ->groupBy('kategori')
                 ->get();
 
-            $kasdanbank = DB::table('kas_bank')->get();
+            $kasdanbank = Akun::where('type', 'Kas & Bank')->get();
 
             $months = range(1, 12); // Buat array bulan 1-12
 

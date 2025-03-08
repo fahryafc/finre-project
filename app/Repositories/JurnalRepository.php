@@ -836,10 +836,10 @@ class JurnalRepository implements JurnalInterface
             ]);
 
             // Insert jurnal Pembayaran Masuk
-            $akun_keluar = Kasdanbank::where('kode_akun',$pembayaran->masuk_akun)->first();
+            $akun_keluar = Akun::where('kode_akun',$pembayaran->masuk_akun)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
-                'id_akun'         => $akun_keluar->id_kas_bank,
+                'id_akun'         => $akun_keluar->id_akun,
                 'debit'           => 0,
                 'kredit'          => $pembayaran->dibayarkan,
                 'keterangan'      => 'Pembayaran Keluar',

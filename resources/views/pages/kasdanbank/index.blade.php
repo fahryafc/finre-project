@@ -98,14 +98,21 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($key->kredit ?? 0, 0, ".", ".") }}</td>
 
                                         <!-- Perhitungan Saldo Akhir -->
-                                        @php 
+                                        @php
                                             $saldo_akhir = $key->saldo_awal + $key->debit - $key->kredit;
                                         @endphp
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ "Rp. ".number_format($saldo_akhir ?? 0, 0, ".", ".") }}</td>
                                         @csrf
                                         @method('DELETE')
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('kasdanbank.destroy', $key->id_akun) }}" data-confirm-delete="true" class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white"><i class="mgc_delete_2_line"></i></a>
+                                            <form action="{{ route('kasdanbank.destroy', $key->id_akun) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus data ini?');" style="display: inline-block;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white">
+                                                    <i class="mgc_delete_2_line"></i>
+                                                </button>
+                                            </form>
+
                                             <button type="button" data-id="{{ $key->id_akun }}" class="edit btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white" data-fc-target="modalKasBank" data-fc-type="modal" data-fc-type="modal"><i class="mgc_edit_2_line"></i></button>
                                         </td>
                                     </tr>

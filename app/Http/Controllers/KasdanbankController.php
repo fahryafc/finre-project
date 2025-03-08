@@ -23,7 +23,7 @@ class KasdanbankController extends Controller
         $title = 'Hapus Data!';
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
-        
+
         try {
             $kasdanbank = Akun::where('type', 'Kas & Bank')
                 ->leftJoinSub(
@@ -66,7 +66,7 @@ class KasdanbankController extends Controller
                 ->join('akun', 'jurnal_detail.id_akun', 'akun.id_akun')
                 ->where('akun.type', 'Kas & Bank')
                 ->sum('jurnal_detail.kredit');
-            
+
             $kategoriAkun = DB::table('kategori_akun')->get();
             $subakunKategori = DB::table('subakun_kategori')->get();
 
@@ -117,7 +117,7 @@ class KasdanbankController extends Controller
                 'kategori_akun'         => $request->kategori_akun,
                 'subakun'               => $data_akun->subakun,
             ]);
-            dd($akun);
+            // dd($akun);
 
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('kasdanbank.index');
@@ -144,7 +144,7 @@ class KasdanbankController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, kasdanbank $kasdanbank)
+    public function update(Request $request, Akun $kasdanbank)
     {
         try {
             $request->validate([
@@ -163,7 +163,7 @@ class KasdanbankController extends Controller
         }
     }
 
-    public function destroy(kasdanbank $kasdanbank)
+    public function destroy(Akun $kasdanbank)
     {
         try {
             $kasdanbank->delete();
