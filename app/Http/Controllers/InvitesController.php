@@ -148,12 +148,14 @@ class InvitesController extends Controller
 
         $user = User::find(Auth::user()->id); // Get user
 
-        foreach ($user->getPermissionNames() as $permission) {
-            $user->revokePermissionTo($permission);
-        }
+        if ($request->status == 'accepted') {
+            foreach ($user->getPermissionNames() as $permission) {
+                $user->revokePermissionTo($permission);
+            }
 
-        Subscription::where('user_id', $user->id)
-            ->update(['status' => 'expired']);
+            Subscription::where('user_id', $user->id)
+                ->update(['status' => 'expired']);
+        }
 
         $find->update([
             'status' => $request->status,
