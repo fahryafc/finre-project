@@ -12,6 +12,7 @@
     <link rel="shortcut icon" href="/images/favicon.ico">
     {{-- @yield('css') --}}
     @include('layouts.shared/head-css')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
 </head>
 
 <body>
