@@ -206,11 +206,11 @@ class PenjualanController extends Controller
                 'id_kontak'         => $request->id_kontak,
                 'tanggal'           => Carbon::createFromFormat('d-m-Y', $request->tanggal)->format('Y-m-d'),
                 'piutang'           => $request->piutangSwitch ? 1 : 0,
-                'ongkir'            => $request->ongkir,
+                'ongkir'            => $this->parseRupiahToNumber($request->ongkir),
                 'pembayaran'        => $request->pembayaran,
-                'total_pajak'       => $request->nominal_pajak,
-                'total_diskon'      => $request->diskon_output,
-                'total_pemasukan'   => $request->total_pemasukan,
+                'total_pajak'       => $this->parseRupiahToNumber($request->nominal_pajak),
+                'total_diskon'      => $this->parseRupiahToNumber($request->diskon_output),
+                'total_pemasukan'   => $this->parseRupiahToNumber($request->total_pemasukan),
                 'tgl_jatuh_tempo'   => $request->tgl_jatuh_tempo,
                 'user_id'           => 1, // Auth::user()->id,
             ]);
@@ -225,17 +225,18 @@ class PenjualanController extends Controller
                     : $this->generateKodeReff('PPN');
 
                 // Simpan detail produk penjualan
+                $harga = $this->parseRupiahToNumber($request->harga[$key]);
                 $produkPenjualan = ProdukPenjualan::create([
                     'id_penjualan'      => $data->id_penjualan,
                     'id_produk'         => $request->produk[$key],
-                    'harga'             => $request->harga[$key],
+                    'harga'             => $harga,
                     'kuantitas'         => $request->kuantitas[$key],
                     'kode_reff_pajak'   => $kodeReff,
                     'jns_pajak'         => $request->jns_pajak[$key],
                     'persen_pajak'      => $request->persen_pajak[$key] ?? 0,
-                    'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ($request->persen_pajak[$key] / 100) ?? 0,
+                    'nominal_pajak' => ((float) $harga * (float) $request->kuantitas[$key] * ((float) $request->persen_pajak[$key] / 100)) ?? 0,
                     'persen_diskon'     => $request->diskon[$key],
-                    'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
+                    'nominal_diskon' => ((float) $harga * (float) $request->kuantitas[$key] * ((float) $request->diskon[$key] / 100)) ?? 0,
                 ]);
 
                 // Menambahkan pajak jika ada
@@ -246,7 +247,7 @@ class PenjualanController extends Controller
                             'kode_reff'       => $produkPenjualan->kode_reff_pajak,
                             'jenis_transaksi' => 'penjualan',
                             'keterangan'      => $produkPenjualan->produk,
-                            'nilai_transaksi' => $produkPenjualan->harga * $produkPenjualan->kuantitas,
+                            'nilai_transaksi' => (float) $produkPenjualan->harga * (float) $produkPenjualan->kuantitas,
                             'persen_pajak'    => $produkPenjualan->persen_pajak,
                             'jenis_pajak'     => 'Pajak Keluaran',
                             'saldo_pajak'     => $produkPenjualan->harga * $produkPenjualan->kuantitas * ($produkPenjualan->persen_pajak / 100),
@@ -278,9 +279,9 @@ class PenjualanController extends Controller
             }
 
             // Mengupdate saldo akun kas & bank
-            $akun = Akun::where('type','Kas & Bank')->where('kode_akun', $request->pembayaran)->first();
+            $akun = Akun::where('type', 'Kas & Bank')->where('kode_akun', $request->pembayaran)->first();
             if ($akun) {
-                $akun->saldo += $request->total_pemasukan;
+                $akun->saldo += $this->parseRupiahToNumber($request->total_pemasukan);
                 $akun->save();
             } else {
                 throw new \Exception('Akun pembayaran tidak ditemukan!');
@@ -292,14 +293,14 @@ class PenjualanController extends Controller
                 $piutang = $request->piutang;
                 DB::table('hutangpiutang')->insert([
                     'id_kontak'     => $data->id_kontak,
-                    'kategori'      => 'Penjualan',//$data->kategori_produk,
+                    'kategori'      => 'Penjualan', //$data->kategori_produk,
                     'jenis'         => 'piutang',
                     'nominal'       => $piutang,
                     'status'        => 'Belum Lunas',
                     'tgl_jatuh_tempo' => $request->tgl_jatuh_tempo,
                 ]);
             }
-            
+
             // Insert Jurnal
             $this->jurnalRepository->storePenjualan($data, $piutang);
 
@@ -403,11 +404,11 @@ class PenjualanController extends Controller
                 'id_kontak'         => $request->id_kontak,
                 'tanggal'           => Carbon::createFromFormat('d-m-Y', $request->tanggal)->format('Y-m-d'),
                 'piutang'           => $request->piutangSwitch ? 1 : 0,
-                'ongkir'            => $request->ongkir,
+                'ongkir'            => $this->parseRupiahToNumber($request->ongkir),
                 'pembayaran'        => $request->pembayaran,
-                'total_pajak'       => $request->nominal_pajak,
-                'total_diskon'      => $request->diskon_output,
-                'total_pemasukan'   => $request->total_pemasukan,
+                'total_pajak'       => $this->parseRupiahToNumber($request->nominal_pajak),
+                'total_diskon'      => $this->parseRupiahToNumber($request->diskon_output),
+                'total_pemasukan'   => $this->parseRupiahToNumber($request->total_pemasukan),
                 'tgl_jatuh_tempo'   => $request->tgl_jatuh_tempo,
             ]);
 
@@ -476,28 +477,28 @@ class PenjualanController extends Controller
                             // 'produk'            => $request->produk[$key],
                             // 'kategori_produk'   => $kategori_produk->kategori,
                             // 'satuan'            => $request->satuan[$key],
-                            'harga'             => $request->harga[$key],
+                            'harga'             => $this->parseRupiahToNumber($request->harga[$key]),
                             'kuantitas'         => $request->kuantitas[$key],
                             'kode_reff_pajak'   => $kodeReff,
                             'jns_pajak'         => $request->jns_pajak[$key],
                             'persen_pajak'      => (int)$request->persen_pajak[$key] ?? 0,
-                            'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100) ?? 0,
+                            'nominal_pajak'     => $this->parseRupiahToNumber($request->harga[$key]) * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100) ?? 0,
                             'persen_diskon'     => $request->diskon[$key],
-                            'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
+                            'nominal_diskon'    => $this->parseRupiahToNumber($request->harga[$key]) * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
                         ]);
                 } else {
                     // Simpan detail produk penjualan
                     ProdukPenjualan::create([
                         'id_penjualan'      => $penjualan->id_penjualan,
                         'id_produk'         => $request->produk[$key],
-                        'harga'             => $request->harga[$key],
+                        'harga'             => $this->parseRupiahToNumber($request->harga[$key]),
                         'kuantitas'         => $request->kuantitas[$key],
                         'kode_reff_pajak'   => $kodeReff,
                         'jns_pajak'         => $request->jns_pajak[$key],
                         'persen_pajak'      => (int)$request->persen_pajak[$key] ?? 0,
-                        'nominal_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100) ?? 0,
+                        'nominal_pajak'     => $this->parseRupiahToNumber($request->harga[$key]) * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100) ?? 0,
                         'persen_diskon'     => $request->diskon[$key],
-                        'nominal_diskon'    => $request->harga[$key] * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
+                        'nominal_diskon'    => $this->parseRupiahToNumber($request->harga[$key]) * $request->kuantitas[$key] * ($request->diskon[$key] / 100) ?? 0,
                     ]);
                 }
 
@@ -509,19 +510,19 @@ class PenjualanController extends Controller
                             'kode_reff'       => $kodeReff,
                             'jenis_transaksi' => 'penjualan',
                             'keterangan'      => $nm_produk,
-                            'nilai_transaksi' => $request->harga[$key] * $request->kuantitas[$key],
+                            'nilai_transaksi' => $this->parseRupiahToNumber($request->harga[$key]) * $request->kuantitas[$key],
                             'persen_pajak'    => (int)$request->persen_pajak[$key],
                             'jenis_pajak'     => 'Pajak Keluaran',
-                            'saldo_pajak'     => $request->harga[$key] * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100),
+                            'saldo_pajak'     => $this->parseRupiahToNumber($request->harga[$key]) * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100),
                         ]);
                     } else if ($request->jns_pajak[$key] == 'ppnbm') {
                         // Insert pajak untuk PPNBM
                         DB::table('pajak_ppnbm')->insert([
                             'kode_reff'       => $kodeReff,
                             'deskripsi_barang' => $nm_produk,
-                            'harga_barang'    => $request->harga[$key],
+                            'harga_barang'    => $this->parseRupiahToNumber($request->harga[$key]),
                             'tarif_ppnbm'     => (int)$request->persen_pajak[$key],
-                            'ppnbm_dikenakan' => $request->harga[$key] * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100),
+                            'ppnbm_dikenakan' => $this->parseRupiahToNumber($request->harga[$key]) * $request->kuantitas[$key] * ((int)$request->persen_pajak[$key] / 100),
                             'jenis_pajak'     => 'Pajak Masukan',
                             'tgl_transaksi'   => $request->tanggal,
                         ]);
@@ -530,10 +531,10 @@ class PenjualanController extends Controller
             }
 
             // update saldo akun kas & bank
-            $akun = Akun::where('type','Kas & Bank')->where('kode_akun', $request->pembayaran)->first();
+            $akun = Akun::where('type', 'Kas & Bank')->where('kode_akun', $request->pembayaran)->first();
             if ($akun) {
                 // Contoh: Menambah nilai ke saldo yang ada
-                $akun->saldo += $penjualan->total_pemasukan;
+                $akun->saldo += $this->parseRupiahToNumber($request->total_pemasukan);
                 $akun->save();
             }
 
@@ -573,7 +574,7 @@ class PenjualanController extends Controller
             }
 
             // Insert Jurnal
-            $this->jurnalRepository->storePenjualan($data, $piutang);
+            $this->jurnalRepository->storePenjualan($penjualan, $piutang);
 
             Alert::success('Data Updated!', 'Data Updated Successfully');
             return redirect()->route('penjualan.index');
@@ -591,13 +592,13 @@ class PenjualanController extends Controller
             Pajakppn::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
             Pajakppnbm::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
 
-             // Delete Jurnal
-             $prefix = Penjualan::CODE_JURNAL;
-             $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $penjualan->id_penjualan)->first();
-             if ($jurnal) {
-                 $this->jurnalRepository->delete($jurnal->id_jurnal);
-             }
-             
+            // Delete Jurnal
+            $prefix = Penjualan::CODE_JURNAL;
+            $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $penjualan->id_penjualan)->first();
+            if ($jurnal) {
+                $this->jurnalRepository->delete($jurnal->id_jurnal);
+            }
+
             $penjualan->delete();
 
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
