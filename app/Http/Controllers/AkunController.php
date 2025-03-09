@@ -22,7 +22,7 @@ class AkunController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $akun = Akun::orderBy('kategori_akun', 'asc')->get();
+        $akun = Akun::orderBy('kode_akun', 'asc')->get();
         return view('pages.akun.index', compact('akun'));
     }
 

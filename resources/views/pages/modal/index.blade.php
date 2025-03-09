@@ -206,6 +206,8 @@
                                 @foreach ( $pemodal as $investor)
                                 <option value="{{ $investor->nama_kontak }}">{{ $investor->nama_kontak }}</option>
                                 @endforeach
+                                <option value="tambah_badan" data-fc-target="tambahKontak" data-fc-type="modal">+ Tambah
+                                    Kontak</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -295,6 +297,8 @@
         </div>
     </div>
 </div>
+
+<x-modals.kontak.tambah-kontak />
 <!-- end modal -->
 @endsection
 
@@ -443,5 +447,13 @@
             }
         });
     });
+
+    const selectOptionKontak = document.getElementById('nama_badan');
+        selectOptionKontak.addEventListener('change', function() {
+            if (this.value === 'tambah_badan') {
+                // Buka modal dan overlay
+                document.querySelector('[data-fc-target="tambahKontak"]').click();
+            }
+        });
 </script>
 @endsection

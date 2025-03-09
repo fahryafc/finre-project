@@ -3,7 +3,8 @@ import flatpickr from "flatpickr";
 // flatpickr
 
 flatpickr('#datepicker-basic', {
-    defaultDate: new Date()
+    defaultDate: new Date(),
+    dateFormat: "d/m/Y",
 });
 
 flatpickr('#datepicker-datetime', {

@@ -66,7 +66,7 @@ class ModalController extends Controller
     public function store(Request $request)
     {
         db::beginTransaction();
-        try {
+        // try {
             // Ambil nilai jenis transaksi dan nominal
             $jnsTransaksi = $request->input('jns_transaksi');
             $nominal = $this->parseRupiahToNumber($request->input('nominal'));
@@ -105,8 +105,8 @@ class ModalController extends Controller
             if ($jnsTransaksi === 'Penyetoran Modal') {
                 $akun->saldo += $nominal;  // Tambahkan nominal ke saldo jika penyetoran modal
             } elseif ($jnsTransaksi === 'Penarikan Dividen') {
-                // $akun->saldo -= $nominal;  // Kurangi saldo jika penarikan dividen
-                $akun->uang_keluar += $nominal;  // Tambahkan nominal ke uang_keluar
+                $akun->saldo -= $nominal;  // Kurangi saldo jika penarikan dividen
+                // $akun->uang_keluar += $nominal;  // Tambahkan nominal ke uang_keluar
             }
             $akun->save();
 
@@ -117,12 +117,12 @@ class ModalController extends Controller
             DB::commit();
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('modal.index');
-        } catch (\Exception $e) {
+        // } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
-            // Jika terjadi kesalahan, kembalikan ke halaman sebelumnya dengan pesan error
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
+        //     dd($e);
+        //     // Jika terjadi kesalahan, kembalikan ke halaman sebelumnya dengan pesan error
+        //     return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        // }
     }
 
     public function update(Request $request, Modal $modal)
@@ -154,7 +154,7 @@ class ModalController extends Controller
             if ($jurnal) {
                 $this->jurnalRepository->delete($jurnal->id_jurnal);
             }
-            
+
             $modal->delete();
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('modal.index');
