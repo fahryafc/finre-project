@@ -97,7 +97,8 @@ class ProdukdaninventoriController extends Controller
             $produk = DB::table('produk')->paginate(5);
             $satuan = DB::table('satuan')->get();
             $kategori = DB::table('kategori')->get();
-            $akun = DB::table('akun')->get();
+            $akun = Akun::where('type', 'Kas & Bank')
+                ->get();
             $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
 
             // Hitung jumlah produk tersedia, hampir habis, habis, dan total produk
@@ -139,7 +140,7 @@ class ProdukdaninventoriController extends Controller
             $kodeReff = null;
         }
         $pemasok = Kontak::where('id_kontak', $request->pemasok)->first();
-        
+
         db::beginTransaction();
         try {
             $data = Produk::create([
@@ -294,11 +295,11 @@ class ProdukdaninventoriController extends Controller
 
             // Delete Jurnal
             $prefix = Produk::CODE_JURNAL;
-            $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $produk->id_produk)->first();
+            $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $produk->id_produk)->first();
             if ($jurnal) {
                 $this->jurnalRepository->delete($jurnal->id_jurnal);
             }
-            
+
             $produk->delete();
             Alert::success('Data Deleted!', 'Data Deleted Successfully');
             return redirect()->route('produkdaninventori.index');

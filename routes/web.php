@@ -17,6 +17,7 @@ use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\HutangpiutangController;
 use App\Http\Controllers\ProdukdaninventoriController;
 use App\Http\Controllers\JurnalController;
+use App\Http\Controllers\SatuanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Models\Invites;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -197,3 +198,5 @@ Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permissio
     Route::get('/jurnal/export-pdf', [JurnalController::class, 'exportToPDF'])->name('jurnal.export.pdf');
     Route::get('/jurnal/export-excel', [JurnalController::class, 'exportToExcel'])->name('jurnal.export.excel');
 });
+
+Route::resource('satuan', SatuanController::class)->only(['store']);
