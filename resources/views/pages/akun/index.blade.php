@@ -37,7 +37,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->nama_akun}}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{$key->kategori_akun}}</td>
 
-                            @php 
+                            @php
                                 $saldo = $key->saldo;
                             @endphp
                             @if (!empty($saldo))
@@ -48,9 +48,9 @@
                             @csrf
                             @method('DELETE')
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                @if ($key->saldo < 1)
+                                {{-- @if ($key->saldo < 1)
                                     <a href="{{ route('akun.destroy', $key->id_akun) }}" data-confirm-delete="true" class="btn rounded-full bg-danger/25 text-danger hover:bg-danger hover:text-white"><i class="mgc_delete_2_line"></i></a>
-                                @endif
+                                @endif --}}
                                 <button type="button" data-id="{{ $key->id_akun }}" data-fc-target="modalTambahAkun" data-fc-type="modal" class="edit btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white"><i class="mgc_edit_2_line"></i></button>
                             </td>
                         </tr>
