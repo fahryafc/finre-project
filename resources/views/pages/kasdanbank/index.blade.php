@@ -145,7 +145,7 @@
                 <span class="material-symbols-rounded">close</span>
             </button>
         </div>
-        <form action="{{ route('kasdanbank.store') }}" method="POST" id="formKasBank" enctype="multipart/form-data">
+        <form action="{{ route('kasdanbank.store') }}" method="POST" id="formKasBank" >
             @csrf
             <div class="px-4 py-4 overflow-y-auto max-h-[60vh]">
                 <div class="grid gap-4">
@@ -153,15 +153,15 @@
                     <div>
                         <div class="mb-3">
                             <label for="nama_akun" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Akun</label>
-                            <input type="text" class="form-input" id="nama_akun" name="nama_akun" aria-describedby="nama_akun" placeholder="Masukan Nama Akun">
+                            <input type="text" class="form-input" id="nama_akun" name="nama_akun" aria-describedby="nama_akun" placeholder="Masukan Nama Akun" required>
                         </div>
                         <div class="mb-3">
                             <label for="kode_akun" class="text-gray-800 text-sm font-medium inline-block mb-2">Kode Akun</label>
-                            <input type="text" class="form-input" id="kode_akun" name="kode_akun" aria-describedby="kode_akun" placeholder="Masukan Kode Akun">
+                            <input type="text" class="form-input" id="kode_akun" name="kode_akun" aria-describedby="kode_akun" placeholder="Masukan Kode Akun" required>
                         </div>
                         <div class="mb-3">
                             <label for="kategori_akun" class="text-gray-800 text-sm font-medium inline-block mb-2">Kategori Akun</label>
-                            <select id="kategori_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="kategori_akun">
+                            <select id="kategori_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="kategori_akun" required>
                                 <option value="">-- Pilih Kategori Akun --</option>
                                 @foreach ( $kategoriAkun as $akun)
                                 <option value="{{ $akun->nama_kategori }}">{{ $akun->nama_kategori }}</option>

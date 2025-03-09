@@ -42,7 +42,7 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div class="mb-3">
                             <label for="tanggal" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal</label>
-                            <input type="text" class="form-input" name="tanggal" id="datepicker-basic">
+                            <input type="text" class="form-input" name="tanggal" id="datepicker-basic" required>
                         </div>
                     </div>
                     <hr class="border-2 border-gray-300 my-2">
@@ -50,11 +50,11 @@
                         <!-- col 1 -->
                         <div class="mb-3">
                             <label for="nm_pengeluaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Pengeluaran</label>
-                            <input type="text" class="form-input" id="nm_pengeluaran" name="nm_pengeluaran" aria-describedby="nm_pengeluaran" placeholder="Masukan Nama Pengeluaran">
+                            <input type="text" class="form-input" id="nm_pengeluaran" name="nm_pengeluaran" aria-describedby="nm_pengeluaran" placeholder="Masukan Nama Pengeluaran" required>
                         </div>
                         <div class="mb-3">
                             <label for="kategori" class="text-gray-800 text-sm font-medium inline-block mb-2">Kategori</label>
-                            <select id="kategori" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="kategori">
+                            <select id="kategori" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="kategori" required>
                                 <option value="" selected>-- Pilih Kategori --</option>
                                 @foreach ( $kategori as $k)
                                 <option value="{{ $k->nama_kategori }}">{{ $k->nama_kategori }}</option>
@@ -63,7 +63,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="jenis_pengeluaran" class="text-gray-800 text-sm font-medium inline-block mb-2"> Jenis Pengeluaran </label>
-                            <select id="jenis_pengeluaran" name="jenis_pengeluaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onchange="togglePengeluaran()">
+                            <select id="jenis_pengeluaran" name="jenis_pengeluaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onchange="togglePengeluaran()" required>
                                 <option value="" selected>-- Pilih Jenis Pengeluaran --</option>
                                 <option value="gaji_karyawan">Gaji Karyawan</option>
                                 <option value="pembayaran_vendor">Pembayaran Vendor</option>
@@ -71,7 +71,7 @@
                         </div>
                         <div class="mb-3 hidden" id="div_nama_karyawan">
                             <label for="nama_karyawan" class="text-gray-800 text-sm font-medium inline-block mb-2"> Nama Karyawan </label>
-                            <select id="nama_karyawan" name="id_kontak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select id="nama_karyawan" name="id_kontak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
                                 <option value="" selected>-- Pilih Nama Karyawan --</option>
                                 @foreach ( $karyawanKontak as $karyawan)
                                 <option value="{{ $karyawan->id_kontak }}">{{ $karyawan->nama_kontak }}</option>
@@ -80,7 +80,7 @@
                         </div>
                         <div class="mb-3 hidden" id="div_nama_vendor">
                             <label for="nama_vendor" class="text-gray-800 text-sm font-medium inline-block mb-2"> Nama Vendor </label>
-                            <select id="nama_vendor" name="id_kontak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select id="nama_vendor" name="id_kontak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
                                 <option value="" selected>-- Pilih Nama Vendor --</option>
                                 @foreach ( $vendorKontak as $vendors)
                                 <option value="{{ $vendors->id_kontak }}">{{ $vendors->nama_kontak }}</option>
@@ -93,11 +93,11 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div class="mb-3">
                             <label for="biaya" class="text-gray-800 text-sm font-medium inline-block mb-2">Biaya</label>
-                            <input type="text" class="form-input" id="biaya" name="biaya" aria-describedby="biaya" placeholder="Masukan Biaya" oninput="formatRupiah(this)">
+                            <input type="text" class="form-input" id="biaya" name="biaya" aria-describedby="biaya" placeholder="Masukan Biaya" oninput="formatRupiah(this)" required>
                         </div>
                         <div class="mb-3">
                             <label for="akun_pembayaran" class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
-                            <select id="akun_pembayaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pembayaran">
+                            <select id="akun_pembayaran" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pembayaran" required>
                                 @foreach ( $kas_bank as $a )
                                 <option value="{{ $a->kode_akun }}">
                                     <span class="flex justify-between w-full">
@@ -111,7 +111,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="akun_pemasukan" class="text-gray-800 text-sm font-medium inline-block mb-2">Pengeluaran masuk akun</label>
-                            <select id="akun_pemasukan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pemasukan">
+                            <select id="akun_pemasukan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="akun_pemasukan" required>
                                 @foreach ( $akun_pemasukan as $a )
                                 <option value="{{ $a->kode_akun }}">
                                     <span class="flex justify-between w-full">
@@ -191,7 +191,7 @@
                         </div>
                         <hr class="border-2 border-gray-300 my-2"> <!-- Garis pemisah -->
                     </div>
-                
+
                     <div class="grid grid-cols-2 gap-4">
                     <div></div>
                     <div class="mb-4">
