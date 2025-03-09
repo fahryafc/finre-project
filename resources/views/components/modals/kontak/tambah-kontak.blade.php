@@ -15,37 +15,37 @@
                     <div>
                         <div class="mb-3">
                             <label for="nama_kontak" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Kontak</label>
-                            <input type="text" class="form-input" id="nama_kontak" name="nama_kontak" aria-describedby="nama_kontak" placeholder="Masukan Nama Kontak">
+                            <input type="text" class="form-input" id="nama_kontak" name="nama_kontak" aria-describedby="nama_kontak" placeholder="Masukan Nama Kontak" required>
                         </div>
                     </div>
                     <div>
                         <div class="mb-3">
                             <label for="jenis_kontak" class="text-gray-800 text-sm font-medium inline-block mb-2">Jenis Kontak</label>
-                            <select id="jenis_kontak" name="jenis_kontak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select id="jenis_kontak" name="jenis_kontak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
                                 <option value="" selected>-- Pilih Jenis Kontak --</option>
                                 <option value="pelanggan">Pelanggan</option>
                                 <option value="karyawan">Karyawan</option>
                                 <option value="vendor">Vendor</option>
-                                <option value="lainnya">Lainnya</option>
+                                <option value="investor">Investor</option>
                             </select>
                         </div>
                     </div>
                     <div>
                         <div class="mb-3">
                             <label for="email" class="text-gray-800 text-sm font-medium inline-block mb-2">Email</label>
-                            <input type="text" class="form-input" id="email" name="email" aria-describedby="email" placeholder="Masukan Email">
+                            <input type="text" class="form-input" id="email" name="email" aria-describedby="email" placeholder="Masukan Email" required>
                         </div>
                     </div>
                     <div>
                         <div class="mb-3">
                             <label for="no_hp" class="text-gray-800 text-sm font-medium inline-block mb-2">No Handphone</label>
-                            <input type="text" class="form-input" id="no_hp" name="no_hp" aria-describedby="no_hp" placeholder="Masukan No Handphone">
+                            <input type="text" class="form-input" id="no_hp" name="no_hp" aria-describedby="no_hp" placeholder="Masukan No Handphone" required>
                         </div>
                     </div>
                     <div>
                         <div class="mb-3">
-                            <label for="nm_perusahaan" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Perusahaan</label>
-                            <input type="text" class="form-input" id="nm_perusahaan" name="nm_perusahaan" aria-describedby="nm_perusahaan" placeholder="Masukan Nama Perusahaan">
+                            <label for="nm_perusahaan" class="text-gray-800 text-sm font-medium inline-block mb-2" required >Nama Perusahaan</label>
+                            <input type="text" class="form-input" id="nm_perusahaan" name="nm_perusahaan" aria-describedby="nm_perusahaan" placeholder="Masukan Nama Perusahaan" required>
                         </div>
                     </div>
                     <div>
