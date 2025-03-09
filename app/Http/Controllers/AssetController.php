@@ -31,14 +31,14 @@ class AssetController extends Controller
     {
         $this->jurnalRepository = $jurnalRepository;
     }
-    
+
      /* Fungsi untuk generate kode reff pajak unik */
     private function generateKodeReff(string $prefix): string
     {
         do {
             $kodeReff = $prefix . '-' . strtoupper(Str::random(6));
         } while (
-            DB::table('pajak_ppnbm')->where('kode_reff', $kodeReff)->exists() || 
+            DB::table('pajak_ppnbm')->where('kode_reff', $kodeReff)->exists() ||
             DB::table('pajak_ppn')->where('kode_reff', $kodeReff)->exists()
         );
 
@@ -64,21 +64,21 @@ class AssetController extends Controller
                     DB::raw('asset.harga_beli * asset.kuantitas AS total_harga'), // Menghitung total harga
                     DB::raw('IFNULL(asset_penyusutan.nominal_masa_manfaat, 0) AS total_penyusutan'), // Total penyusutan
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku_masa_manfaat
                         '),
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_nilai_tahun IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_nilai_tahun) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_nilai_tahun IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_nilai_tahun)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku_nilai_tahun
                         '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat') // Persentase masa manfaat per tahun
@@ -96,12 +96,12 @@ class AssetController extends Controller
                     DB::raw('asset.harga_beli * asset.kuantitas AS total_harga'), // Menghitung total harga
                     DB::raw('IFNULL(asset_penyusutan.nominal_masa_manfaat, 0) AS total_penyusutan'), // Total penyusutan
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku
                         '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat'), // Persentase masa manfaat per tahun
@@ -174,21 +174,21 @@ class AssetController extends Controller
                     DB::raw('asset.harga_beli * asset.kuantitas AS total_harga'), // Menghitung total harga
                     DB::raw('IFNULL(asset_penyusutan.nominal_masa_manfaat, 0) AS total_penyusutan'), // Total penyusutan
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku_masa_manfaat
                         '),
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_nilai_tahun IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_nilai_tahun) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_nilai_tahun IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_nilai_tahun)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku_nilai_tahun
                         '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat') // Persentase masa manfaat per tahun
@@ -207,12 +207,12 @@ class AssetController extends Controller
                     DB::raw('asset.harga_beli * asset.kuantitas AS total_harga'), // Menghitung total harga
                     DB::raw('IFNULL(asset_penyusutan.nominal_masa_manfaat, 0) AS total_penyusutan'), // Total penyusutan
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku
                         '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat'), // Persentase masa manfaat per tahun
@@ -286,21 +286,21 @@ class AssetController extends Controller
                     DB::raw('asset.harga_beli * asset.kuantitas AS total_harga'), // Menghitung total harga
                     DB::raw('IFNULL(asset_penyusutan.nominal_masa_manfaat, 0) AS total_penyusutan'), // Total penyusutan
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku_masa_manfaat
                         '),
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_nilai_tahun IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_nilai_tahun) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_nilai_tahun IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_nilai_tahun)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku_nilai_tahun
                         '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat') // Persentase masa manfaat per tahun
@@ -319,12 +319,12 @@ class AssetController extends Controller
                     DB::raw('asset.harga_beli * asset.kuantitas AS total_harga'), // Menghitung total harga
                     DB::raw('IFNULL(asset_penyusutan.nominal_masa_manfaat, 0) AS total_penyusutan'), // Total penyusutan
                     DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku
                         '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat'), // Persentase masa manfaat per tahun
@@ -406,12 +406,12 @@ class AssetController extends Controller
                 DB::raw('asset.harga_beli * asset.kuantitas AS total_harga'), // Menghitung total harga
                 DB::raw('IFNULL(asset_penyusutan.nominal_masa_manfaat, 0) AS total_penyusutan'), // Total penyusutan
                 DB::raw('
-                            CASE 
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN 
-                                    (asset.harga_beli * asset.kuantitas) - 
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat) 
-                                ELSE 
-                                    asset.harga_beli * asset.kuantitas 
+                            CASE
+                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
+                                    (asset.harga_beli * asset.kuantitas) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat)
+                                ELSE
+                                    asset.harga_beli * asset.kuantitas
                             END AS harga_buku
                         '),
                 DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat') // Persentase masa manfaat per tahun
@@ -495,8 +495,8 @@ class AssetController extends Controller
 
         // Inisialisasi nilai awal untuk variabel
         $persentaseMasaManfaat = null;
-        $kodeReff = $request->jns_pajak === 'ppnbm' 
-            ? $this->generateKodeReff('PPNBM') 
+        $kodeReff = $request->jns_pajak === 'ppnbm'
+            ? $this->generateKodeReff('PPNBM')
             : $this->generateKodeReff('PPN');
 
         try {
@@ -614,7 +614,7 @@ class AssetController extends Controller
 
             // Insert Jurnal
             $this->jurnalRepository->storeAsset($aset, $asset_penyusutan);
-            
+
             // Commit transaksi jika tidak ada kesalahan
             DB::commit();
             Alert::success('Data Added!', 'Data Created Successfully');

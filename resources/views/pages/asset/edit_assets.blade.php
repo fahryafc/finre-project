@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="p-6">
-            <form action="{{ route('asset.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('asset.edit_asset', $asset->id_aset) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                     <!-- row pertama -->
                     <div class="grid grid-cols-3 gap-4">
@@ -94,7 +94,7 @@
                         </div>
                     </div>
                     <hr class="border-2 border-gray-300 my-4">
-                    
+
                     <div class="grid grid-cols-3 gap-4">
                         <div class="mb-3">
                             <label for="kode_sku" class="text-gray-800 text-sm font-medium inline-block mb-2">Kode/SKU</label>

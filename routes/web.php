@@ -160,6 +160,7 @@ Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permissio
     Route::get('/asset/jual_asset/{id}', [AssetController::class, 'jual'])->name('asset.jual_asset');
     Route::get('/asset/edit_asset/{id}', [AssetController::class, 'edit'])->name('asset.edit_asset');
     Route::get('/asset/detail_asset/{id}', [AssetController::class, 'detail'])->name('asset.detail_asset');
+    Route::delete('/asset/delete_asset/{id}', [AssetController::class, 'destroy'])->name('asset.destroy');
 });
 Route::resource('/kategori', KategoriController::class)->middleware(['auth']);
 
