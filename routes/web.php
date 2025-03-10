@@ -184,7 +184,7 @@ Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permissio
 
 // route kontak
 Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permission:inviter|kontak']], function () {
-    Route::resource('/kontak', KontakController::class);
+    Route::resource('/kontak', KontakController::class)->except(['show']);
     Route::get('/kontak/export-pdf', [KontakController::class, 'exportKontakToPDF'])->name('export.kontak.pdf');
     Route::get('/kontak/export-kontak', [KontakController::class, 'exportKontakToExcel'])->name('export.kontak');
 });

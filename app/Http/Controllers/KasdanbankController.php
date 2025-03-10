@@ -97,8 +97,9 @@ class KasdanbankController extends Controller
 
     public function getSubkategori(Request $request)
     {
-        $kategori = $request->input('kategori'); // Ambil kategori dari request
-        $subkategori = Akun::where('kategori_akun', $kategori)
+        $kategori = Kategori_akun::where('id_kategori_akun',$request->input('kategori'))
+            ->first();  
+        $subkategori = Akun::where('kategori_akun', $kategori->nama_kategori)
             ->groupBy('subakun')
             ->get();
 
