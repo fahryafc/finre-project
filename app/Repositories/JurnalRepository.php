@@ -32,8 +32,8 @@ class JurnalRepository implements JurnalInterface
     {
         $user_id = 1; // Auth::user()->id;
         $jurnals = Jurnal::whereBetween('tanggal', [$tanggal_mulai, $tanggal_selesai])
-                ->where('user_id', $user_id)
-                ->get();
+            ->where('user_id', $user_id)
+            ->get();
 
         return $jurnals;
     }
@@ -45,26 +45,26 @@ class JurnalRepository implements JurnalInterface
         $result = [];
 
         $j = DB::table('jurnal_detail')
-                    ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
-                    ->join('akun', 'akun.id_akun', '=', 'jurnal_detail.id_akun')
-                    ->where('jurnal.user_id', $user_id)
-                    ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai]);
+            ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
+            ->join('akun', 'akun.id_akun', '=', 'jurnal_detail.id_akun')
+            ->where('jurnal.user_id', $user_id)
+            ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai]);
 
         $operasional[] = $j->selectRaw("'Penerimaan Kas dari pelanggan' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->where('kode_akun', '4-101')->first();
         $operasional[] = $j->selectRaw("'Pendapatan lain-lain' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->where('kode_akun', '4-104')->first();
-        $operasional[] = $j->selectRaw("'Pembayaran kas kepada vendor' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['5-103','5-104','5-105','5-106','5-107','5-108','5-109'])->first();
+        $operasional[] = $j->selectRaw("'Pembayaran kas kepada vendor' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['5-103', '5-104', '5-105', '5-106', '5-107', '5-108', '5-109'])->first();
         $operasional[] = $j->selectRaw("'Pembayaran kas kepada karyawan' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->where('kode_akun', '5-102')->first();
         $operasional[] = $j->selectRaw("'Pembelian persediaan barang' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->where('kode_akun', '5-101')->first();
         $operasional[] = $j->selectRaw("'Pembayaran pajak penghasilan' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->where('kode_akun', '2-108')->first();
-        $operasional[] = $j->selectRaw("'Penerimaan Pajak Keluaran' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['2-106','2-107'])->first();
-        $operasional[] = $j->selectRaw("'Pembayaran Pajak Masukan' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['1-109','1-110'])->first();
+        $operasional[] = $j->selectRaw("'Penerimaan Pajak Keluaran' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['2-106', '2-107'])->first();
+        $operasional[] = $j->selectRaw("'Pembayaran Pajak Masukan' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['1-109', '1-110'])->first();
         $operasional[] = $j->selectRaw("'Pembayaran Bunga Pinjaman' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->where('kode_akun', '5-116')->first();
 
-        $investasi[] = $j->selectRaw("'Pembelian aset tetap' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['1-201','1-202','1-203','1-204','1-205','1-206','1-207'])->first();
+        $investasi[] = $j->selectRaw("'Pembelian aset tetap' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['1-201', '1-202', '1-203', '1-204', '1-205', '1-206', '1-207'])->first();
 
-        $pendanaan[] = $j->selectRaw("'Penerimaan modal' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['3-101','3-103'])->first();
+        $pendanaan[] = $j->selectRaw("'Penerimaan modal' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['3-101', '3-103'])->first();
         $pendanaan[] = $j->selectRaw("'Pembayaran dividen' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->where('kode_akun', '3-105')->first();
-        $pendanaan[] = $j->selectRaw("'Penerimaan Pinjaman' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['2-101','2-102'])->first();
+        $pendanaan[] = $j->selectRaw("'Penerimaan Pinjaman' as aktivitas,SUM(debit) as debit,SUM(kredit) as kredit")->whereIn('kode_akun', ['2-101', '2-102'])->first();
 
         $result = [
             'operasional' => $operasional,
@@ -78,15 +78,15 @@ class JurnalRepository implements JurnalInterface
     public function getNeracaByTanggal($tanggal_mulai, $tanggal_selesai)
     {
         $user_id = 1; // Auth::user()->id;
-        $akun_neraca = Akun::whereIn('kategori_akun', ['Aset/Harta','Utang/Kewajiban/Liabilitas','Modal/Ekuitas (Kekayaan Peusahaan)'])->get();
+        $akun_neraca = Akun::whereIn('kategori_akun', ['Aset/Harta', 'Utang/Kewajiban/Liabilitas', 'Modal/Ekuitas (Kekayaan Peusahaan)'])->get();
         $neracas = [];
         foreach ($akun_neraca as $akun) {
             $total = DB::table('jurnal_detail')
-                    ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
-                    ->where('jurnal.user_id', $user_id)
-                    ->where('jurnal_detail.id_akun', $akun->id_akun)
-                    ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
-                    ->sum('debit');
+                ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
+                ->where('jurnal.user_id', $user_id)
+                ->where('jurnal_detail.id_akun', $akun->id_akun)
+                ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
+                ->sum('debit');
 
             if ($total > 0) {
                 $neracas[$akun->kategori_akun][$akun->subakun][] = [
@@ -107,11 +107,11 @@ class JurnalRepository implements JurnalInterface
         $pendapatans = [];
         foreach ($akun_pendapatan as $akun) {
             $total = DB::table('jurnal_detail')
-                    ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
-                    ->where('jurnal.user_id', $user_id)
-                    ->where('jurnal_detail.id_akun', $akun->id_akun)
-                    ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
-                    ->sum('debit');
+                ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
+                ->where('jurnal.user_id', $user_id)
+                ->where('jurnal_detail.id_akun', $akun->id_akun)
+                ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
+                ->sum('debit');
 
             if ($total > 0) {
                 $pendapatans[] = [
@@ -125,22 +125,22 @@ class JurnalRepository implements JurnalInterface
         $hpps[] = [
             'nama_akun' => $akun_hpp->nama_akun,
             'total' => DB::table('jurnal_detail')
-                            ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
-                            ->where('jurnal.user_id', $user_id)
-                            ->where('jurnal_detail.id_akun', $akun_hpp->id_akun)
-                            ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
-                            ->sum('debit'),
+                ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
+                ->where('jurnal.user_id', $user_id)
+                ->where('jurnal_detail.id_akun', $akun_hpp->id_akun)
+                ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
+                ->sum('debit'),
         ];
 
         $akun_beban = Akun::whereIn('kategori_akun', ['Beban'])->whereNotIn('kode_akun', ['5-101'])->get();
         $bebans = [];
         foreach ($akun_beban as $akun) {
             $total = DB::table('jurnal_detail')
-                    ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
-                    ->where('jurnal.user_id', $user_id)
-                    ->where('jurnal_detail.id_akun', $akun->id_akun)
-                    ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
-                    ->sum('debit');
+                ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
+                ->where('jurnal.user_id', $user_id)
+                ->where('jurnal_detail.id_akun', $akun->id_akun)
+                ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
+                ->sum('debit');
 
             if ($total > 0) {
                 $bebans[] = [
@@ -152,19 +152,19 @@ class JurnalRepository implements JurnalInterface
 
         $akun_pendapatan_lain = Akun::where('kode_akun', '4-104')->first();
         $total_pendapatan_lain = DB::table('jurnal_detail')
-                            ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
-                            ->where('jurnal.user_id', $user_id)
-                            ->where('jurnal_detail.id_akun', $akun_pendapatan_lain->id_akun)
-                            ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
-                            ->sum('debit');
+            ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
+            ->where('jurnal.user_id', $user_id)
+            ->where('jurnal_detail.id_akun', $akun_pendapatan_lain->id_akun)
+            ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
+            ->sum('debit');
 
         $akun_biaya_lain = Akun::where('kode_akun', '5-109')->first();
         $total_biaya_lain = DB::table('jurnal_detail')
-                            ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
-                            ->where('jurnal.user_id', $user_id)
-                            ->where('jurnal_detail.id_akun', $akun_biaya_lain->id_akun)
-                            ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
-                            ->sum('debit');
+            ->join('jurnal', 'jurnal.id_jurnal', '=', 'jurnal_detail.id_jurnal')
+            ->where('jurnal.user_id', $user_id)
+            ->where('jurnal_detail.id_akun', $akun_biaya_lain->id_akun)
+            ->whereBetween('jurnal.tanggal', [$tanggal_mulai, $tanggal_selesai])
+            ->sum('debit');
 
         $result = [
             'pendapatans' => $pendapatans,
@@ -193,7 +193,7 @@ class JurnalRepository implements JurnalInterface
     public function storePenjualan(Penjualan $penjualan, $piutang = 0)
     {
         $prefix = Penjualan::CODE_JURNAL;
-        $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $penjualan->id_penjualan)->first();
+        $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $penjualan->id_penjualan)->first();
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
@@ -213,7 +213,7 @@ class JurnalRepository implements JurnalInterface
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal Penjualan
-        $akun_kas = Akun::where('kode_akun',$penjualan->pembayaran)->first();
+        $akun_kas = Akun::where('kode_akun', $penjualan->pembayaran)->first();
         if ($akun_kas) {
             $piutang = parseRupiahToNumber($piutang);
             DB::table('jurnal_detail')->insert([
@@ -225,13 +225,13 @@ class JurnalRepository implements JurnalInterface
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
             ]);
-        } else{
+        } else {
             throw new \Exception('Akun Kas/Bank tidak ditemukan!');
         }
 
         // Insert jurnal piutang usaha
         if ($penjualan->piutang == 1) {
-            $akun_piutang_usaha = Akun::where('kode_akun','1-103')->first();
+            $akun_piutang_usaha = Akun::where('kode_akun', '1-103')->first();
             if ($akun_piutang_usaha) {
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
@@ -242,14 +242,14 @@ class JurnalRepository implements JurnalInterface
                     'created_at'      => Carbon::now(),
                     'updated_at'      => Carbon::now(),
                 ]);
-            } else{
+            } else {
                 throw new \Exception('Akun Piutang Usaha tidak ditemukan!');
             }
         }
 
         // Insert jurnal pendapatan barang/jasa
         if ($penjualan->total_pemasukan) {
-            $akun_pendapatan_barang = Akun::where('kode_akun','4-101')->first();
+            $akun_pendapatan_barang = Akun::where('kode_akun', '4-101')->first();
             if ($akun_pendapatan_barang) {
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
@@ -260,14 +260,14 @@ class JurnalRepository implements JurnalInterface
                     'created_at'      => Carbon::now(),
                     'updated_at'      => Carbon::now(),
                 ]);
-            } else{
+            } else {
                 throw new \Exception('Akun Pendapatan Barang/Jasa tidak ditemukan!');
             }
         }
 
         // Insert jurnal pendapatan biaya pengiriman
         if ($penjualan->ongkir) {
-            $akun_pendapatan_ongkir = Akun::where('kode_akun','4-103')->first();
+            $akun_pendapatan_ongkir = Akun::where('kode_akun', '4-103')->first();
             if ($akun_pendapatan_ongkir) {
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
@@ -278,7 +278,7 @@ class JurnalRepository implements JurnalInterface
                     'created_at'      => Carbon::now(),
                     'updated_at'      => Carbon::now(),
                 ]);
-            } else{
+            } else {
                 throw new \Exception('Akun Pendapatan Biaya Pengiriman tidak ditemukan!');
             }
         }
@@ -298,7 +298,7 @@ class JurnalRepository implements JurnalInterface
 
         // Insert jurnal pajak untuk PPN Keluaran
         if ($total_pajak_ppn > 0) {
-            $akun_pajak_ppn = Akun::where('kode_akun','2-106')->first();
+            $akun_pajak_ppn = Akun::where('kode_akun', '2-106')->first();
             if ($akun_pajak_ppn) {
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
@@ -309,14 +309,14 @@ class JurnalRepository implements JurnalInterface
                     'created_at'      => Carbon::now(),
                     'updated_at'      => Carbon::now(),
                 ]);
-            } else{
+            } else {
                 throw new \Exception('Akun PPN Keluaran tidak ditemukan!');
             }
         }
 
         // Insert jurnal pajak untuk PPNBM Keluaran
         if ($total_pajak_ppnbm > 0) {
-            $akun_pajak_ppnbm = Akun::where('kode_akun','2-107')->first();
+            $akun_pajak_ppnbm = Akun::where('kode_akun', '2-107')->first();
             if ($akun_pajak_ppnbm) {
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
@@ -327,7 +327,7 @@ class JurnalRepository implements JurnalInterface
                     'created_at'      => Carbon::now(),
                     'updated_at'      => Carbon::now(),
                 ]);
-            } else{
+            } else {
                 throw new \Exception('Akun PPNBM Keluaran tidak ditemukan!');
             }
         }
@@ -338,7 +338,7 @@ class JurnalRepository implements JurnalInterface
     public function storePengeluaran(Pengeluaran $pengeluaran)
     {
         $prefix = Pengeluaran::CODE_JURNAL;
-        $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $pengeluaran->id_pengeluaran)->first();
+        $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $pengeluaran->id_pengeluaran)->first();
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
@@ -358,7 +358,7 @@ class JurnalRepository implements JurnalInterface
 
         // Insert jurnal hutang usaha
         if ($pengeluaran->biaya) {
-            $akun_pemasukan = Akun::where('kode_akun',$pengeluaran->akun_pemasukan)->first();
+            $akun_pemasukan = Akun::where('kode_akun', $pengeluaran->akun_pemasukan)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_pemasukan->id_akun,
@@ -371,7 +371,7 @@ class JurnalRepository implements JurnalInterface
         }
 
         // Insert jurnal Pengeluaran
-        $akun_kas = Akun::where('kode_akun',$pengeluaran->akun_pembayaran)->first();
+        $akun_kas = Akun::where('kode_akun', $pengeluaran->akun_pembayaran)->first();
         DB::table('jurnal_detail')->insert([
             'id_jurnal'       => $jurnal->id_jurnal,
             'id_akun'         => $akun_kas->id_akun,
@@ -384,7 +384,7 @@ class JurnalRepository implements JurnalInterface
 
         // Insert jurnal beban yang harus dibayar
         if ($pengeluaran->hutang == 1) {
-            $akun_hutang_usaha = Akun::where('kode_akun','2-104')->first();
+            $akun_hutang_usaha = Akun::where('kode_akun', '2-104')->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_hutang_usaha->id_akun,
@@ -399,7 +399,7 @@ class JurnalRepository implements JurnalInterface
         if ($pengeluaran->pajak == 1) {
             if ($pengeluaran->jns_pajak == 'ppn') {
                 // Insert jurnal pajak untuk PPN Masukan
-                $akun_pajak_ppn = Akun::where('kode_akun','1-109')->first();
+                $akun_pajak_ppn = Akun::where('kode_akun', '1-109')->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_ppn->id_akun,
@@ -411,7 +411,7 @@ class JurnalRepository implements JurnalInterface
                 ]);
             } elseif ($pengeluaran->jns_pajak == 'ppnbm') {
                 // Insert jurnal pajak untuk PPNBM Masukan
-                $akun_pajak_ppnbm = Akun::where('kode_akun','1-110')->first();
+                $akun_pajak_ppnbm = Akun::where('kode_akun', '1-110')->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_ppnbm->id_akun,
@@ -423,7 +423,7 @@ class JurnalRepository implements JurnalInterface
                 ]);
             } elseif ($pengeluaran->jns_pajak == 'pph') {
                 // Insert jurnal pajak untuk PPH
-                $akun_pajak_pph = Akun::where('kode_akun','2-108')->first();
+                $akun_pajak_pph = Akun::where('kode_akun', '2-108')->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_pph->id_akun,
@@ -442,12 +442,12 @@ class JurnalRepository implements JurnalInterface
     public function storeAsset(Aset $aset, AssetPenyusutan $asset_penyusutan)
     {
         $prefix = Aset::CODE_JURNAL;
-        $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $aset->id_aset)->first();
+        $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $aset->id_aset)->first();
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
 
-        $total_harga = ($aset->harga_beli * $aset->kuantitas) + $aset->pajak_dibayarkan;
+        $total_harga = (parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas) + parseRupiahToNumber($aset->pajak_dibayarkan);
         $data = [
             'no_jurnal'        => $this->getNextNumber($prefix),
             'code'             => $prefix,
@@ -463,7 +463,7 @@ class JurnalRepository implements JurnalInterface
 
         // Insert jurnal Asset
         if ($aset->akun_aset) {
-            $akun_asset = Akun::where('kode_akun',$aset->akun_aset)->first();
+            $akun_asset = Akun::where('kode_akun', $aset->akun_aset)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_asset->id_akun,
@@ -476,12 +476,12 @@ class JurnalRepository implements JurnalInterface
         }
 
         // Insert jurnal Pengeluaran
-        $akun_pembayaran = Akun::where('kode_akun',$aset->akun_pembayaran)->first();
+        $akun_pembayaran = Akun::where('kode_akun', $aset->akun_pembayaran)->first();
         DB::table('jurnal_detail')->insert([
             'id_jurnal'       => $jurnal->id_jurnal,
             'id_akun'         => $akun_pembayaran->id_akun,
             'debit'           => 0,
-            'kredit'          => $aset->harga_beli * $aset->kuantitas,
+            'kredit'          => parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas,
             'keterangan'      => 'Kas/Bank',
             'created_at'      => Carbon::now(),
             'updated_at'      => Carbon::now(),
@@ -490,7 +490,7 @@ class JurnalRepository implements JurnalInterface
         if ($aset->penyusutan == 1 && $asset_penyusutan) {
             if ($asset_penyusutan->akun_penyusutan) {
                 // Insert jurnal Penyusutan
-                $akun_penyusutan = Akun::where('kode_akun',$asset_penyusutan->akun_penyusutan)->first();
+                $akun_penyusutan = Akun::where('kode_akun', $asset_penyusutan->akun_penyusutan)->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_penyusutan->id_akun,
@@ -504,7 +504,7 @@ class JurnalRepository implements JurnalInterface
 
             if ($asset_penyusutan->akumulasi_akun) {
                 // Insert jurnal Akumulasi Akun
-                $akun_akumulasi = Akun::where('kode_akun',$asset_penyusutan->akun_akumulasi)->first();
+                $akun_akumulasi = Akun::where('kode_akun', $asset_penyusutan->akun_akumulasi)->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_akumulasi->id_akun,
@@ -520,24 +520,24 @@ class JurnalRepository implements JurnalInterface
         if ($aset->pajak == 1) {
             if ($aset->jns_pajak == 'ppn11' || $aset->jns_pajak == 'ppn12') {
                 // Insert jurnal pajak untuk PPN Keluaran
-                $akun_pajak_ppn = Akun::where('kode_akun','2-106')->first();
+                $akun_pajak_ppn = Akun::where('kode_akun', '2-106')->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_ppn->id_akun,
                     'debit'           => 0,
-                    'kredit'          => $aset->pajak_dibayarkan,
+                    'kredit'          => parseRupiahToNumber($aset->pajak_dibayarkan),
                     'keterangan'      => 'PPN Keluaran',
                     'created_at'      => Carbon::now(),
                     'updated_at'      => Carbon::now(),
                 ]);
             } elseif ($aset->jns_pajak == 'ppnbm') {
                 // Insert jurnal pajak untuk PPNBM
-                $akun_pajak_ppnbm = Akun::where('kode_akun','2-107')->first();
+                $akun_pajak_ppnbm = Akun::where('kode_akun', '2-107')->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_ppnbm->id_akun,
                     'debit'           => 0,
-                    'kredit'          => $aset->pajak_dibayarkan,
+                    'kredit'          => parseRupiahToNumber($aset->pajak_dibayarkan),
                     'keterangan'      => 'PPNBM Keluaran',
                     'created_at'      => Carbon::now(),
                     'updated_at'      => Carbon::now(),
@@ -551,12 +551,12 @@ class JurnalRepository implements JurnalInterface
     public function storePenjualanAsset(PenjualanAsset $penjualan_asset)
     {
         $prefix = PenjualanAsset::CODE_JURNAL;
-        $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $penjualan_asset->id_penjualan_asset)->first();
+        $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $penjualan_asset->id_penjualan_asset)->first();
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
 
-        $total_transaksi = $penjualan_asset->nominal_deposit + $penjualan_asset->pajak_dibayarkan;
+        $total_transaksi = parseRupiahToNumber($penjualan_asset->nominal_deposit) + parseRupiahToNumber($penjualan_asset->pajak_dibayarkan);
         $data = [
             'no_jurnal'        => $this->getNextNumber($prefix),
             'code'             => $prefix,
@@ -571,7 +571,7 @@ class JurnalRepository implements JurnalInterface
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal Deposit
-        $akun_deposit = Akun::where('kode_akun',$penjualan_asset->akun_deposit)->first();
+        $akun_deposit = Akun::where('kode_akun', $penjualan_asset->akun_deposit)->first();
         DB::table('jurnal_detail')->insert([
             'id_jurnal'       => $jurnal->id_jurnal,
             'id_akun'         => $akun_deposit->id_akun,
@@ -583,11 +583,11 @@ class JurnalRepository implements JurnalInterface
         ]);
 
         // Insert jurnal Nilai Asset
-        $akun_aset = Akun::where('kode_akun',$penjualan_asset->asset->akun_aset)->first();
+        $akun_aset = Akun::where('kode_akun', $penjualan_asset->asset->akun_aset)->first();
         DB::table('jurnal_detail')->insert([
             'id_jurnal'       => $jurnal->id_jurnal,
             'id_akun'         => $akun_aset->id_akun,
-            'debit'           => ($penjualan_asset->asset->harga_beli * $penjualan_asset->asset->kuantitas),
+            'debit'           => (parseRupiahToNumber($penjualan_asset->asset->harga_beli) * $penjualan_asset->asset->kuantitas),
             'kredit'          => 0,
             'keterangan'      => 'Deposit',
             'created_at'      => Carbon::now(),
@@ -596,7 +596,7 @@ class JurnalRepository implements JurnalInterface
 
         if ($penjualan_asset->nominal_keuntungan_kerugian > 0) {
             // Insert jurnal Keuntungan
-            $akun_keuntungan_kerugian = Akun::where('kode_akun',$penjualan_asset->akun_keuntungan_kerugian)->first();
+            $akun_keuntungan_kerugian = Akun::where('kode_akun', $penjualan_asset->akun_keuntungan_kerugian)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_keuntungan_kerugian->id_akun,
@@ -606,9 +606,9 @@ class JurnalRepository implements JurnalInterface
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
             ]);
-        } else{
+        } else {
             // Insert jurnal Kerugian
-            $akun_keuntungan_kerugian = Akun::where('kode_akun',$penjualan_asset->akun_keuntungan_kerugian)->first();
+            $akun_keuntungan_kerugian = Akun::where('kode_akun', $penjualan_asset->akun_keuntungan_kerugian)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_keuntungan_kerugian->id_akun,
@@ -623,7 +623,7 @@ class JurnalRepository implements JurnalInterface
         if ($penjualan_asset->pajak == 1) {
             if ($penjualan_asset->jns_pajak == 'ppn11' || $penjualan_asset->jns_pajak == 'ppn12') {
                 // Insert jurnal pajak untuk PPN Keluaran
-                $akun_pajak_ppn = Akun::where('kode_akun','2-106')->first();
+                $akun_pajak_ppn = Akun::where('kode_akun', '2-106')->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_ppn->id_akun,
@@ -635,7 +635,7 @@ class JurnalRepository implements JurnalInterface
                 ]);
             } elseif ($penjualan_asset->jns_pajak == 'ppnbm') {
                 // Insert jurnal pajak untuk PPNBM
-                $akun_pajak_ppnbm = Akun::where('kode_akun','2-107')->first();
+                $akun_pajak_ppnbm = Akun::where('kode_akun', '2-107')->first();
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_ppnbm->id_akun,
@@ -654,7 +654,7 @@ class JurnalRepository implements JurnalInterface
     public function storeModal(Modal $modal)
     {
         $prefix = Modal::CODE_JURNAL;
-        $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $modal->id_modal)->first();
+        $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $modal->id_modal)->first();
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
@@ -674,7 +674,7 @@ class JurnalRepository implements JurnalInterface
 
         // Insert jurnal Masuk akun
         if ($modal->jns_transaksi === 'Penyetoran Modal') {
-            $akun_masuk = Akun::where('kode_akun',$modal->masuk_akun)->first();
+            $akun_masuk = Akun::where('kode_akun', $modal->masuk_akun)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_masuk->id_akun,
@@ -686,7 +686,7 @@ class JurnalRepository implements JurnalInterface
             ]);
 
             // Insert jurnal Modal Pemilik
-            $akun_modal = Akun::where('kode_akun','3-101')->first();
+            $akun_modal = Akun::where('kode_akun', '3-101')->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_modal->id_akun,
@@ -700,7 +700,7 @@ class JurnalRepository implements JurnalInterface
 
         // Insert jurnal Credit Akun
         if ($modal->jns_transaksi === 'Penarikan Dividen') {
-            $akun_credit = Akun::where('kode_akun',$modal->credit_akun)->first();
+            $akun_credit = Akun::where('kode_akun', $modal->credit_akun)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_credit->id_akun,
@@ -712,7 +712,7 @@ class JurnalRepository implements JurnalInterface
             ]);
 
             // Insert jurnal Penarikan Dividen
-            $akun_modal = Akun::where('kode_akun','2-109')->first();
+            $akun_modal = Akun::where('kode_akun', '2-109')->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_modal->id_akun,
@@ -730,7 +730,7 @@ class JurnalRepository implements JurnalInterface
     public function storeProduk(Produk $produk)
     {
         $prefix = Produk::CODE_JURNAL;
-        $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $produk->id_produk)->first();
+        $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $produk->id_produk)->first();
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
@@ -750,7 +750,7 @@ class JurnalRepository implements JurnalInterface
         $jurnal = Jurnal::create($data);
 
         // Insert jurnal Persediaan barang dagang
-        $akun_persediaan = Akun::where('kode_akun','1-108')->first();
+        $akun_persediaan = Akun::where('kode_akun', '1-108')->first();
         DB::table('jurnal_detail')->insert([
             'id_jurnal'       => $jurnal->id_jurnal,
             'id_akun'         => $akun_persediaan->id_akun,
@@ -762,7 +762,7 @@ class JurnalRepository implements JurnalInterface
         ]);
 
         // Insert jurnal Pembayaran
-        $akun_pembayaran = Akun::where('kode_akun',$produk->akun_pembayaran)->first();
+        $akun_pembayaran = Akun::where('kode_akun', $produk->akun_pembayaran)->first();
         DB::table('jurnal_detail')->insert([
             'id_jurnal'       => $jurnal->id_jurnal,
             'id_akun'         => $akun_pembayaran->id_akun,
@@ -775,7 +775,7 @@ class JurnalRepository implements JurnalInterface
 
         if ($produk->jns_pajak == 'ppn') {
             // Insert jurnal pajak untuk PPN Masukan
-            $akun_pajak_ppn = Akun::where('kode_akun','1-109')->first();
+            $akun_pajak_ppn = Akun::where('kode_akun', '1-109')->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_pajak_ppn->id_akun,
@@ -787,7 +787,7 @@ class JurnalRepository implements JurnalInterface
             ]);
         } elseif ($produk->jns_pajak == 'ppnbm') {
             // Insert jurnal pajak untuk PPNBM
-            $akun_pajak_ppnbm = Akun::where('kode_akun','2-107')->first();
+            $akun_pajak_ppnbm = Akun::where('kode_akun', '2-107')->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_pajak_ppnbm->id_akun,
@@ -805,7 +805,7 @@ class JurnalRepository implements JurnalInterface
     public function storePembayaranHutangPiutang(RiwayatPembayaranHutangPiutang $pembayaran)
     {
         $prefix = RiwayatPembayaranHutangPiutang::CODE_JURNAL;
-        $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $pembayaran->id_pembayaran_hutangpiutang)->first();
+        $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $pembayaran->id_pembayaran_hutangpiutang)->first();
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
@@ -825,7 +825,7 @@ class JurnalRepository implements JurnalInterface
 
         if ($pembayaran->jenis_riwayat == 'hutang') {
             // Insert jurnal Hutang
-            $akun_hutang = Akun::where('kode_akun','2-101')->first();
+            $akun_hutang = Akun::where('kode_akun', '2-101')->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_hutang->id_akun,
@@ -837,7 +837,7 @@ class JurnalRepository implements JurnalInterface
             ]);
 
             // Insert jurnal Pembayaran Masuk
-            $akun_keluar = Akun::where('kode_akun',$pembayaran->masuk_akun)->first();
+            $akun_keluar = Akun::where('kode_akun', $pembayaran->masuk_akun)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_keluar->id_akun,
@@ -847,9 +847,9 @@ class JurnalRepository implements JurnalInterface
                 'created_at'      => Carbon::now(),
                 'updated_at'      => Carbon::now(),
             ]);
-        } else{
+        } else {
             // Insert jurnal Pembayaran Masuk
-            $akun_masuk = Akun::where('kode_akun',$pembayaran->masuk_akun)->first();
+            $akun_masuk = Akun::where('kode_akun', $pembayaran->masuk_akun)->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_masuk->id_akun,
@@ -861,7 +861,7 @@ class JurnalRepository implements JurnalInterface
             ]);
 
             // Insert jurnal Piutang
-            $akun_piutang = Akun::where('kode_akun','1-103')->first();
+            $akun_piutang = Akun::where('kode_akun', '1-103')->first();
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_piutang->id_akun,

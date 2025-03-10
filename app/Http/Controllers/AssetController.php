@@ -32,7 +32,7 @@ class AssetController extends Controller
         $this->jurnalRepository = $jurnalRepository;
     }
 
-     /* Fungsi untuk generate kode reff pajak unik */
+    /* Fungsi untuk generate kode reff pajak unik */
     private function generateKodeReff(string $prefix): string
     {
         do {
@@ -455,7 +455,8 @@ class AssetController extends Controller
         ]);
     }
 
-    public function create(){
+    public function create()
+    {
         // Ambil data tambahan lainnya
         $satuan = Satuan::get();
         $kategori = Kategori::get();
@@ -465,7 +466,9 @@ class AssetController extends Controller
         $akun_kredit = DB::table('akun')
             ->whereIn('kategori_akun', ['Pendapatan', 'Beban'])
             ->get();
-        $kasdanbank = DB::table('kas_bank')->get();
+        $kasdanbank = DB::table('akun')
+            ->where('type', '=', 'Kas & Bank')
+            ->get();
         $total_nilai_asset = DB::table('asset')
             ->selectRaw('SUM(harga_beli * kuantitas) as total_nilai_asset')
             ->value('total_nilai_asset');
@@ -474,18 +477,18 @@ class AssetController extends Controller
         $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
 
         return view('pages.asset.tambah_assets', [
-                'kategori' => $kategori,
-                'satuan' => $satuan,
-                'akun' => $akun,
-                'pemasoks' => $pemasoks,
-                'kasdanbank' => $kasdanbank,
-                'akun_penyusutan' => $akun_penyusutan,
-                'total_nilai_asset' => $total_nilai_asset,
-                'akun_kredit' => $akun_kredit,
-                'akun_deposit' => $akun_deposit,
-                'totalTersedia' => $totalTersedia,
-                'totalTerjual' => $totalTerjual,
-            ]);
+            'kategori' => $kategori,
+            'satuan' => $satuan,
+            'akun' => $akun,
+            'pemasoks' => $pemasoks,
+            'kasdanbank' => $kasdanbank,
+            'akun_penyusutan' => $akun_penyusutan,
+            'total_nilai_asset' => $total_nilai_asset,
+            'akun_kredit' => $akun_kredit,
+            'akun_deposit' => $akun_deposit,
+            'totalTersedia' => $totalTersedia,
+            'totalTerjual' => $totalTerjual,
+        ]);
     }
 
     public function store(Request $request)
@@ -512,9 +515,9 @@ class AssetController extends Controller
                 'kuantitas'         => $request->kuantitas,
                 'jns_pajak'         => $request->jns_pajak,
                 'persen_pajak'      => $request->persen_pajak,
-                'pajak_dibayarkan'  => $request->pajak_dibayarkan,
+                'pajak_dibayarkan'  => parseRupiahToNumber($request->pajak_dibayarkan),
                 'kode_sku'          => $request->kode_sku,
-                'harga_beli'        => $request->harga_beli,
+                'harga_beli'        => parseRupiahToNumber($request->harga_beli),
                 'akun_pembayaran'   => $request->akun_pembayaran,
                 'akun_aset'         => $request->akun_aset,
                 'penyusutan'        => $request->penyusutan ? 1 : 0, // Jika checked, isi dengan 1
@@ -522,7 +525,7 @@ class AssetController extends Controller
             ]);
 
             // Jika penyusutan diisi dengan 1, masukkan data ke tabel asset_penyusutan
-            $total_harga = $aset->harga_beli * $aset->kuantitas;
+            $total_harga = parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas;
             $asset_penyusutan = new AssetPenyusutan;
             if ($request->penyusutan) {
                 // Hitung nominal berdasarkan masa manfaat atau nilai tahun
@@ -584,28 +587,28 @@ class AssetController extends Controller
                         'kode_reff'         => $aset->kode_reff_pajak,
                         'jenis_transaksi'   => 'Assets',
                         'keterangan'        => $aset->nm_aset,
-                        'nilai_transaksi'   => $aset->harga_beli * $aset->kuantitas,
+                        'nilai_transaksi'   => parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas,
                         'persen_pajak'      => $aset->persen_pajak,
                         'jenis_pajak'       => 'Pajak Keluaran',
-                        'saldo_pajak'       => $aset->pajak_dibayarkan,
+                        'saldo_pajak'       => parseRupiahToNumber($aset->pajak_dibayarkan),
                     ]);
                 } elseif ($aset->jns_pajak == 'ppn12') {
                     DB::table('pajak_ppn')->insert([
                         'kode_reff'         => $aset->kode_reff_pajak,
                         'jenis_transaksi'   => 'Assets',
                         'keterangan'        => $aset->nm_aset,
-                        'nilai_transaksi'   => $aset->harga_beli * $aset->kuantitas,
+                        'nilai_transaksi'   => parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas,
                         'persen_pajak'      => $aset->persen_pajak,
                         'jenis_pajak'       => 'Pajak Keluaran',
-                        'saldo_pajak'       => $aset->pajak_dibayarkan,
+                        'saldo_pajak'       => parseRupiahToNumber($aset->pajak_dibayarkan),
                     ]);
                 } elseif ($aset->jns_pajak == 'ppnbm') {
                     DB::table('pajak_ppnbm')->insert([
                         'kode_reff'             => $aset->kode_reff_pajak,
                         'deskripsi_barang'      => $aset->produk,
-                        'harga_barang'          => $aset->harga_beli,
+                        'harga_barang'          => parseRupiahToNumber($aset->harga_beli),
                         'tarif_ppnbm'           => $aset->persen_pajak,
-                        'ppnbm_dikenakan'       => $aset->pajak_dibayarkan,
+                        'ppnbm_dikenakan'       => parseRupiahToNumber($aset->pajak_dibayarkan),
                         'jenis_pajak'           => "Pajak Masukan",
                         'tgl_transaksi'         => $aset->tanggal,
                     ]);
@@ -628,7 +631,8 @@ class AssetController extends Controller
         return redirect()->route('asset.asset_tersedia');
     }
 
-    public function jual($id){
+    public function jual($id)
+    {
         // Ambil data tambahan lainnya
         $asset = DB::table('asset')->where('id_aset', '=', $id)->first();
         $satuan = Satuan::get();
@@ -649,20 +653,20 @@ class AssetController extends Controller
         $pelanggan = DB::table('kontak')->where('jenis_kontak', '=', 'pelanggan')->get();
 
         return view('pages.asset.jual_assets', [
-                'asset' => $asset,
-                'kategori' => $kategori,
-                'satuan' => $satuan,
-                'akun' => $akun,
-                'pemasoks' => $pemasoks,
-                'pelanggan' => $pelanggan,
-                'kasdanbank' => $kasdanbank,
-                'akun_penyusutan' => $akun_penyusutan,
-                'total_nilai_asset' => $total_nilai_asset,
-                'akun_kredit' => $akun_kredit,
-                'akun_deposit' => $akun_deposit,
-                'totalTersedia' => $totalTersedia,
-                'totalTerjual' => $totalTerjual,
-            ]);
+            'asset' => $asset,
+            'kategori' => $kategori,
+            'satuan' => $satuan,
+            'akun' => $akun,
+            'pemasoks' => $pemasoks,
+            'pelanggan' => $pelanggan,
+            'kasdanbank' => $kasdanbank,
+            'akun_penyusutan' => $akun_penyusutan,
+            'total_nilai_asset' => $total_nilai_asset,
+            'akun_kredit' => $akun_kredit,
+            'akun_deposit' => $akun_deposit,
+            'totalTersedia' => $totalTersedia,
+            'totalTerjual' => $totalTerjual,
+        ]);
     }
 
     public function store_penjualan(Request $request)
@@ -672,7 +676,8 @@ class AssetController extends Controller
         DB::beginTransaction();
         try {
             // Membuat data baru untuk penjualan asset
-            $pelanggan = DB::table('kontak')->where('id_kontak', '=', $request->id_kontak)->first();
+            $pelanggan = DB::table('kontak')
+                ->where('id_kontak', '=', $request->id_kontak)->first();
             $PenjualanAsset = PenjualanAsset::create([
                 'id_aset'                       => $request->id_aset,
                 'nm_pelanggan'                  => $pelanggan->nama_kontak,
@@ -747,13 +752,13 @@ class AssetController extends Controller
                     ]);
                 } elseif ($PenjualanAsset->jns_pajak == 'ppnbm') {
                     DB::table('pajak_ppnbm')->insert([
-                        'kode_reff'             => $aset->kode_reff_pajak,
-                        'deskripsi_barang'      => $aset->produk,
-                        'harga_barang'          => $aset->harga_beli,
-                        'tarif_ppnbm'           => $aset->persen_pajak,
-                        'ppnbm_dikenakan'       => $aset->pajak_dibayarkan,
+                        'kode_reff'             => $asset->kode_reff_pajak,
+                        'deskripsi_barang'      => $asset->produk,
+                        'harga_barang'          => $asset->harga_beli,
+                        'tarif_ppnbm'           => $asset->persen_pajak,
+                        'ppnbm_dikenakan'       => $asset->pajak_dibayarkan,
                         'jenis_pajak'           => "Pajak Masukan",
-                        'tgl_transaksi'         => $aset->tanggal,
+                        'tgl_transaksi'         => $asset->tanggal,
                     ]);
                 }
             }
@@ -774,7 +779,8 @@ class AssetController extends Controller
         }
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
         // Ambil data tambahan lainnya
         $asset = DB::table('asset')->where('id_aset', '=', $id)->first();
         $satuan = Satuan::get();
@@ -794,19 +800,19 @@ class AssetController extends Controller
         $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
 
         return view('pages.asset.edit_assets', [
-                'asset' => $asset,
-                'kategori' => $kategori,
-                'satuan' => $satuan,
-                'akun' => $akun,
-                'pemasoks' => $pemasoks,
-                'kasdanbank' => $kasdanbank,
-                'akun_penyusutan' => $akun_penyusutan,
-                'total_nilai_asset' => $total_nilai_asset,
-                'akun_kredit' => $akun_kredit,
-                'akun_deposit' => $akun_deposit,
-                'totalTersedia' => $totalTersedia,
-                'totalTerjual' => $totalTerjual,
-            ]);
+            'asset' => $asset,
+            'kategori' => $kategori,
+            'satuan' => $satuan,
+            'akun' => $akun,
+            'pemasoks' => $pemasoks,
+            'kasdanbank' => $kasdanbank,
+            'akun_penyusutan' => $akun_penyusutan,
+            'total_nilai_asset' => $total_nilai_asset,
+            'akun_kredit' => $akun_kredit,
+            'akun_deposit' => $akun_deposit,
+            'totalTersedia' => $totalTersedia,
+            'totalTerjual' => $totalTerjual,
+        ]);
     }
 
     public function update(Request $request, $id): RedirectResponse
@@ -916,7 +922,7 @@ class AssetController extends Controller
 
             // Delete Jurnal
             $prefix = Aset::CODE_JURNAL;
-            $jurnal = Jurnal::where('code',$prefix)->where('no_reff', $asset->id_aset)->first();
+            $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $asset->id_aset)->first();
             if ($jurnal) {
                 $this->jurnalRepository->delete($jurnal->id_jurnal);
             }

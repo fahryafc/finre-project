@@ -89,7 +89,7 @@
         <div class="card-header mb-5">
             <div class="flex justify-between items-center">
                 <h4 class="card-title">Data Asset Terjual</h4>
-                <a href="{{ route('asset.tambah_asset') }}" class="btn bg-[#307487] text-white">
+                <a href="{{ route('asset.asset_tersedia') }}" class="btn bg-[#307487] text-white">
                     <i class="mgc_add_fill text-base me-4"></i>
                     Tambah Data 
                 </a>

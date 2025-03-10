@@ -152,6 +152,7 @@ Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permissio
 
 Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permission:inviter|aset']], function () {
     Route::get('/get-asset-data/{id}', [AssetController::class, 'getAssetData']);
+    Route::post('/tambah-asset/store', [AssetController::class, 'store'])->name('tambah-asset.store');
     Route::post('/penjualan-asset/store', [AssetController::class, 'store_penjualan'])->name('penjualan-asset.store');
     Route::get('/get-asset-detail/{id}', [AssetController::class, 'getAssetDetail']);
     Route::get('/asset/asset_tersedia', [AssetController::class, 'asset_tersedia'])->name('asset.asset_tersedia');
