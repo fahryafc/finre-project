@@ -215,6 +215,7 @@ class JurnalRepository implements JurnalInterface
         // Insert jurnal Penjualan
         $akun_kas = Akun::where('kode_akun',$penjualan->pembayaran)->first();
         if ($akun_kas) {
+            $piutang = parseRupiahToNumber($piutang);
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_kas->id_akun,

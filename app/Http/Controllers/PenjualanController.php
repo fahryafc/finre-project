@@ -198,11 +198,6 @@ class PenjualanController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'id_penjualan' => ['required', 'unique:penjualan,id_penjualan'],
-            'id_kontak' => ['required'],
-            'pembayaran' => ['required'],
-        ]);
         db::beginTransaction();
         try {
             // Menyimpan data penjualan utama
