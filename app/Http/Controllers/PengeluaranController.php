@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
+use App\Models\Akun;
 use App\Models\Pengeluaran;
 use App\Models\Kasdanbank;
 use App\Models\Arusuang;
@@ -200,7 +201,9 @@ class PengeluaranController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // generate kode reff untuk pajak
+        DB::beginTransaction();
+        try {
+            // generate kode reff untuk pajak
         if ($request->jns_pajak === 'ppnbm') {
             $kodeReff = Helper::generateKodeReff('PPNBM');
         } elseif ($request->jns_pajak === 'ppn') {
@@ -218,14 +221,14 @@ class PengeluaranController extends Controller
             'id_kontak'            => $request->id_kontak,
             'tanggal'              => Carbon::createFromFormat('d-m-Y', $request->tanggal)->format('Y-m-d'),
             'kategori'             => $request->kategori,
-            'biaya'                => $request->biaya,
+            'biaya'                => parseRupiahToNumber($request->biaya),
             'pajak'                => $request->pajakButton ? 1 : 0, // Jika checked, isi dengan 1
             'kode_reff_pajak'      => $kodeReff,
             'jns_pajak'            => $request->jns_pajak,
             'pajak_persen'         => $request->pajak_persen,
-            'pajak_dibayarkan'     => $request->pajak_dibayarkan,
+            'pajak_dibayarkan'     => parseRupiahToNumber($request->pajak_dibayarkan),
             'hutang'               => $request->hutangButton ? 1 : 0, // Jika checked, isi dengan 1
-            'nominal_hutang'       => $request->nominal_hutang,
+            'nominal_hutang'       => parseRupiahToNumber($request->nominal_hutang),
             'akun_pembayaran'      => $request->akun_pembayaran,
             'akun_pemasukan'       => $request->akun_pemasukan,
             'tgl_jatuh_tempo'      => $request->hutangButton ? Carbon::createFromFormat('d-m-Y', $request->tgl_jatuh_tempo)->format('Y-m-d') : null, // Set to null if hutang is 0
@@ -242,18 +245,18 @@ class PengeluaranController extends Controller
                     'kode_reff'         => $data_pengeluaran->kode_reff_pajak,
                     'jenis_transaksi'   => 'penjualan',
                     'keterangan'        => $data_pengeluaran->produk,
-                    'nilai_transaksi'   => $data_pengeluaran->harga * $data_pengeluaran->kuantitas,
+                    'nilai_transaksi'   => parseRupiahToNumber($data_pengeluaran->harga) * $data_pengeluaran->kuantitas,
                     'persen_pajak'      => $data_pengeluaran->persen_pajak,
                     'jenis_pajak'       => 'Pajak Keluaran',
-                    'saldo_pajak'       => $data_pengeluaran->total_pemasukan * ($data_pengeluaran->persen_pajak / 100),
+                    'saldo_pajak'       => parseRupiahToNumber($data_pengeluaran->total_pemasukan) * ($data_pengeluaran->persen_pajak / 100),
                 ]);
             } elseif ($data_pengeluaran->jns_pajak == 'ppnbm') {
                 DB::table('pajak_ppnbm')->insert([
                     'kode_reff'             => $data_pengeluaran->kode_reff_pajak,
                     'deskripsi_barang'      => $data_pengeluaran->produk,
-                    'harga_barang'          => $data_pengeluaran->harga,
+                    'harga_barang'          => parseRupiahToNumber($data_pengeluaran->harga),
                     'tarif_ppnbm'           => $data_pengeluaran->persen_pajak,
-                    'ppnbm_dikenakan'       => $data_pengeluaran->total_pemasukan * ($data_pengeluaran->persen_pajak / 100),
+                    'ppnbm_dikenakan'       => parseRupiahToNumber($data_pengeluaran->total_pemasukan) * ($data_pengeluaran->persen_pajak / 100),
                     'jenis_pajak'           => "Pajak Masukan",
                     'tgl_transaksi'         => $data_pengeluaran->tanggal,
                 ]);
@@ -264,7 +267,7 @@ class PengeluaranController extends Controller
                     'nm_karyawan'       => $findKaryawan->nama_kontak,
                     'gaji_karyawan'     => $data_pengeluaran->biaya,
                     'pph_terutang'      => $data_pengeluaran->pajak_dibayarkan,
-                    'bersih_diterima'   => $data_pengeluaran->biaya - $data_pengeluaran->pajak_dibayarkan,
+                    'bersih_diterima'   => parseRupiahToNumber($data_pengeluaran->biaya) - parseRupiahToNumber($data_pengeluaran->pajak_dibayarkan),
                 ]);
             }
         }
@@ -278,7 +281,7 @@ class PengeluaranController extends Controller
             if ($kas_bank) {
                 $arusuang = Arusuang::create([
                     'kode_akun'        => $data_pengeluaran->akun_pembayaran, // Diambil dari akun_pembayaran
-                    'nominal'          => $data_pengeluaran->biaya, // Diambil dari biaya pengeluaran
+                    'nominal'          => parseRupiahToNumber($data_pengeluaran->biaya), // Diambil dari biaya pengeluaran
                     'type'             => 'uang keluar', // Default type
                     'tanggal'          => $data_pengeluaran->tanggal, // Diambil dari tanggal pengeluaran
                 ]);
@@ -304,7 +307,7 @@ class PengeluaranController extends Controller
                 DB::table('hutangpiutang')
                     ->where('id_hutangpiutang', $hutangPiutang->id_hutangpiutang)
                     ->update([
-                        'nominal' => $hutangPiutang->nominal + $data_pengeluaran->nominal_hutang,
+                        'nominal' => parseRupiahToNumber($hutangPiutang->nominal) + parseRupiahToNumber($data_pengeluaran->nominal_hutang),
                     ]);
             } else {
                 // Jika tidak ditemukan, insert row baru
@@ -312,7 +315,7 @@ class PengeluaranController extends Controller
                     'id_kontak'          => $data_pengeluaran->id_kontak,
                     'kategori'           => $data_pengeluaran->kategori,
                     'jenis'              => 'hutang',
-                    'nominal'            => $data_pengeluaran->nominal_hutang,
+                    'nominal'            => parseRupiahToNumber($data_pengeluaran->nominal_hutang),
                     'status'             => 'Belum Lunas',
                     'tgl_jatuh_tempo'    => $data_pengeluaran->tgl_jatuh_tempo,
                 ]);
@@ -323,8 +326,14 @@ class PengeluaranController extends Controller
         $this->jurnalRepository->storePengeluaran($data_pengeluaran);
 
         // Tampilkan notifikasi sukses
+        DB::commit();
         Alert::success('Data Added!', 'Data Created Successfully');
         return redirect()->route('pengeluaran.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Alert::error('Error', 'Tambah Data Pengeluaran Gagal: ' . $e->getMessage());
+            return redirect()->back();
+        }
     }
 
     public function edit($id)
@@ -384,13 +393,13 @@ class PengeluaranController extends Controller
                 'id_kontak'            => $request->id_kontak,
                 'tanggal'              => Carbon::createFromFormat('d-m-Y', $request->tanggal)->format('Y-m-d'),
                 'kategori'             => $request->kategori,
-                'biaya'                => $request->biaya,
+                'biaya'                => parseRupiahToNumber($request->biaya),
                 'pajak'                => $request->pajakButton ? 1 : 0,
                 'jns_pajak'            => $request->jns_pajak,
                 'pajak_persen'         => $request->pajak_persen,
-                'pajak_dibayarkan'     => $request->pajak_dibayarkan,
+                'pajak_dibayarkan'     => parseRupiahToNumber($request->pajak_dibayarkan),
                 'hutang'               => $request->hutangButton ? 1 : 0,
-                'nominal_hutang'       => $request->nominal_hutang,
+                'nominal_hutang'       => parseRupiahToNumber($request->nominal_hutang),
                 'akun_pembayaran'      => $request->akun_pembayaran,
                 'akun_pemasukan'       => $request->akun_pemasukan,
                 'tgl_jatuh_tempo'      => $request->hutangButton ? Carbon::createFromFormat('d-m-Y', $request->tgl_jatuh_tempo)->format('Y-m-d') : null,
@@ -405,10 +414,10 @@ class PengeluaranController extends Controller
                             'kode_reff'         => $findPengeluaran->kode_reff_pajak,
                             'jenis_transaksi'   => 'pengeluaran',
                             'keterangan'        => $findPengeluaran->nm_pengeluaran,
-                            'nilai_transaksi'   => $findPengeluaran->biaya,
+                            'nilai_transaksi'   => parseRupiahToNumber($findPengeluaran->biaya),
                             'persen_pajak'      => $findPengeluaran->pajak_persen,
                             'jenis_pajak'       => 'Pajak Masukan',
-                            'saldo_pajak'       => $findPengeluaran->biaya * ($findPengeluaran->pajak_persen / 100),
+                            'saldo_pajak'       => parseRupiahToNumber($findPengeluaran->biaya) * ($findPengeluaran->pajak_persen / 100),
                         ]);
                     } else {
                         // Insert data baru jika pajak bernilai 0/null/kosong
@@ -417,10 +426,10 @@ class PengeluaranController extends Controller
                             'kode_reff'         => $findPengeluaran->kode_reff_pajak,
                             'jenis_transaksi'   => 'pengeluaran',
                             'keterangan'        => $findPengeluaran->nm_pengeluaran,
-                            'nilai_transaksi'   => $findPengeluaran->biaya,
+                            'nilai_transaksi'   => parseRupiahToNumber($findPengeluaran->biaya),
                             'persen_pajak'      => $findPengeluaran->pajak_persen,
                             'jenis_pajak'       => 'Pajak Masukan',
-                            'saldo_pajak'       => $findPengeluaran->biaya * ($findPengeluaran->pajak_persen / 100),
+                            'saldo_pajak'       => parseRupiahToNumber($findPengeluaran->biaya) * ($findPengeluaran->pajak_persen / 100),
                         ]);
                     }
                 } elseif ($findPengeluaran->jns_pajak === 'ppnbm') {
@@ -428,9 +437,9 @@ class PengeluaranController extends Controller
                         // Update data jika pajak bernilai 1
                         DB::table('pajak_ppnbm')->where('id_pengeluaran', $id_pengeluaran)->update([
                             'deskripsi_barang'  => $findPengeluaran->nm_pengeluaran,
-                            'harga_barang'      => $findPengeluaran->biaya,
+                            'harga_barang'      => parseRupiahToNumber($findPengeluaran->biaya),
                             'tarif_ppnbm'       => $findPengeluaran->pajak_persen,
-                            'ppnbm_dikenakan'   => $findPengeluaran->biaya * ($findPengeluaran->pajak_persen / 100),
+                            'ppnbm_dikenakan'   => parseRupiahToNumber($findPengeluaran->biaya) * ($findPengeluaran->pajak_persen / 100),
                             'jenis_pajak'       => 'Pajak Masukan',
                             'tgl_transaksi'     => $findPengeluaran->tanggal,
                         ]);
@@ -439,9 +448,9 @@ class PengeluaranController extends Controller
                         DB::table('pajak_ppnbm')->insert([
                             'id_pengeluaran'    => $id_pengeluaran,
                             'deskripsi_barang'  => $findPengeluaran->nm_pengeluaran,
-                            'harga_barang'      => $findPengeluaran->biaya,
+                            'harga_barang'      => parseRupiahToNumber($findPengeluaran->biaya),
                             'tarif_ppnbm'       => $findPengeluaran->pajak_persen,
-                            'ppnbm_dikenakan'   => $findPengeluaran->biaya * ($findPengeluaran->pajak_persen / 100),
+                            'ppnbm_dikenakan'   => parseRupiahToNumber($findPengeluaran->biaya) * ($findPengeluaran->pajak_persen / 100),
                             'jenis_pajak'       => 'Pajak Masukan',
                             'tgl_transaksi'     => $findPengeluaran->tanggal,
                         ]);
@@ -454,9 +463,9 @@ class PengeluaranController extends Controller
                             'id_pengeluaran'    => $findPengeluaran->id_pengeluaran,
                             'kode_reff'         => $findPengeluaran->kode_reff,
                             'nm_karyawan'       => $findKaryawan->nama_kontak,
-                            'gaji_karyawan'     => $findPengeluaran->biaya,
-                            'pph_terutang'      => $findPengeluaran->pajak_dibayarkan,
-                            'bersih_diterima'   => $findPengeluaran->biaya - $findPengeluaran->pajak_dibayarkan,
+                            'gaji_karyawan'     => parseRupiahToNumber($findPengeluaran->biaya),
+                            'pph_terutang'      => parseRupiahToNumber($findPengeluaran->pajak_dibayarkan),
+                            'bersih_diterima'   => parseRupiahToNumber($findPengeluaran->biaya) - parseRupiahToNumber($findPengeluaran->pajak_dibayarkan),
                         ]);
                     } else {
                         // Insert data baru jika pajak bernilai 0/null/kosong
@@ -464,9 +473,9 @@ class PengeluaranController extends Controller
                             'id_pengeluaran'    => $findPengeluaran->id_pengeluaran,
                             'kode_reff'         => $findPengeluaran->kode_reff,
                             'nm_karyawan'       => $findKaryawan->nama_kontak,
-                            'gaji_karyawan'     => $findPengeluaran->biaya,
-                            'pph_terutang'      => $findPengeluaran->pajak_dibayarkan,
-                            'bersih_diterima'   => $findPengeluaran->biaya - $findPengeluaran->pajak_dibayarkan,
+                            'gaji_karyawan'     => parseRupiahToNumber($findPengeluaran->biaya),
+                            'pph_terutang'      => parseRupiahToNumber($findPengeluaran->pajak_dibayarkan),
+                            'bersih_diterima'   => parseRupiahToNumber($findPengeluaran->biaya) - parseRupiahToNumber($findPengeluaran->pajak_dibayarkan),
                         ]);
                     }
                 }
@@ -477,7 +486,7 @@ class PengeluaranController extends Controller
                 // Kurangi saldo pada akun pembayaran lama
                 $kas_bank_old = Kasdanbank::where('kode_akun', $old_data['akun_pembayaran'])->first();
                 if ($kas_bank_old) {
-                    $kas_bank_old->decrement('uang_keluar', $old_data['biaya']);
+                    $kas_bank_old->decrement('uang_keluar', parseRupiahToNumber($old_data['biaya']));
                 }
 
                 // Tambahkan saldo pada akun pembayaran baru
@@ -503,14 +512,14 @@ class PengeluaranController extends Controller
                     DB::table('hutangpiutang')
                         ->where('id_hutangpiutang', $hutangPiutang->id_hutangpiutang)
                         ->update([
-                            'nominal' => $hutangPiutang->nominal + $request->nominal_hutang - $old_data['nominal_hutang'],
+                            'nominal' => parseRupiahToNumber($hutangPiutang->nominal) + parseRupiahToNumber($request->nominal_hutang) - parseRupiahToNumber($old_data['nominal_hutang']),
                         ]);
                 } else {
                     DB::table('hutangpiutang')->insert([
                         'id_kontak'          => $findPengeluaran->id_kontak,
                         'kategori'           => $findPengeluaran->kategori,
                         'jenis'              => 'hutang',
-                        'nominal'            => $request->nominal_hutang,
+                        'nominal'            => parseRupiahToNumber($request->nominal_hutang),
                         'status'             => 'Belum Lunas',
                         'tgl_jatuh_tempo'    => $findPengeluaran->tgl_jatuh_tempo,
                     ]);

@@ -91,7 +91,7 @@
                 <h4 class="card-title">Data Asset Tersedia</h4>
                 <a href="{{ route('asset.tambah_asset') }}" class="btn bg-[#307487] text-white">
                     <i class="mgc_add_fill text-base me-4"></i>
-                    Tambah Data 
+                    Tambah Data
                 </a>
             </div>
         </div>
@@ -200,15 +200,15 @@
 
                                 <a href="{{ route('asset.jual_asset', $ast->id_aset) }}" class="btn rounded-full bg-success/25 text-success hover:bg-success hover:text-white">
                                     <i class="ti ti-credit-card-pay text-base me-1"></i>
-                                    Jual 
+                                    Jual
                                 </a>
                                 <a href="{{ route('asset.edit_asset', $ast->id_aset) }}" class="btn rounded-full bg-warning/25 text-warning hover:bg-warning hover:text-white">
                                     <i class="mgc_edit_2_line text-base me-1"></i>
-                                    Edit 
+                                    Edit
                                 </a>
                                 <a href="{{ route('asset.edit_asset', $ast->id_aset) }}" class="btn rounded-full bg-info/25 text-info hover:bg-info hover:text-white">
                                     <i class="mgc_information_line text-base me-1"></i>
-                                    Detail 
+                                    Detail
                                 </a>
 
                                 <!-- Delete Form & Button -->

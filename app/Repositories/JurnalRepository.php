@@ -349,7 +349,7 @@ class JurnalRepository implements JurnalInterface
             'no_reff'          => $pengeluaran->id_pengeluaran,
             'tanggal'          => $pengeluaran->tanggal,
             'keterangan'       => 'Jurnal Pengeluaran',
-            'total'            => $pengeluaran->biaya,
+            'total'            => parseRupiahToNumber($pengeluaran->biaya),
             'status'           => '',
             'user_id'          => 1, // Auth::user()->id,
         ];
@@ -362,7 +362,7 @@ class JurnalRepository implements JurnalInterface
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_pemasukan->id_akun,
-                'debit'           => $pengeluaran->biaya - $pengeluaran->pajak_dibayarkan - $pengeluaran->nominal_hutang,
+                'debit'           => parseRupiahToNumber($pengeluaran->biaya) - parseRupiahToNumber($pengeluaran->pajak_dibayarkan) - parseRupiahToNumber($pengeluaran->nominal_hutang),
                 'kredit'          => 0,
                 'keterangan'      => 'Hutang Usaha',
                 'created_at'      => Carbon::now(),
@@ -376,7 +376,7 @@ class JurnalRepository implements JurnalInterface
             'id_jurnal'       => $jurnal->id_jurnal,
             'id_akun'         => $akun_kas->id_akun,
             'debit'           => 0,
-            'kredit'          => $pengeluaran->biaya,
+            'kredit'          => parseRupiahToNumber($pengeluaran->biaya),
             'keterangan'      => 'Kas/Bank',
             'created_at'      => Carbon::now(),
             'updated_at'      => Carbon::now(),
@@ -388,7 +388,7 @@ class JurnalRepository implements JurnalInterface
             DB::table('jurnal_detail')->insert([
                 'id_jurnal'       => $jurnal->id_jurnal,
                 'id_akun'         => $akun_hutang_usaha->id_akun,
-                'debit'           => $pengeluaran->nominal_hutang,
+                'debit'           => parseRupiahToNumber($pengeluaran->nominal_hutang),
                 'kredit'          => 0,
                 'keterangan'      => 'Beban Yang masih harus dibayar',
                 'created_at'      => Carbon::now(),
@@ -403,7 +403,7 @@ class JurnalRepository implements JurnalInterface
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_ppn->id_akun,
-                    'debit'           => $pengeluaran->pajak_dibayarkan,
+                    'debit'           => parseRupiahToNumber($pengeluaran->pajak_dibayarkan),
                     'kredit'          => 0,
                     'keterangan'      => 'PPN Masukan',
                     'created_at'      => Carbon::now(),
@@ -415,7 +415,7 @@ class JurnalRepository implements JurnalInterface
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_ppnbm->id_akun,
-                    'debit'           => $pengeluaran->pajak_dibayarkan,
+                    'debit'           => parseRupiahToNumber($pengeluaran->pajak_dibayarkan),
                     'kredit'          => 0,
                     'keterangan'      => 'PPNBM Masukan',
                     'created_at'      => Carbon::now(),
@@ -427,7 +427,7 @@ class JurnalRepository implements JurnalInterface
                 DB::table('jurnal_detail')->insert([
                     'id_jurnal'       => $jurnal->id_jurnal,
                     'id_akun'         => $akun_pajak_pph->id_akun,
-                    'debit'           => $pengeluaran->pajak_dibayarkan,
+                    'debit'           => parseRupiahToNumber($pengeluaran->pajak_dibayarkan),
                     'kredit'          => 0,
                     'keterangan'      => 'Hutang PPH 21',
                     'created_at'      => Carbon::now(),

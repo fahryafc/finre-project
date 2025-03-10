@@ -116,7 +116,7 @@ Route::prefix('dashboard')->group(function () {
 });
 
 Route::group(['middleware' => ['auth', 'active_member.check', 'role_or_permission:inviter|penjualan']], function () {
-    Route::resource('/penjualan', PenjualanController::class);
+    Route::resource('/penjualan', PenjualanController::class)->except(['edit']);
     Route::get('/penjualan/edit/{id}', [PenjualanController::class, 'edit'])->name('penjualan.edit');
     Route::get('/penjualan/detail/{id}', [PenjualanController::class, 'detail'])->name('penjualan.detail');
 });

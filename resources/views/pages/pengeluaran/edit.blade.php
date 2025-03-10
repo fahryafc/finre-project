@@ -178,7 +178,7 @@
                                     name="pajak_dibayarkan"
                                     aria-describedby="pajak_dibayarkan"
                                     placeholder="Pajak Dibayarkan"
-                                    value="{{ 'Rp. '.number_format(old('pajak_dibayarkan', $pengeluaran->pajak_dibayarkan, 0, '.', '.')) }}"
+                                    value="{{ 'Rp. '.number_format(old('pajak_dibayarkan', parseRupiahToNumber($pengeluaran->pajak_dibayarkan), 0, '.', '.')) }}"
                                     readonly>
                             </div>
                         </div>
@@ -196,7 +196,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-3">
                             <div class="mb-3">
                                 <label for="nominal_hutang" class="text-gray-800 text-sm font-medium inline-block mb-2">Hutang</label>
-                                <input type="text" class="form-input" id="nominal_hutang" name="nominal_hutang" aria-describedby="hutang" placeholder="Masukan Nominal Hutang" value="{{ 'Rp. '.number_format(old('nominal_hutang', $pengeluaran->nominal_hutang, 0, '.', '.')) }}">
+                                <input type="text" class="form-input" id="nominal_hutang" name="nominal_hutang" aria-describedby="hutang" placeholder="Masukan Nominal Hutang" value="{{ 'Rp. '.number_format(old('nominal_hutang', parseRupiahToNumber($pengeluaran->nominal_hutang), 0, '.', '.')) }}">
                             </div>
                             <div class="mb-3">
                                 <label for="tgl_jatuh_tempo" class="text-gray-800 text-sm font-medium inline-block mb-2">Tanggal Jatuh Tempo</label>

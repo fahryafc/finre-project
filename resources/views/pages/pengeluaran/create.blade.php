@@ -19,16 +19,16 @@
                 <div class="flex justify-between items-center">
                     <h4 class="card-title">Tambah Data Pengeluaran</h4>
                     <!-- <div class="flex items-center gap-2">
-                                                                                                            <button type="button" class="btn-code" data-fc-type="collapse" data-fc-target="GridFormHtml">
-                                                                                                                <i class="mgc_eye_line text-lg"></i>
-                                                                                                                <span class="ms-2">Code</span>
-                                                                                                            </button>
+                                                                                                                                            <button type="button" class="btn-code" data-fc-type="collapse" data-fc-target="GridFormHtml">
+                                                                                                                                                <i class="mgc_eye_line text-lg"></i>
+                                                                                                                                                <span class="ms-2">Code</span>
+                                                                                                                                            </button>
 
-                                                                                                            <button class="btn-code" data-clipboard-action="copy">
-                                                                                                                <i class="mgc_copy_line text-lg"></i>
-                                                                                                                <span class="ms-2">Copy</span>
-                                                                                                            </button>
-                                                                                                        </div> -->
+                                                                                                                                            <button class="btn-code" data-clipboard-action="copy">
+                                                                                                                                                <i class="mgc_copy_line text-lg"></i>
+                                                                                                                                                <span class="ms-2">Copy</span>
+                                                                                                                                            </button>
+                                                                                                                                        </div> -->
                 </div>
             </div>
             <div class="p-6">
@@ -258,8 +258,8 @@
     @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
     @vite(['resources/js/pages/extended-sweetalert.js'])
     @vite(['resources/js/pages/highlight.js'])
+    <script src="{{ asset('js/custom-js/create_pengeluaran.js') }}" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-    <script src="{{ asset('js/custom-js/create_pengeluaran.js') }}" ></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tanggalInput = document.querySelector('.tgl_edit');
@@ -281,8 +281,8 @@
             }
         });
 
-         // Event untuk tombol tutup modal
-         document.querySelectorAll('[data-modal-hide="kategoriModal"]').forEach((button) => {
+        // Event untuk tombol tutup modal
+        document.querySelectorAll('[data-modal-hide="kategoriModal"]').forEach((button) => {
             button.addEventListener('click', () => {
                 kategoriModal.classList.add('hidden');
                 kategoriModal.classList.remove('flex');
