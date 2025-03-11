@@ -71,8 +71,8 @@
                         @endif
                     </div>
                     <!-- <button class="btn bg-[#307487] text-white" data-fc-target="modalTambahAkun" data-fc-type="modal" type="button"><i class="mgc_add_fill text-base me-4"></i>
-                            Tambah Data
-                        </button> -->
+                                                                                                                                                                    Tambah Data
+                                                                                                                                                                </button> -->
                     <a href="{{ route('penjualan.create') }}" class="btn bg-[#307487] text-white">
                         <i class="mgc_add_fill text-base me-4"></i>
                         Tambah Data
@@ -493,9 +493,9 @@
     <script>
         let colors = []
 
-        for (let i = 0; i < {{ Js::from(count($produkList)) }}; i++) {
-            colors.push('#' + Math.floor(Math.random() * 16777215).toString(16))
-        }
+        // for (let i = 0; i < {{ Js::from(count($produkList)) }}; i++) {
+        //     colors.push('#' + Math.floor(Math.random() * 16777215).toString(16))
+        // }
         var options = {
             chart: {
                 height: 320,
@@ -503,7 +503,11 @@
             },
             series: {{ Js::from($produkListValue) }},
             labels: {{ Js::from($produkList) }},
-            colors: colors,
+            colors: [
+                '#3674B5', '#578FCA', '#A1E3F9', '#D1F8EF',
+                '#F2EFE7', '#9ACBD0', '#9ACBD0', '#48A6A7', '#2973B2',
+                '#EFDCAB', '#F2F6D0'
+            ],
             legend: {
                 show: true,
                 position: 'bottom',
