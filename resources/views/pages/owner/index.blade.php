@@ -122,7 +122,7 @@
                                         {{ Str::title($item->nama_paket) ?? "-" }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                                        {{ Str::title($item->payment_history[count($item->payment_history) - 1]->periode) ?? "-" }}
+                                        {{ optional(collect($item->payment_history)->last())->periode ? Str::title(collect($item->payment_history)->last()->periode) : "-" }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
                                         <span @class(['text-red-600' => $item->status == 'expired', 'text-green-600' => $item->status == 'active'])>

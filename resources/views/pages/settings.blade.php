@@ -1,4 +1,4 @@
-@extends('layouts.default')
+@extends('layouts.vertical', ['title' => 'Setting Profile'])
 
 @section('content')
     <form method="POST" action="/settings-process" enctype="multipart/form-data" autocomplete="off">
