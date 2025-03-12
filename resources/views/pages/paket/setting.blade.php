@@ -1,5 +1,4 @@
-@extends('layouts.default')
-
+@extends('layouts.vertical', ['title' => 'Paket'])
 @section('content')
     <div class="p-5 dark:bg-slate-700 bg-white rounded-md shadow">
         <div class="mb-2">

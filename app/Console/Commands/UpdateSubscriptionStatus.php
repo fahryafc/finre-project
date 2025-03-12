@@ -49,7 +49,7 @@ class UpdateSubscriptionStatus extends Command
                     $user->removeRole('inviter');
                 }
 
-                Mail::to($user->email)->send(new ExpiringSubscriptionMail($user));
+                // Mail::to($user->email)->send(new ExpiringSubscriptionMail($user));
 
                 Invites::where('subscription_id', $user->subscription->id)
                     ->where('status', 'accepted')
