@@ -9,6 +9,15 @@ document.addEventListener("DOMContentLoaded", function (e) {
         new NiceSelect(select);
     });
 });
+document.addEventListener("DOMContentLoaded", function (e) {
+    // default
+    var els = document.querySelectorAll(".selectize-search");
+    els.forEach(function (select) {
+        new NiceSelect(select,{
+            searchable: true
+        });
+    });
+});
 
 //
 document.addEventListener("DOMContentLoaded", function (e) {

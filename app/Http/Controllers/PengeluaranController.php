@@ -49,11 +49,11 @@ class PengeluaranController extends Controller
         try {
             // $pengeluaran = DB::table('pengeluaran')->get();
             $pengeluaran = Pengeluaran::join('kontak', 'pengeluaran.id_kontak', '=', 'kontak.id_kontak')
+            ->join('akun', 'akun.kode_akun', '=', 'pengeluaran.akun_pembayaran', 'left')
                 ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
                     return $query->whereBetween('tanggal', [$from_date, $to_date]);
                 })
-                ->select('pengeluaran.*', 'kontak.nama_kontak')
-                ->where('user_id', $user_id)
+                ->select('pengeluaran.*', 'kontak.nama_kontak','akun.nama_akun')
                 ->paginate(5);
             $akun = DB::table('akun')->get();
             $satuan = DB::table('satuan')->get();

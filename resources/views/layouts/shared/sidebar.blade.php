@@ -1,7 +1,7 @@
 <div class="app-menu">
 
     <!-- Sidenav Brand Logo -->
-    <a href="javascript:void(0)" class="logo-box">
+    <a href="/" class="logo-box">
         <!-- Light Brand Logo -->
         <div class="logo-light">
             <img src="/images/finre.png" class="logo-lg h-6" alt="Light logo">

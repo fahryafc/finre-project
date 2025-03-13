@@ -2,6 +2,7 @@
 
 @section('css')
     @vite(['node_modules/gridjs/dist/theme/mermaid.min.css'])
+    @vite(['node_modules/nice-select2/dist/css/nice-select2.css'])
     @vite(['node_modules/flatpickr/dist/flatpickr.min.css', 'node_modules/@simonwep/pickr/dist/themes/classic.min.css', 'node_modules/@simonwep/pickr/dist/themes/monolith.min.css', 'node_modules/@simonwep/pickr/dist/themes/nano.min.css'])
     @vite(['node_modules/sweetalert2/dist/sweetalert2.min.css'])
     <style>
@@ -57,7 +58,7 @@
                             <label for="kategori"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Kategori</label>
                             <select id="kategori"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize-search"
                                 name="kategori">
                                 <option value="" selected>-- Pilih Kategori --</option>
                                 @foreach ($kategori as $k)
@@ -72,7 +73,7 @@
                             <label for="jenis_pengeluaran" class="text-gray-800 text-sm font-medium inline-block mb-2">
                                 Jenis Pengeluaran </label>
                             <select id="jenis_pengeluaran" name="jenis_pengeluaran"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize-search"
                                 onchange="togglePengeluaran()">
                                 <option value="" selected>-- Pilih Jenis Pengeluaran --</option>
                                 <option value="gaji_karyawan"
@@ -87,7 +88,7 @@
                             <label for="nama_karyawan" class="text-gray-800 text-sm font-medium inline-block mb-2"> Nama
                                 Karyawan </label>
                             <select id="nama_karyawan" name="id_kontak"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                class="selectize-search">
                                 <option value="" selected>-- Pilih Nama Karyawan --</option>
                                 @foreach ($karyawanKontak as $karyawan)
                                     <option value="{{ $karyawan->id_kontak }}"
@@ -103,7 +104,7 @@
                             <label for="nama_vendor" class="text-gray-800 text-sm font-medium inline-block mb-2"> Nama
                                 Vendor </label>
                             <select id="nama_vendor" name="id_kontak"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                class="selectize-search">
                                 <option value="" selected>-- Pilih Vendor --</option>
                                 @foreach ($vendorKontak as $vendors)
                                     <option value="{{ $vendors->id_kontak }}"
@@ -128,7 +129,7 @@
                             <label for="akun_pembayaran"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
                             <select id="akun_pembayaran"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize-search"
                                 name="akun_pembayaran">
                                 <option value="" selected>-- Pilih Akun --</option>
                                 @foreach ($kas_bank as $akun)
@@ -143,7 +144,7 @@
                             <label for="akun_pemasukan"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Pengeluaran masuk akun</label>
                             <select id="akun_pemasukan"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize-search"
                                 name="akun_pemasukan">
                                 <option value="" selected>-- Pilih Akun --</option>
                                 @foreach ($kas_bank as $akun)
@@ -261,11 +262,12 @@
                                     readonly>
                             </div>
                         </div>
+                        </div>
                         <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
-                            <button onclick="window.history.back()" type="button"
-                                class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all"
-                                data-fc-dismiss type="button">Close
-                            </button>
+                            <button
+                            class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all"
+                            onclick="window.history.back();" type="button">Close
+                        </button>
                             <button type="submit" class="btn bg-[#307487] text-white" type="submit">Save</button>
                         </div>
                 </form>
@@ -279,6 +281,7 @@
 @section('script')
     @vite(['resources/js/pages/table-gridjs.js'])
     @vite(['resources/js/pages/highlight.js'])
+    @vite(['resources/js/pages/form-select.js'])
     @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
     @vite(['resources/js/pages/extended-sweetalert.js'])
     @vite(['resources/js/pages/highlight.js'])

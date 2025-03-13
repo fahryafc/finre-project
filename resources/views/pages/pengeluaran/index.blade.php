@@ -118,7 +118,7 @@
                                     {{ 'Rp. ' . number_format(parseRupiahToNumber($p->biaya), 0, '.', '.') }}</td>
                                 <td
                                     class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
-                                    {{ $p->akun_pembayaran }}</td>
+                                    {{ $p->nama_akun ?? '-' }}</td>
                                 @if ($p->pajak == 1)
                                     <td
                                         class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
@@ -205,6 +205,13 @@
                 fontSize: '14px',
                 offsetX: 0,
             },
+       tooltip: {
+    y: {
+        formatter: function(value) {
+            return value + '%'; // Tambahkan % setelah nilai
+        }
+    }
+},
             stroke: {
                 colors: ['transparent']
             },
@@ -247,7 +254,7 @@
                 width: 3,
             },
             series: [{
-                name: 'Pemasukan',
+                name: 'Pengeluaran',
                 data: {{ Js::from($pengeluaranChart) }}
             }],
             colors: ['#556ee6'],

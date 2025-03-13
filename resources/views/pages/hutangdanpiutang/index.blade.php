@@ -30,15 +30,27 @@
         <div class="card mt-10 p-5">
             <div class="card-header mb-5 flex justify-between items-center">
                 <h4 class="card-title">Tabel Hutang</h4>
-                <div class="filter-container flex flex-col">
-                    <label for="filterKategori" class="text-gray-800 text-sm font-medium inline-block mb-1">Filter Kategori : </label>
-                    <select id="filterKategori" class="p-2 border border-gray-300 rounded-md" onchange="filterByKategori()">
-                        <option value="">Semua Kategori</option>
-                        @foreach($kategoriHutang as $kategori)
-                            <option value="{{ $kategori->kategori }}">{{ $kategori->kategori }}</option>
-                        @endforeach
-                    </select>
+                <div class="filter-container flex flex-row items-center gap-4">
+                    <div class="flex flex-col">
+                        <label for="filterStatus" class="text-gray-800 text-sm font-medium">Filter Status:</label>
+                        <select id="filterStatus" class="p-2 border border-gray-300 rounded-md"
+                            data-table="pagination-table" data-status="filterStatus">
+                            <option value="">Semua Status</option>
+                            <option value="Belum Lunas">Belum Lunas</option>
+                            <option value="Lunas">Lunas</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col">
+                        <label for="filterKategori" class="text-gray-800 text-sm font-medium">Filter Kategori:</label>
+                        <select id="filterKategori" class="p-2 border border-gray-300 rounded-md"
+                            data-table="pagination-table" data-kategori="filterKategori">
+                            <option value="">Semua Kategori</option>
+                            <option value="Kategori A">Kategori A</option>
+                            <option value="Kategori B">Kategori B</option>
+                        </select>
+                    </div>
                 </div>
+                
             </div>
             <div class="card-body">
                 <table id="pagination-table">
@@ -218,8 +230,20 @@
 
         <!-- table piutang -->
         <div class="card mt-10 p-5">
-            <div class="card-header mb-5">
+            <div class="card-header mb-5 flex justify-between items-center">
                 <h4 class="card-title">Tabel Piutang</h4>
+                <div class="filter-container flex flex-row items-center gap-4">
+                    <div class="flex flex-col">
+                        <label for="filterStatusPiutang" class="text-gray-800 text-sm font-medium mb-1">Filter Status:</label>
+                        <select id="filterStatusPiutang" class="p-2 border border-gray-300 rounded-md"
+                            data-table="table-piutang" data-status="filterStatusPiutang">
+                            <option value="">Semua Status</option>
+                            <option value="Belum Lunas">Belum Lunas</option>
+                            <option value="Lunas">Lunas</option>
+                        </select>
+                    </div>
+                </div>
+                
             </div>
             <div class="card-body">
                 <table id="table-piutang">
@@ -480,5 +504,39 @@
     );
 
     chart.render();
+
+
+    function filterTable(tableId, kategoriFilterId = null, statusFilterId) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+
+        const kategoriFilter = kategoriFilterId ? document.getElementById(kategoriFilterId)?.value.toLowerCase() : "";
+        const statusFilter = document.getElementById(statusFilterId)?.value.toLowerCase() || "";
+
+        table.querySelectorAll("tbody tr").forEach(row => {
+            const kategori = row.getAttribute("data-kategori")?.toLowerCase() || "";
+            const status = row.getAttribute("data-status")?.toLowerCase() || "";
+
+            const kategoriMatch = !kategoriFilter || kategori === kategoriFilter;
+            const statusMatch = !statusFilter || status === statusFilter;
+
+            row.style.display = kategoriMatch && statusMatch ? "" : "none";
+        });
+    }
+
+    // Event Listeners untuk otomatis memanggil filter saat dropdown berubah
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("select[data-table]").forEach(select => {
+            select.addEventListener("change", function () {
+                const tableId = this.getAttribute("data-table");
+                const kategoriFilterId = this.getAttribute("data-kategori");
+                const statusFilterId = this.getAttribute("data-status");
+
+                filterTable(tableId, kategoriFilterId, statusFilterId);
+            });
+        });
+    });
+
+
 </script>
 @endsection

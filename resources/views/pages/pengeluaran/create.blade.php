@@ -64,7 +64,7 @@
                             <label for="jenis_pengeluaran" class="text-gray-800 text-sm font-medium inline-block mb-2">
                                 Jenis Pengeluaran </label>
                             <select id="jenis_pengeluaran" name="jenis_pengeluaran"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize"
                                 onchange="togglePengeluaran()" required>
                                 <option value="" selected>-- Pilih Jenis Pengeluaran --</option>
                                 <option value="gaji_karyawan">Gaji Karyawan</option>
@@ -75,7 +75,7 @@
                             <label for="nama_karyawan" class="text-gray-800 text-sm font-medium inline-block mb-2"> Nama
                                 Karyawan </label>
                             <select id="nama_karyawan" name="id_kontak"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize-search"
                                 required>
                                 <option value="" selected>-- Pilih Nama Karyawan --</option>
                                 @foreach ($karyawanKontak as $karyawan)
@@ -89,7 +89,7 @@
                             <label for="nama_vendor" class="text-gray-800 text-sm font-medium inline-block mb-2"> Nama
                                 Vendor </label>
                             <select id="nama_vendor" name="id_kontak"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize-search"
                                 required>
                                 <option value="" selected>-- Pilih Nama Vendor --</option>
                                 @foreach ($vendorKontak as $vendors)
@@ -112,7 +112,7 @@
                             <label for="akun_pembayaran"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
                             <select id="akun_pembayaran"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize-search"
                                 name="akun_pembayaran" required>
                                 @foreach ($kas_bank as $a)
                                     <option value="{{ $a->kode_akun }}">
@@ -129,7 +129,7 @@
                             <label for="akun_pemasukan"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Pengeluaran masuk akun</label>
                             <select id="akun_pemasukan"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="selectize-search"
                                 name="akun_pemasukan" required>
                                 @foreach ($akun_pemasukan as $a)
                                     <option value="{{ $a->kode_akun }}">
@@ -240,7 +240,7 @@
                     <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
                         <button
                             class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all"
-                            data-fc-dismiss type="button">Close
+                            onclick="window.history.back();" type="button">Close
                         </button>
                         <button class="btn bg-[#307487] text-white" type="submit">Save</button>
                     </div>

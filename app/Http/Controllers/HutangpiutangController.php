@@ -66,6 +66,7 @@ class HutangpiutangController extends Controller
                 )
                 ->groupBy('hutangpiutang.id_kontak', 'hutangpiutang.kategori', 'kontak.nama_kontak', 'kontak.nm_perusahaan', 'hutangpiutang.tgl_jatuh_tempo')
                 ->get();
+                
 
             $kategoriHutang = DB::table('hutangpiutang')
                 ->select('kategori')

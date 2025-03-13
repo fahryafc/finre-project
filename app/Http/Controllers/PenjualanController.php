@@ -51,13 +51,19 @@ class PenjualanController extends Controller
                 ->join('kontak', 'kontak.id_kontak', '=', 'penjualan.id_kontak')
                 ->join('produk_penjualan', 'produk_penjualan.id_penjualan', '=', 'penjualan.id_penjualan')
                 ->join('produk', 'produk.id_produk', '=', 'produk_penjualan.id_produk')
+                ->join('akun', 'akun.kode_akun', '=', 'penjualan.pembayaran')
+                ->join('jurnal', 'jurnal.no_reff', '=', 'penjualan.id_penjualan')
+                ->join('jurnal_detail', 'jurnal_detail.id_jurnal', '=', 'jurnal.id_jurnal')
+                ->where('jurnal_detail.keterangan', 'Piutang Usaha')
                 ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
                     return $query->whereBetween('penjualan.tanggal', [$from_date, $to_date]);
                 })
                 ->select(
                     'kontak.nama_kontak',
                     'penjualan.*',
-                    DB::raw('SUM(produk.harga_jual * produk.kuantitas) AS total_harga')
+                    'akun.nama_akun',
+                    'jurnal_detail.*',
+                    DB::raw('produk.harga_jual AS total_harga')
                 )
                 ->groupBy(
                     'penjualan.id_penjualan'
@@ -212,7 +218,7 @@ class PenjualanController extends Controller
                 'total_diskon'      => $this->parseRupiahToNumber($request->diskon_output),
                 'total_pemasukan'   => $this->parseRupiahToNumber($request->total_pemasukan),
                 'tgl_jatuh_tempo'   => $request->tgl_jatuh_tempo,
-                'user_id'           => 1, // Auth::user()->id,
+                'user_id'           => 1 //Auth::user()->id,
             ]);
 
             // dd($request->produk);
@@ -290,7 +296,7 @@ class PenjualanController extends Controller
             // Menambahkan data piutang jika ada
             $piutang = 0;
             if ($data->piutang == 1) {
-                $piutang = $request->piutang;
+                $piutang = $this->parseRupiahToNumber($request->piutang);
                 DB::table('hutangpiutang')->insert([
                     'id_kontak'     => $data->id_kontak,
                     'kategori'      => 'Penjualan', //$data->kategori_produk,
@@ -321,8 +327,9 @@ class PenjualanController extends Controller
             $detailPenjualan = DB::table('produk_penjualan')
                 ->join('penjualan', 'penjualan.id_penjualan', '=', 'produk_penjualan.id_penjualan')
                 ->join('kontak', 'kontak.id_kontak', '=', 'penjualan.id_kontak')
-                ->select('produk_penjualan.*', 'penjualan.*', 'kontak.nama_kontak')
                 ->where('produk_penjualan.id_penjualan', $id)
+                ->join('produk', 'produk.id_produk', '=', 'produk_penjualan.id_produk')
+                ->select('produk_penjualan.*', 'penjualan.*', 'kontak.nama_kontak','produk.nama_produk', 'produk.satuan', 'produk.kategori')
                 ->get();
 
             return response()->json([

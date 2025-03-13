@@ -96,10 +96,10 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-input satuan" id="satuan" name="satuan[]" placeholder="Masukan satuan" value="{{ $produks->produk->satuan }}" @readonly($produks->produk->satuan)>
+                                    <input type="text" class="form-input satuan" id="satuan" name="satuan[]" placeholder="Masukan satuan" value="{{ $produks?->produk?->satuan }}" @readonly($produks?->produk?->satuan)>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" value="{{ old('harga','Rp '.number_format($produks->produk->harga_jual, 0, '.', '.')) }}" readonly>
+                                    <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" value="{{ old('harga','Rp '.number_format($produks?->produk?->harga_jual, 0, '.', '.')) }}" readonly>
                                 </div>
                                 <div class="mb-3">
                                     <input type="text" class="form-input kuantitas" id="kuantitas" name="kuantitas[]" placeholder="Masukan Kuantitas" value="{{ $produks->kuantitas }}">

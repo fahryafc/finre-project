@@ -207,7 +207,6 @@ class JurnalRepository implements JurnalInterface
             'keterangan'       => 'Jurnal Penjualan',
             'total'            => $total_penjualan,
             'status'           => '',
-            'user_id'          => 1, // Auth::user()->id,
         ];
 
         $jurnal = Jurnal::create($data);

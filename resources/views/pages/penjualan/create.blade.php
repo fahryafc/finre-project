@@ -8,6 +8,7 @@
 'node_modules/@simonwep/pickr/dist/themes/classic.min.css',
 'node_modules/@simonwep/pickr/dist/themes/monolith.min.css',
 'node_modules/@simonwep/pickr/dist/themes/nano.min.css',
+'node_modules/nice-select2/dist/css/nice-select2.css'
 ])
 @vite(['node_modules/sweetalert2/dist/sweetalert2.min.css'])
 @endsection
@@ -42,7 +43,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="id_kontak" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama Pelanggan</label>
-                        <select id="id_kontak" name="id_kontak" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                        <select id="id_kontak" name="id_kontak" class="selectize-search " required>
                             <option value="" selected>-- Pilih Pelanggan --</option>
                             @foreach ($pelanggan as $customer)
                             <option value="{{ $customer->id_kontak }}">{{ $customer->nama_kontak }} - {{ $customer->nm_perusahaan }}</option>
@@ -88,7 +89,7 @@
                                 <select id="produk" name="produk[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                     <option value="" selected>-- Pilih Produk --</option>
                                     @foreach ($produk as $produks)
-                                        <option value="{{ $produks->id_produk }}" data-harga="{{ $produks->harga_jual }}" data-satuan="{{ $produks->satuan }}">{{ $produks->nama_produk }}</option>
+                                        <option value="{{ $produks->id_produk }}" data-harga="{{ $produks->harga_jual }}" data-satuan="{{ $produks->satuan }}" data-qty="{{$produks->kuantitas}}">{{ $produks->nama_produk }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -99,7 +100,7 @@
                                 <input type="text" class="form-input harga" id="harga" name="harga[]" placeholder="Masukan Harga" readonly>
                             </div>
                             <div class="mb-3">
-                                <input type="text" class="form-input kuantitas" id="kuantitas" name="kuantitas[]" placeholder="Masukan Kuantitas" required>
+                                <input type="number" class="form-input kuantitas" id="kuantitas" name="kuantitas[]" placeholder="Masukan Kuantitas" required>
                             </div>
                             <div class="mb-3">
                                 <select id="jns_pajak" name="jns_pajak[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
@@ -113,7 +114,7 @@
                                 <input type="text" id="persen_pajak" name="persen_pajak[]" placeholder="Masukan Pajak (%)" class="form-input persen_pajak" readonly>
                             </div>
                             <div class="mb-3">
-                                <input type="text" id="diskon" name="diskon[]" placeholder="Masukan Diskon" class="form-input diskon"/>
+                                <input type="number" id="diskon" name="diskon[]" placeholder="Masukan Diskon" class="form-input diskon"/>
                             </div>
                             <div class="mb-3">
                                 <button type="button" class="delete-row btn bg-red-500 text-white hover:bg-red-600 p-2 rounded-lg" onclick="deleteRow(this)">
@@ -201,7 +202,9 @@
                 </div>
 
                 <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
-                    <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" data-fc-dismiss type="button">Close</button>
+                    <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 
+                    hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" 
+                    onclick="window.history.back();" type="button">Back</button>
                     <button class="btn bg-[#307487] text-white" type="submit">Save</button>
                 </div>
             </form>
@@ -216,7 +219,7 @@
 
 @section('script')
 @vite(['resources/js/pages/table-gridjs.js'])
-@vite(['resources/js/pages/highlight.js'])
+@vite(['resources/js/pages/highlight.js','resources/js/pages/form-select.js'])
 @vite(['resources/js/pages/highlight.js', 'resources/js/pages/form-flatpickr.js', 'resources/js/pages/form-color-pickr.js'])
 @vite(['resources/js/pages/extended-sweetalert.js'])
 @vite(['resources/js/pages/highlight.js'])

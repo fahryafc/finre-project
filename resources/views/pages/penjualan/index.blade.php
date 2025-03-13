@@ -134,9 +134,9 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
                                     {{ 'Rp.  ' . number_format($p->total_pajak, 0, '.', '.') }}</td>
 
-                                @if (!empty($p->diskon))
+                                @if (!empty($p->total_diskon))
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                                        {{ $p->total_diskon }}%</td>
+                                        {{ 'Rp.  ' . number_format($p->total_diskon, 0, '.', '.') }}</td>
                                 @else
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">0</td>
                                 @endif
@@ -148,18 +148,16 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">0</td>
                                 @endif
 
-                                @if (!empty($p->piutang))
+                                @if (!empty($p->debit))
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                                        {{ 'Rp. ' . number_format($p->piutang, 0, '.', '.') }}</td>
+                                        {{ 'Rp. ' . number_format($p->debit, 0, '.', '.') }}</td>
                                 @else
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">0</td>
                                 @endif
-
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
-                                    {{ $p->pembayaran }}</td>
+                                    {{ $p->nama_akun }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
                                     {{ 'Rp. ' . number_format($p->total_pemasukan, 0, '.', '.') }}</td>
-
                                 @csrf
                                 @method('DELETE')
                                 <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
@@ -367,29 +365,39 @@
             buttons.forEach(button => {
                 button.addEventListener('click', async () => {
                     const penjualanId = button.getAttribute('data-id');
+
+                    // Tampilkan loading di tabel
+                    modalBody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="text-center text-gray-500">
+                                <span class="animate-spin">⏳</span> Memuat data...
+                            </td>
+                        </tr>
+                    `;
+
                     try {
                         const response = await fetch(`/penjualan/detail/${penjualanId}`);
                         const data = await response.json();
 
-                        // Clear previous table rows
+                        // Kosongkan tabel sebelum menampilkan data baru
                         modalBody.innerHTML = '';
 
                         if (data && data.status === 'success') {
-                            // Loop through each detail row and populate the table
+                            // Loop dan tampilkan data dalam tabel
                             data.detailPenjualan.forEach((detail, index) => {
                                 const row = `
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${index + 1}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.nama_kontak}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.produk}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kategori_produk}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.satuan}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.harga).toLocaleString()}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kuantitas}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.nominal_pajak).toLocaleString()}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.nominal_diskon).toLocaleString()}</td>
-                                </tr>
-                            `;
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${index + 1}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.nama_kontak}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.nama_produk}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kategori}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.satuan}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.harga).toLocaleString()}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${detail.kuantitas}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.nominal_pajak).toLocaleString()}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp ${parseInt(detail.nominal_diskon).toLocaleString()}</td>
+                                    </tr>
+                                `;
                                 modalBody.innerHTML += row;
                             });
                         } else {
@@ -403,6 +411,7 @@
                     }
                 });
             });
+
         });
 
         const buttonsJurnal = document.querySelectorAll('[data-modal-target="modal-detail-jurnal"]');

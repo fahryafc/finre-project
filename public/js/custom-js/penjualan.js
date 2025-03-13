@@ -225,16 +225,23 @@ document.getElementById('productRows').addEventListener('change', function (even
 });
 document.getElementById('persen_pajak').setAttribute('readonly', 'readonly');
 
-function addProductRow() {
+function addProductRow(maxProducts) {
     const container = document.getElementById('productRows');
+    const currentRows = container.querySelectorAll('.product-row').length; // Hitung jumlah baris yang ada
 
-    // Get the first row template
+    if (currentRows >= maxProducts) {
+        alert(`Maksimal baris yang bisa ditambahkan adalah ${maxProducts}`);
+        return;
+    }
+
+    // Clone baris pertama sebagai template
     const template = document.querySelector('.product-row').cloneNode(true);
 
-    // Clear any values in the inputs
+    // Bersihkan nilai input dan reset dropdown
     template.querySelectorAll('input').forEach(input => input.value = '');
     template.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
 
+    // Tambahkan ke dalam container
     container.appendChild(template);
 }
 
@@ -262,8 +269,23 @@ document.getElementById('productRows').addEventListener('change', function (even
 
         const harga = selectedOption.getAttribute('data-harga');
         const satuan = selectedOption.getAttribute('data-satuan');
+        const qty = selectedOption.getAttribute('data-qty');
 
         productRow.querySelector('input[name="harga[]"]').value = formatRupiah(harga) || '';
         productRow.querySelector('input[name="satuan[]"]').value = satuan || '';
+
+        const inputKuantitas = productRow.querySelector('input[name="kuantitas[]"]');
+        inputKuantitas.setAttribute('max', qty);
+        inputKuantitas.value = ''; // Reset kuantitas saat ganti produk
+    } else if (event.target && event.target.matches('input[name="kuantitas[]"]')){
+        const productRow = event.target.closest('.product-row');
+        const maxQty = parseInt(productRow.querySelector('select[name="produk[]"] option:checked').getAttribute('data-qty')) || 0;
+        
+        const currentQty = parseInt(event.target.value) || 0;
+
+        if (currentQty > maxQty) {
+            event.target.value = maxQty;
+            alert(`Maksimal kuantitas yang bisa dimasukkan adalah ${maxQty}`);
+        }
     }
 });
