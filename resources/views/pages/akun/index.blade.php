@@ -201,7 +201,7 @@
 
                 if (kategoriId) {
                     try {
-                        const res = await fetch(`/get-subkategori?kategori=${kategoriId}`);
+                        const res = await fetch(`/get-subakun-by-kategori?kategori_akun=${kategoriId}`);
                         const result = await res.json();
 
                         // Hapus loading dan tambahkan opsi baru

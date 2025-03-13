@@ -194,6 +194,7 @@ class AssetController extends Controller
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat') // Persentase masa manfaat per tahun
                 )
                 ->where('asset.user_id', $user_id)
+                ->where('asset.asset_terjual', null)
                 ->paginate(5);
 
             $assetTerjual = Aset::leftJoin('asset_penyusutan', 'asset.id_aset', '=', 'asset_penyusutan.id_aset')
@@ -315,18 +316,24 @@ class AssetController extends Controller
                     'asset_penyusutan.nominal_masa_manfaat',
                     'asset_penyusutan.masa_manfaat',
                     'asset_penyusutan.tanggal_penyusutan',
+                    'penjualan_asset.harga_pelepasan AS harga_pelepasan',
+                    'penjualan_asset.nominal_keuntungan_kerugian AS nominal_keuntungan_kerugian',
                     'penjualan_asset.kuantitas AS terjual',
-                    DB::raw('asset.harga_beli * asset.kuantitas AS total_harga'), // Menghitung total harga
+                    DB::raw('asset.harga_beli * penjualan_asset.kuantitas AS total_harga'), // Menghitung total harga
                     DB::raw('IFNULL(asset_penyusutan.nominal_masa_manfaat, 0) AS total_penyusutan'), // Total penyusutan
-                    DB::raw('
-                            CASE
-                                WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
-                                    (asset.harga_beli * asset.kuantitas) -
-                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) * asset_penyusutan.nominal_masa_manfaat)
-                                ELSE
-                                    asset.harga_beli * asset.kuantitas
-                            END AS harga_buku
-                        '),
+                    DB::raw('CASE
+                            WHEN asset_penyusutan.tanggal_penyusutan IS NOT NULL
+                                AND asset_penyusutan.nominal_masa_manfaat IS NOT NULL THEN
+                                GREATEST(
+                                    (asset.harga_beli * IFNULL(penjualan_asset.kuantitas, 0)) -
+                                    (TIMESTAMPDIFF(YEAR, asset_penyusutan.tanggal_penyusutan, CURDATE()) *
+                                    IFNULL(asset_penyusutan.nominal_masa_manfaat, 0)),
+                                    0
+                                )
+                            ELSE
+                                asset.harga_beli * IFNULL(penjualan_asset.kuantitas, 0)
+                        END AS harga_buku
+                    '),
                     DB::raw('IF(asset_penyusutan.masa_manfaat IS NOT NULL, 100 / asset_penyusutan.masa_manfaat, 0) AS persentase_masa_manfaat'), // Persentase masa manfaat per tahun
                     'penjualan_asset.kuantitas AS kuantitas_terjual'
                 )
@@ -502,133 +509,133 @@ class AssetController extends Controller
             ? $this->generateKodeReff('PPNBM')
             : $this->generateKodeReff('PPN');
 
-        try {
-            // Simpan data ke tabel aset
-            $aset = Aset::create([
-                'pemasok'           => $request->pemasok,
-                'tanggal'           => $request->tanggal,
-                'nm_aset'           => $request->nm_aset,
-                'kategori'          => $request->kategori,
-                'satuan'            => $request->satuan,
-                'pajak'             => $request->pajakButton ? 1 : 0, // Jika checked, isi dengan 1
-                'kode_reff_pajak'   => $kodeReff,
-                'kuantitas'         => $request->kuantitas,
-                'jns_pajak'         => $request->jns_pajak,
-                'persen_pajak'      => $request->persen_pajak,
-                'pajak_dibayarkan'  => parseRupiahToNumber($request->pajak_dibayarkan),
-                'kode_sku'          => $request->kode_sku,
-                'harga_beli'        => parseRupiahToNumber($request->harga_beli),
-                'akun_pembayaran'   => $request->akun_pembayaran,
-                'akun_aset'         => $request->akun_aset,
-                'penyusutan'        => $request->penyusutan ? 1 : 0, // Jika checked, isi dengan 1
-                'user_id'           => 1, // Auth::user()->id,
+        // try {
+        // Simpan data ke tabel aset
+        $aset = Aset::create([
+            'pemasok'           => $request->pemasok,
+            'tanggal'           => Carbon::createFromFormat('d-m-Y', $request->tanggal)->format('Y-m-d'),
+            'nm_aset'           => $request->nm_aset,
+            'kategori'          => $request->kategori,
+            'satuan'            => $request->satuan,
+            'pajak'             => $request->pajakButton ? 1 : 0, // Jika checked, isi dengan 1
+            'kode_reff_pajak'   => $kodeReff,
+            'kuantitas'         => $request->kuantitas,
+            'jns_pajak'         => $request->jns_pajak,
+            'persen_pajak'      => $request->persen_pajak,
+            'pajak_dibayarkan'  => parseRupiahToNumber($request->pajak_dibayarkan),
+            'kode_sku'          => $request->kode_sku,
+            'harga_beli'        => parseRupiahToNumber($request->harga_beli),
+            'akun_pembayaran'   => $request->akun_pembayaran,
+            'akun_aset'         => $request->akun_aset,
+            'penyusutan'        => $request->penyusutan ? 1 : 0, // Jika checked, isi dengan 1
+            'user_id'           => 1, // Auth::user()->id,
+        ]);
+
+        // Jika penyusutan diisi dengan 1, masukkan data ke tabel asset_penyusutan
+        $total_harga = parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas;
+        $asset_penyusutan = new AssetPenyusutan;
+        if ($request->penyusutan) {
+            // Hitung nominal berdasarkan masa manfaat atau nilai tahun
+            $nominalMasaManfaat = $request->masa_manfaat ? $total_harga / $request->masa_manfaat : null;
+            $nominalNilaiTahun = $request->nilai_tahun ? ($request->nilai_tahun / 100) * $total_harga : null;
+
+            // Tentukan nilai akumulasi berdasarkan inputan
+            $akumulasiAkun = null;
+
+            if ($nominalMasaManfaat !== null) {
+                // Akumulasi berdasarkan masa manfaat
+                $akumulasiAkun = $nominalMasaManfaat * $request->masa_manfaat;
+            } elseif ($nominalNilaiTahun !== null) {
+                // Akumulasi berdasarkan nilai tahun
+                $akumulasiAkun = $nominalNilaiTahun * $request->tahun;
+            }
+
+            // Simpan data penyusutan ke tabel asset_penyusutan
+            $asset_penyusutan = AssetPenyusutan::create([
+                'id_aset'               => $aset->id_aset, // Menggunakan id_aset sebagai foreign key untuk asset_penyusutan
+                'tanggal_penyusutan'    => Carbon::createFromFormat('d-m-Y', $request->tanggal_penyusutan)->format('Y-m-d'),
+                'masa_manfaat'          => $request->masa_manfaat ?: null, // Jika ada input masa manfaat, isi, jika tidak null
+                'nilai_tahun'           => $request->nilai_tahun ?: null, // Jika ada input nilai tahun, isi, jika tidak null
+                'nominal_masa_manfaat'  => $nominalMasaManfaat, // Nominal dari harga_beli dibagi masa manfaat
+                'nominal_nilai_tahun'   => $nominalNilaiTahun, // Nominal dari persen dikali harga beli
+                'akun_penyusutan'       => $request->akun_penyusutan,
+                'akumulasi_akun'        => $akumulasiAkun,
+                'akun_akumulasi'        => $request->akumulasi_akun,
             ]);
 
-            // Jika penyusutan diisi dengan 1, masukkan data ke tabel asset_penyusutan
-            $total_harga = parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas;
-            $asset_penyusutan = new AssetPenyusutan;
-            if ($request->penyusutan) {
-                // Hitung nominal berdasarkan masa manfaat atau nilai tahun
-                $nominalMasaManfaat = $request->masa_manfaat ? $total_harga / $request->masa_manfaat : null;
-                $nominalNilaiTahun = $request->nilai_tahun ? ($request->nilai_tahun / 100) * $total_harga : null;
+            // dd($asset_penyusutan);
 
-                // Tentukan nilai akumulasi berdasarkan inputan
-                $akumulasiAkun = null;
-
-                if ($nominalMasaManfaat !== null) {
-                    // Akumulasi berdasarkan masa manfaat
-                    $akumulasiAkun = $nominalMasaManfaat * $request->masa_manfaat;
-                } elseif ($nominalNilaiTahun !== null) {
-                    // Akumulasi berdasarkan nilai tahun
-                    $akumulasiAkun = $nominalNilaiTahun * $request->tahun;
-                }
-
-                // Simpan data penyusutan ke tabel asset_penyusutan
-                $asset_penyusutan = AssetPenyusutan::create([
-                    'id_aset'               => $aset->id_aset, // Menggunakan id_aset sebagai foreign key untuk asset_penyusutan
-                    'tanggal_penyusutan'    => $request->tanggal_penyusutan,
-                    'masa_manfaat'          => $request->masa_manfaat ?: null, // Jika ada input masa manfaat, isi, jika tidak null
-                    'nilai_tahun'           => $request->nilai_tahun ?: null, // Jika ada input nilai tahun, isi, jika tidak null
-                    'nominal_masa_manfaat'  => $nominalMasaManfaat, // Nominal dari harga_beli dibagi masa manfaat
-                    'nominal_nilai_tahun'   => $nominalNilaiTahun, // Nominal dari persen dikali harga beli
-                    'akun_penyusutan'       => $request->akun_penyusutan,
-                    'akumulasi_akun'        => $akumulasiAkun,
-                    'akun_akumulasi'        => $request->akumulasi_akun,
-                ]);
-
-                // dd($asset_penyusutan);
-
-                // Update saldo pada tabel akun untuk akun_penyusutan
-                $akun_penyusutan = Akun::where('kode_akun', $request->akun_penyusutan)->first();
-                if ($akun_penyusutan) {
-                    // Update saldo tanpa mass assignment
-                    $akun_penyusutan->saldo += $nominalMasaManfaat ?? $nominalNilaiTahun;
-                    $akun_penyusutan->save(); // Simpan perubahan saldo
-                } else {
-                    Alert::error('Error', 'Akun penyusutan tidak ditemukan');
-                    return redirect()->back();
-                }
-
-                // Update saldo pada tabel akun untuk akumulasi_akun
-                $akun_akumulasi = Akun::where('kode_akun', $request->akumulasi_akun)->first();
-                if ($akun_akumulasi && $akumulasiAkun !== null) {
-                    // Update saldo tanpa mass assignment
-                    $akun_akumulasi->saldo += $akumulasiAkun;
-                    $akun_akumulasi->save(); // Simpan perubahan saldo
-                } else {
-                    Alert::error('Error', 'Akun akumulasi tidak ditemukan');
-                    return redirect()->back();
-                }
+            // Update saldo pada tabel akun untuk akun_penyusutan
+            $akun_penyusutan = Akun::where('kode_akun', $request->akun_penyusutan)->first();
+            if ($akun_penyusutan) {
+                // Update saldo tanpa mass assignment
+                $akun_penyusutan->saldo += $nominalMasaManfaat ?? $nominalNilaiTahun;
+                $akun_penyusutan->save(); // Simpan perubahan saldo
+            } else {
+                Alert::error('Error', 'Akun penyusutan tidak ditemukan');
+                return redirect()->back();
             }
 
-            if ($aset->pajak == 1) {
-                if ($aset->jns_pajak == 'ppn11') {
-                    DB::table('pajak_ppn')->insert([
-                        'kode_reff'         => $aset->kode_reff_pajak,
-                        'jenis_transaksi'   => 'Assets',
-                        'keterangan'        => $aset->nm_aset,
-                        'nilai_transaksi'   => parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas,
-                        'persen_pajak'      => $aset->persen_pajak,
-                        'jenis_pajak'       => 'Pajak Keluaran',
-                        'saldo_pajak'       => parseRupiahToNumber($aset->pajak_dibayarkan),
-                    ]);
-                } elseif ($aset->jns_pajak == 'ppn12') {
-                    DB::table('pajak_ppn')->insert([
-                        'kode_reff'         => $aset->kode_reff_pajak,
-                        'jenis_transaksi'   => 'Assets',
-                        'keterangan'        => $aset->nm_aset,
-                        'nilai_transaksi'   => parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas,
-                        'persen_pajak'      => $aset->persen_pajak,
-                        'jenis_pajak'       => 'Pajak Keluaran',
-                        'saldo_pajak'       => parseRupiahToNumber($aset->pajak_dibayarkan),
-                    ]);
-                } elseif ($aset->jns_pajak == 'ppnbm') {
-                    DB::table('pajak_ppnbm')->insert([
-                        'kode_reff'             => $aset->kode_reff_pajak,
-                        'deskripsi_barang'      => $aset->produk,
-                        'harga_barang'          => parseRupiahToNumber($aset->harga_beli),
-                        'tarif_ppnbm'           => $aset->persen_pajak,
-                        'ppnbm_dikenakan'       => parseRupiahToNumber($aset->pajak_dibayarkan),
-                        'jenis_pajak'           => "Pajak Masukan",
-                        'tgl_transaksi'         => $aset->tanggal,
-                    ]);
-                }
+            // Update saldo pada tabel akun untuk akumulasi_akun
+            $akun_akumulasi = Akun::where('kode_akun', $request->akumulasi_akun)->first();
+            if ($akun_akumulasi && $akumulasiAkun !== null) {
+                // Update saldo tanpa mass assignment
+                $akun_akumulasi->saldo += $akumulasiAkun;
+                $akun_akumulasi->save(); // Simpan perubahan saldo
+            } else {
+                Alert::error('Error', 'Akun akumulasi tidak ditemukan');
+                return redirect()->back();
             }
-
-            // Insert Jurnal
-            $this->jurnalRepository->storeAsset($aset, $asset_penyusutan);
-
-            // Commit transaksi jika tidak ada kesalahan
-            DB::commit();
-            Alert::success('Data Added!', 'Data Created Successfully');
-            return redirect()->route('asset.asset_tersedia');
-        } catch (\Exception $e) {
-            // Rollback transaksi jika terjadi kesalahan
-            DB::rollback();
-            Alert::error('Error!', 'Failed to create data: ' . $e->getMessage());
         }
 
+        if ($aset->pajak == 1) {
+            if ($aset->jns_pajak == 'ppn11') {
+                DB::table('pajak_ppn')->insert([
+                    'kode_reff'         => $aset->kode_reff_pajak,
+                    'jenis_transaksi'   => 'Assets',
+                    'keterangan'        => $aset->nm_aset,
+                    'nilai_transaksi'   => parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas,
+                    'persen_pajak'      => $aset->persen_pajak,
+                    'jenis_pajak'       => 'Pajak Keluaran',
+                    'saldo_pajak'       => parseRupiahToNumber($aset->pajak_dibayarkan),
+                ]);
+            } elseif ($aset->jns_pajak == 'ppn12') {
+                DB::table('pajak_ppn')->insert([
+                    'kode_reff'         => $aset->kode_reff_pajak,
+                    'jenis_transaksi'   => 'Assets',
+                    'keterangan'        => $aset->nm_aset,
+                    'nilai_transaksi'   => parseRupiahToNumber($aset->harga_beli) * $aset->kuantitas,
+                    'persen_pajak'      => $aset->persen_pajak,
+                    'jenis_pajak'       => 'Pajak Keluaran',
+                    'saldo_pajak'       => parseRupiahToNumber($aset->pajak_dibayarkan),
+                ]);
+            } elseif ($aset->jns_pajak == 'ppnbm') {
+                DB::table('pajak_ppnbm')->insert([
+                    'kode_reff'             => $aset->kode_reff_pajak,
+                    'deskripsi_barang'      => $aset->produk,
+                    'harga_barang'          => parseRupiahToNumber($aset->harga_beli),
+                    'tarif_ppnbm'           => $aset->persen_pajak,
+                    'ppnbm_dikenakan'       => parseRupiahToNumber($aset->pajak_dibayarkan),
+                    'jenis_pajak'           => "Pajak Masukan",
+                    'tgl_transaksi'         => $aset->tanggal,
+                ]);
+            }
+        }
+
+        // Insert Jurnal
+        $this->jurnalRepository->storeAsset($aset, $asset_penyusutan);
+
+        // Commit transaksi jika tidak ada kesalahan
+        DB::commit();
+        Alert::success('Data Added!', 'Data Created Successfully');
         return redirect()->route('asset.asset_tersedia');
+        // } catch (\Exception $e) {
+        //     // Rollback transaksi jika terjadi kesalahan
+        //     DB::rollback();
+        //     Alert::error('Error!', 'Failed to create data: ' . $e->getMessage());
+        // }
+
+        // return redirect()->route('asset.asset_tersedia');
     }
 
     public function jual($id)
@@ -687,17 +694,17 @@ class AssetController extends Controller
                 'email'                         => $pelanggan->email,
                 'alamat'                        => $pelanggan->alamat,
                 'kuantitas'                     => $request->kuantitas,
-                'tgl_penjualan'                 => $request->tgl_penjualan,
-                'harga_pelepasan'               => $request->harga_pelepasan,
-                'nilai_penyusutan_terakhir'     => $request->nilai_penyusutan_terakhir,
-                'nilai_buku'                    => $request->nilai_buku,
+                'tgl_penjualan'                 => Carbon::createFromFormat('d-m-Y', $request->tgl_penjualan)->format('Y-m-d'),
+                'harga_pelepasan'               => parseRupiahToNumber($request->harga_pelepasan),
+                'nilai_penyusutan_terakhir'     => parseRupiahToNumber($request->nilai_penyusutan_terakhir),
+                'nilai_buku'                    => parseRupiahToNumber($request->nilai_buku),
                 'akun_deposit'                  => $request->akun_deposit,
-                'nominal_deposit'               => $request->nominal_deposit,
+                'nominal_deposit'               => parseRupiahToNumber($request->nominal_deposit),
                 'akun_keuntungan_kerugian'      => $request->akun_keuntungan_kerugian,
-                'nominal_keuntungan_kerugian'   => $request->nominal_keuntungan_kerugian,
-                'jns_pajak'                     => $request->jns_pajak,
-                'pajak_dibayarkan'              => $request->pajak_dibayarkan,
-                'pajak'                         => $request->buttonPajakPenjualan ? 1 : 0, // Jika checked, isi dengan 1
+                'nominal_keuntungan_kerugian'   => str_replace("Rp ", "", $request->nominal_keuntungan_kerugian),
+                // 'jns_pajak'                     => $request->jns_pajak,
+                // 'pajak_dibayarkan'              => $request->pajak_dibayarkan,
+                // 'pajak'                         => $request->buttonPajakPenjualan ? 1 : 0, // Jika checked, isi dengan 1
                 'user_id'                       => 1, // Auth::user()->id,
             ]);
 
@@ -758,7 +765,7 @@ class AssetController extends Controller
                         'tarif_ppnbm'           => $asset->persen_pajak,
                         'ppnbm_dikenakan'       => $asset->pajak_dibayarkan,
                         'jenis_pajak'           => "Pajak Masukan",
-                        'tgl_transaksi'         => $asset->tanggal,
+                        'tgl_transaksi'         => Carbon::createFromFormat('d-m-Y', $request->tanggal)->format('Y-m-d'),
                     ]);
                 }
             }
@@ -791,7 +798,9 @@ class AssetController extends Controller
         $akun_kredit = DB::table('akun')
             ->whereIn('kategori_akun', ['Pendapatan', 'Beban'])
             ->get();
-        $kasdanbank = DB::table('kas_bank')->get();
+        $kasdanbank = DB::table('akun')
+            ->where('type', '=', 'Kas & Bank')
+            ->get();
         $total_nilai_asset = DB::table('asset')
             ->selectRaw('SUM(harga_beli * kuantitas) as total_nilai_asset')
             ->value('total_nilai_asset');

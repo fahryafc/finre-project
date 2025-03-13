@@ -28,9 +28,9 @@ class KasdanbankController extends Controller
             $kasdanbank = Akun::where('type', 'Kas & Bank')
                 ->leftJoinSub(
                     Modal::select(
-                            DB::raw('jurnal_detail.id_akun as akun_id'),
-                            DB::raw('SUM(jurnal_detail.debit) as saldo_awal')
-                        )
+                        DB::raw('jurnal_detail.id_akun as akun_id'),
+                        DB::raw('SUM(jurnal_detail.debit) as saldo_awal')
+                    )
                         ->leftJoin('jurnal', 'jurnal.no_reff', 'modal.id_modal')
                         ->leftJoin('jurnal_detail', 'jurnal_detail.id_jurnal', 'jurnal.id_jurnal')
                         ->where('modal.jns_transaksi', 'Penyetoran Modal')
@@ -43,10 +43,10 @@ class KasdanbankController extends Controller
                 )
                 ->leftJoinSub(
                     Jurnal::select(
-                            DB::raw('jurnal_detail.id_akun AS akun_id'),
-                            DB::raw('SUM(jurnal_detail.debit) AS debit'),
-                            DB::raw('SUM(jurnal_detail.kredit) AS kredit')
-                        )
+                        DB::raw('jurnal_detail.id_akun AS akun_id'),
+                        DB::raw('SUM(jurnal_detail.debit) AS debit'),
+                        DB::raw('SUM(jurnal_detail.kredit) AS kredit')
+                    )
                         ->leftJoin('jurnal_detail', 'jurnal_detail.id_jurnal', 'jurnal.id_jurnal')
                         ->groupBy('jurnal_detail.id_akun'),
                     'jl',
@@ -97,8 +97,8 @@ class KasdanbankController extends Controller
 
     public function getSubkategori(Request $request)
     {
-        $kategori = Kategori_akun::where('id_kategori_akun',$request->input('kategori'))
-            ->first();  
+        $kategori = Kategori_akun::where('nama_kategori', $request->kategori)
+            ->first();
         $subkategori = Akun::where('kategori_akun', $kategori->nama_kategori)
             ->groupBy('subakun')
             ->get();
