@@ -68,7 +68,7 @@ class PenjualanController extends Controller
                 ->groupBy(
                     'penjualan.id_penjualan'
                 )
-                ->where('user_id', $user_id)
+                ->where('penjualan.user_id', $user_id)
                 ->get();
 
             $akun = DB::table('akun')->where('kategori_akun', '=', 'Aset/Harta')->get();
