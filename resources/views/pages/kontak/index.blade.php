@@ -76,7 +76,7 @@
                         <div class="w-16 h-16 rounded-full inline-flex items-center justify-center bg-purple-100">
                             <i class="ti ti-layers-subtract text-3xl text-purple-600"></i>
                         </div>
-                        <p class="text-gray-500 mt-2 text-sm dark:text-gray-400">Total Lainnya</p>
+                        <p class="text-gray-500 mt-2 text-sm dark:text-gray-400">Total Investor</p>
                     </div>
                     <div class="flex-grow text-right">
                         <h3 class="text-gray-700 mt-1 text-3xl font-bold dark:text-gray-300">{{ $totals->total_lainnya }}

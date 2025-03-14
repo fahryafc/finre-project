@@ -22,7 +22,8 @@ class AkunController extends Controller
         $text = "Apakah kamu yakin menghapus data ini ?";
         confirmDelete($title, $text);
 
-        $akun = Akun::orderBy('id_akun', 'asc')
+        $akun = Akun::orderBy('kategori_akun', 'asc')
+            ->orderBy('id_akun', 'asc')
             ->get();
 
         return view('pages.akun.index', compact('akun'));
@@ -38,6 +39,7 @@ class AkunController extends Controller
     {
         $kategori = $request->input('kategori_akun'); // Ambil kategori dari request
         $subkategori = Akun::where('kategori_akun', $kategori)
+            ->orWhere('id_kategori_akun', $kategori)
             ->groupBy('subakun')
             ->get();
 

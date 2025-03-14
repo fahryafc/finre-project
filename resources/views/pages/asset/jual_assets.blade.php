@@ -52,6 +52,8 @@
                                     <option value="{{ $customer->id_kontak }}">{{ $customer->nama_kontak }} -
                                         {{ $customer->nm_perusahaan }}</option>
                                 @endforeach
+                                <option value="tambah_pelanggan" data-fc-target="tambahKontak" data-fc-type="modal">+ Tambah
+                                    Pelanggan</option>
                             </select>
                         </div>
                     </div>
@@ -288,6 +290,7 @@
             </div>
         </div>
     </div>
+    <x-modals.kontak.tambah-kontak />
 @endsection
 
 @section('script')
@@ -297,5 +300,16 @@
     @vite(['resources/js/pages/highlight.js'])
     <!-- <script src="{{ asset('js/custom-js/assets.js') }}" defer></script> -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
     <script src="{{ asset('js/custom-js/jual-assets.js') }}" defer></script>
+
+    <script>
+        const selectOptionKaryawan = document.getElementById('id_kontak');
+        selectOptionKaryawan.addEventListener('change', function() {
+            if (this.value === 'tambah_pelanggan') {
+                // Buka modal dan overlay
+                document.querySelector('[data-fc-target="tambahKontak"]').click();
+            }
+        });
+    </script>
 @endsection

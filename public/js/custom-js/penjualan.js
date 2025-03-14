@@ -91,21 +91,20 @@ function calculateTotal() {
             persenPajak = parseFloat(row.querySelector('.persen_pajak').value) || 0;
         }
 
-        // Hitung pajak berdasarkan harga sebelum diskon
-        let pajak = 0;
-        if (persenPajak > 0) {
-            pajak = (totalHargaBaris * persenPajak) / 100;
-        }
-
-        // Tambahkan pajak awal (sebelum diskon) ke total pajak
-        totalPajak += pajak;
-
         // Hitung diskon hanya jika ada
         const diskon = (totalHargaBaris * diskonInput) / 100;
         totalDiskon += diskon;  // Tambahkan diskon ke total kumulatif
 
         // Hitung pemasukan setelah diskon dan pajak
         const totalHargaDiskon = totalHargaBaris - diskon;
+        // Hitung pajak berdasarkan harga sebelum diskon
+        let pajak = 0;
+        if (persenPajak > 0) {
+            pajak = (totalHargaDiskon * persenPajak) / 100;
+        }
+
+        // Tambahkan pajak awal (sebelum diskon) ke total pajak
+        totalPajak += pajak;
         totalHarga += totalHargaBaris;  // Tambahkan harga sebelum diskon ke total harga
         totalPemasukan += totalHargaDiskon;  // Tambahkan harga setelah diskon ke total pemasukan
     });
@@ -280,7 +279,7 @@ document.getElementById('productRows').addEventListener('change', function (even
     } else if (event.target && event.target.matches('input[name="kuantitas[]"]')){
         const productRow = event.target.closest('.product-row');
         const maxQty = parseInt(productRow.querySelector('select[name="produk[]"] option:checked').getAttribute('data-qty')) || 0;
-        
+
         const currentQty = parseInt(event.target.value) || 0;
 
         if (currentQty > maxQty) {

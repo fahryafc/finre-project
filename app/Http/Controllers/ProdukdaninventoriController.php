@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Helpers\Helper;
-use App\Models\Produk;
-use App\Models\Kategori;
-use App\Models\Satuan;
-use App\Models\Akun;
-use App\Models\Kontak;
-use App\Models\Pajak;
-use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use RealRashid\SweetAlert\Facades\Alert;
-use Illuminate\Support\Facades\Validator;
 use Exception;
 use Carbon\Carbon;
+use App\Models\Akun;
+use App\Models\Pajak;
+use App\Models\Jurnal;
+use App\Models\Kontak;
+use App\Models\Produk;
+use App\Models\Satuan;
+use App\Helpers\Helper;
+use App\Models\Kategori;
+use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Repositories\JurnalRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use App\Repositories\JurnalRepository;
+use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Validator;
 
 class ProdukdaninventoriController extends Controller
 {
