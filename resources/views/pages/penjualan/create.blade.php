@@ -202,8 +202,8 @@
                 </div>
 
                 <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
-                    <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 
-                    hover:bg-slate-100 hover:dark:bg-slate-700 transition-all" 
+                    <button class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700
+                    hover:bg-slate-100 hover:dark:bg-slate-700 transition-all"
                     onclick="window.history.back();" type="button">Back</button>
                     <button class="btn bg-[#307487] text-white" type="submit">Save</button>
                 </div>
