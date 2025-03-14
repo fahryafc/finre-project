@@ -36,7 +36,7 @@ class KontakController extends Controller
                         SUM(CASE WHEN jenis_kontak = "pelanggan" THEN 1 ELSE 0 END) AS total_pelanggan,
                         SUM(CASE WHEN jenis_kontak = "karyawan" THEN 1 ELSE 0 END) AS total_karyawan,
                         SUM(CASE WHEN jenis_kontak = "vendor" THEN 1 ELSE 0 END) AS total_vendor,
-                        SUM(CASE WHEN jenis_kontak = "lainnya" THEN 1 ELSE 0 END) AS total_lainnya
+                        SUM(CASE WHEN jenis_kontak = "investor" THEN 1 ELSE 0 END) AS total_lainnya
                     ')->first();
 
 
