@@ -23,8 +23,7 @@
                         <div class="mb-3">
                             <label for="pemasok"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Pemasok</label>
-                            <select id="pemasok" name="pemasok"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select id="pemasok" name="pemasok" class="selectize-search" required>
                                 <option value="" selected>-- Pilih Pemasok --</option>
                                 @foreach ($pemasoks as $pemasok)
                                     <option value="{{ $pemasok->id_kontak }}">{{ $pemasok->nama_kontak }}</option>
@@ -46,11 +45,11 @@
                             <label for="nama_produk" class="text-gray-800 text-sm font-medium inline-block mb-2">Nama
                                 Produk</label>
                             <input type="text" class="form-input" id="nama_produk" name="nama_produk"
-                                aria-describedby="nama_produk" placeholder="Masukan Nama Produk">
+                                aria-describedby="nama_produk" placeholder="Masukan Nama Produk" required>
                         </div>
                         <div class="mb-3">
                             <label for="satuan" class="text-gray-800 text-sm font-medium inline-block mb-2">Satuan</label>
-                            <select id="satuan" class="selectize" name="satuan">
+                            <select id="satuan" class="selectize" name="satuan" required>
                                 @foreach ($satuan as $key)
                                     <option value="{{ $key->nama_satuan }}">{{ $key->nama_satuan }}</option>
                                 @endforeach
@@ -61,7 +60,7 @@
                         <div class="mb-3">
                             <label for="kategori"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Kategori</label>
-                            <select id="kategori" class="selectize" name="kategori">
+                            <select id="kategori" class="selectize" name="kategori" required>
                                 @foreach ($kategori as $key)
                                     <option value="{{ $key->nama_kategori }}">{{ $key->nama_kategori }}</option>
                                 @endforeach
@@ -71,13 +70,13 @@
                         <div class="mb-3">
                             <label for="kuantitas"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Kuantitas</label>
-                            <input type="number" class="form-input" id="kuantitas" name="kuantitas"
+                            <input type="number" class="form-input" id="kuantitas" name="kuantitas" required
                                 placeholder="Masukan Kuantitas">
                         </div>
                         <div class="mb-3">
                             <label for="kode_sku"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Kode/SKU</label>
-                            <input type="text" class="form-input" id="kode_sku" name="kode_sku"
+                            <input type="text" class="form-input" id="kode_sku" name="kode_sku" required
                                 aria-describedby="kode_sku" placeholder="Masukan Kode/SKU">
                         </div>
                     </div>
@@ -87,13 +86,13 @@
                         <div class="mb-3">
                             <label for="harga_beli" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga
                                 Beli</label>
-                            <input type="text" class="form-input" id="harga_beli" name="harga_beli"
+                            <input type="text" class="form-input" id="harga_beli" name="harga_beli" required
                                 placeholder="Masukan Harga Beli">
                         </div>
                         <div class="mb-3">
                             <label for="harga_jual" class="text-gray-800 text-sm font-medium inline-block mb-2">Harga
                                 Jual</label>
-                            <input type="text" class="form-input" id="harga_jual" name="harga_jual"
+                            <input type="text" class="form-input" id="harga_jual" name="harga_jual" required
                                 placeholder="Masukan Harga Jual">
                         </div>
                     </div>
@@ -130,22 +129,20 @@
                         <div class="mb-3">
                             <label for="akun_pembayaran"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
-                            <select id="akun_pembayaran"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                name="akun_pembayaran">
+                            <select id="akun_pembayaran" class="selectize-search" name="akun_pembayaran" required>
                                 @foreach ($akun as $key)
                                     <option value="{{ $key->kode_akun }}">{{ $key->nama_akun }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <!-- <div class="mb-3">
-                                                                        <label for="masuk_akun" class="text-gray-800 text-sm font-medium inline-block mb-2"> Masuk Akun </label>
-                                                                        <select id="masuk_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="masuk_akun">
-                                                                            @foreach ($akun as $key)
+                                                                                                                        <label for="masuk_akun" class="text-gray-800 text-sm font-medium inline-block mb-2"> Masuk Akun </label>
+                                                                                                                        <select id="masuk_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="masuk_akun">
+                                                                                                                            @foreach ($akun as $key)
     <option value="{{ $key->kode_akun }}">{{ $key->nama_akun }}</option>
     @endforeach
-                                                                        </select>
-                                                                    </div> -->
+                                                                                                                        </select>
+                                                                                                                    </div> -->
                     </div>
                     <hr class="border-2 border-gray-300 my-2">
 
@@ -165,7 +162,7 @@
                     <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
                         <button
                             class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all"
-                            data-fc-dismiss type="button">Close
+                            onclick="localStorage.clear(); window.history.back(); " type="button">Close
                         </button>
                         <button class="btn bg-[#307487] text-white" type="submit">Save</button>
                     </div>
@@ -230,8 +227,5 @@
                 document.querySelector('[data-fc-target="tambahSatuan"]').click();
             }
         });
-
-
-
     </script>
 @endsection

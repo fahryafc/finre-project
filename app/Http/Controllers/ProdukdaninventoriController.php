@@ -98,8 +98,7 @@ class ProdukdaninventoriController extends Controller
             $produk = DB::table('produk')->paginate(5);
             $satuan = DB::table('satuan')->get();
             $kategori = DB::table('kategori')->get();
-            $akun = Akun::where('type', 'Kas & Bank')
-                ->get();
+            $akun = DB::table('akun')->get();
             $pemasoks = DB::table('kontak')->where('jenis_kontak', '=', 'vendor')->get();
 
             // Hitung jumlah produk tersedia, hampir habis, habis, dan total produk
@@ -152,7 +151,7 @@ class ProdukdaninventoriController extends Controller
                 'kategori'          => $request->kategori,
                 'kuantitas'         => $request->kuantitas,
                 'kode_sku'          => $request->kode_sku,
-                'tanggal'           => $request->tanggal,
+                'tanggal' => Carbon::createFromFormat('d/m/Y', $request->tanggal)->format('Y-m-d'),
                 'harga_beli'        => $request->harga_beli,
                 'harga_jual'        => $request->harga_jual,
                 'akun_pembayaran'   => $request->akun_pembayaran,
@@ -239,20 +238,20 @@ class ProdukdaninventoriController extends Controller
     {
         // Ambil pemasok berdasarkan id_kontak
         $pemasok = Kontak::where('id_kontak', $request->id_kontak)->first();
-
         db::beginTransaction();
         try {
             // Cari produk berdasarkan ID dan update datanya
             $produk = Produk::findOrFail($id_produk);
+            $pemasok = Kontak::where('id_kontak', $request->pemasok)->first();
             $produk->update([
                 'pemasok'           => $pemasok->nama_kontak,
-                'id_kontak'         => $request->id_kontak,
+                'id_kontak'         => $pemasok->id_kontak,
                 'nama_produk'       => $request->nama_produk,
                 'satuan'            => $request->satuan,
                 'kategori'          => $request->kategori,
                 'kuantitas'         => $request->kuantitas,
                 'kode_sku'          => $request->kode_sku,
-                'tanggal'           => $request->tanggal,
+                'tanggal' => Carbon::createFromFormat('d/m/Y', $request->tanggal)->format('Y-m-d'),
                 'harga_beli'        => $request->harga_beli,
                 'harga_jual'        => $request->harga_jual,
                 'akun_pembayaran'   => $request->akun_pembayaran,
@@ -263,15 +262,15 @@ class ProdukdaninventoriController extends Controller
                 'total_transaksi'     => $request->total_transaksi,
             ]);
 
-            if ($data->nominal_pajak != NULL || $data->nominal_pajak != '') {
-                // Masukkan data ke tabel pajak
+            if ($produk->nominal_pajak != NULL || $produk->nominal_pajak != '') {
+                // Masukkan produk ke tabel pajak
                 DB::table('pajak_ppn')->insert([
                     'jenis_transaksi'   => 'penjualan',
-                    'keterangan'        => $data->nama_produk,
-                    'nilai_transaksi'   => $data->harga_beli * $data->kuantitas,
-                    'persen_pajak'      => $data->persen_pajak,
+                    'keterangan'        => $produk->nama_produk,
+                    'nilai_transaksi'   => $produk->harga_beli * $produk->kuantitas,
+                    'persen_pajak'      => $produk->persen_pajak,
                     'jenis_pajak'       => 'Pajak Masukan',
-                    'saldo_pajak'       => $data->nominal_pajak,
+                    'saldo_pajak'       => $produk->nominal_pajak,
                 ]);
             }
 

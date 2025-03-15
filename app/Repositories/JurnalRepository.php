@@ -745,7 +745,6 @@ class JurnalRepository implements JurnalInterface
         if ($jurnal) {
             $this->delete($jurnal->id_jurnal);
         }
-
         $total_transaksi = ($produk->kuantitas * $produk->harga_beli) + $produk->nominal_pajak;
         $data = [
             'no_jurnal'        => $this->getNextNumber($prefix),
