@@ -334,6 +334,18 @@ class JurnalRepository implements JurnalInterface
         return $jurnal;
     }
 
+    public function deletePenjualan($id_penjualan)
+    {
+        $jurnal = Jurnal::where('code', Penjualan::CODE_JURNAL)
+            ->where('no_reff', $id_penjualan)
+            ->first();
+
+        if ($jurnal) {
+            DB::table('jurnal_detail')->where('id_jurnal', $jurnal->id_jurnal)->delete(); // Hapus detail jurnal
+            $jurnal->delete(); // Hapus jurnal utama
+        }
+    }
+
     public function storePengeluaran(Pengeluaran $pengeluaran)
     {
         $prefix = Pengeluaran::CODE_JURNAL;

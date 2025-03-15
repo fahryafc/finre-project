@@ -54,7 +54,6 @@ class PenjualanController extends Controller
                 ->join('akun', 'akun.kode_akun', '=', 'penjualan.pembayaran')
                 ->join('jurnal', 'jurnal.no_reff', '=', 'penjualan.id_penjualan')
                 ->join('jurnal_detail', 'jurnal_detail.id_jurnal', '=', 'jurnal.id_jurnal')
-                ->where('jurnal_detail.keterangan', 'Piutang Usaha')
                 ->when($from_date && $to_date, function ($query) use ($from_date, $to_date) {
                     return $query->whereBetween('penjualan.tanggal', [$from_date, $to_date]);
                 })
@@ -117,13 +116,19 @@ class PenjualanController extends Controller
                 ->get();
 
             foreach ($getDataProdukPenjualan as $item) {
-                $totalPemasukan += $item->pemasukan_produk;
+                $totalPemasukan += parseRupiahToNumber($item->pemasukan_produk);
             }
-
-            foreach ($getDataProdukPenjualan as $item) {
-                $persentase = ($item->pemasukan_produk / $totalPemasukan) * 100;
-                array_push($produkList, $item->nama_produk);
-                array_push($produkListValue, round($persentase, 2));
+            if ($totalPemasukan > 0) {
+                foreach ($getDataProdukPenjualan as $item) {
+                    $persentase = (parseRupiahToNumber($item->pemasukan_produk) / $totalPemasukan) * 100;
+                    array_push($produkList, $item->nama_produk);
+                    array_push($produkListValue, round($persentase, 2));
+                }
+            } else {
+                foreach ($getDataProdukPenjualan as $item) {
+                    array_push($produkList, $item->nama_produk);
+                    array_push($produkListValue, 0); // Semua produk mendapat 0% jika tidak ada pemasukan
+                }
             }
 
             return view('pages.penjualan.index', [
@@ -329,7 +334,7 @@ class PenjualanController extends Controller
                 ->join('kontak', 'kontak.id_kontak', '=', 'penjualan.id_kontak')
                 ->where('produk_penjualan.id_penjualan', $id)
                 ->join('produk', 'produk.id_produk', '=', 'produk_penjualan.id_produk')
-                ->select('produk_penjualan.*', 'penjualan.*', 'kontak.nama_kontak','produk.nama_produk', 'produk.satuan', 'produk.kategori')
+                ->select('produk_penjualan.*', 'penjualan.*', 'kontak.nama_kontak', 'produk.nama_produk', 'produk.satuan', 'produk.kategori')
                 ->get();
 
             return response()->json([
@@ -591,27 +596,58 @@ class PenjualanController extends Controller
         }
     }
 
-    public function destroy(string $id_penjualan)
+    public function destroy($id): RedirectResponse
     {
+        DB::beginTransaction();
         try {
-            $penjualan = Penjualan::findOrFail($id_penjualan);
+            // Ambil data penjualan utama
+            $penjualan = Penjualan::findOrFail($id);
 
-            Pajakppn::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
-            Pajakppnbm::where('kode_reff', $penjualan->kode_reff_pajak)->delete();
-
-            // Delete Jurnal
-            $prefix = Penjualan::CODE_JURNAL;
-            $jurnal = Jurnal::where('code', $prefix)->where('no_reff', $penjualan->id_penjualan)->first();
-            if ($jurnal) {
-                $this->jurnalRepository->delete($jurnal->id_jurnal);
+            // Kembalikan kuantitas produk yang telah terjual
+            $produkPenjualan = ProdukPenjualan::where('id_penjualan', $id)->get();
+            foreach ($produkPenjualan as $item) {
+                $produk = Produk::where('id_produk', $item->id_produk)->first();
+                if ($produk) {
+                    $produk->kuantitas += $item->kuantitas;
+                    $produk->save();
+                }
             }
 
+            // Hapus data piutang jika ada
+            if ($penjualan->piutang == 1) {
+                DB::table('hutangpiutang')->where('id_kontak', $penjualan->id_kontak)
+                    ->where('kategori', 'Penjualan')
+                    ->where('jenis', 'piutang')
+                    ->delete();
+            }
+
+            // Kembalikan saldo akun kas & bank
+            $akun = Akun::where('type', 'Kas & Bank')->where('kode_akun', $penjualan->pembayaran)->first();
+            if ($akun) {
+                $akun->saldo -= $penjualan->total_pemasukan;
+                $akun->save();
+            }
+
+            // Hapus data pajak yang terkait dengan penjualan
+            DB::table('pajak_ppn')->whereIn('kode_reff', $produkPenjualan->pluck('kode_reff_pajak'))->delete();
+            DB::table('pajak_ppnbm')->whereIn('kode_reff', $produkPenjualan->pluck('kode_reff_pajak'))->delete();
+
+            // Hapus data jurnal terkait
+            $this->jurnalRepository->deletePenjualan($penjualan);
+
+            // Hapus detail produk penjualan
+            ProdukPenjualan::where('id_penjualan', $id)->delete();
+
+            // Hapus data penjualan utama
             $penjualan->delete();
 
-            Alert::success('Data Deleted!', 'Data Deleted Successfully');
+            DB::commit();
+            Alert::success('Data Deleted!', 'Hapus Data Penjualan Berhasil');
             return redirect()->route('penjualan.index');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error : ' . $e->getMessage());
+            DB::rollBack();
+            Alert::error('Error', 'Hapus Data Penjualan Gagal: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 }
