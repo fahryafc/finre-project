@@ -19,20 +19,21 @@
                 <div class="flex justify-between items-center">
                     <h4 class="card-title">Tambah Data Pengeluaran</h4>
                     <!-- <div class="flex items-center gap-2">
-                                                                                                                                            <button type="button" class="btn-code" data-fc-type="collapse" data-fc-target="GridFormHtml">
-                                                                                                                                                <i class="mgc_eye_line text-lg"></i>
-                                                                                                                                                <span class="ms-2">Code</span>
-                                                                                                                                            </button>
+                                                                                                                                                                                                                                        <button type="button" class="btn-code" data-fc-type="collapse" data-fc-target="GridFormHtml">
+                                                                                                                                                                                                                                            <i class="mgc_eye_line text-lg"></i>
+                                                                                                                                                                                                                                            <span class="ms-2">Code</span>
+                                                                                                                                                                                                                                        </button>
 
-                                                                                                                                            <button class="btn-code" data-clipboard-action="copy">
-                                                                                                                                                <i class="mgc_copy_line text-lg"></i>
-                                                                                                                                                <span class="ms-2">Copy</span>
-                                                                                                                                            </button>
-                                                                                                                                        </div> -->
+                                                                                                                                                                                                                                        <button class="btn-code" data-clipboard-action="copy">
+                                                                                                                                                                                                                                            <i class="mgc_copy_line text-lg"></i>
+                                                                                                                                                                                                                                            <span class="ms-2">Copy</span>
+                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                    </div> -->
                 </div>
             </div>
             <div class="p-6">
-                <form id="" action="{{ route('pengeluaran.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="pengeluaranForm" action="{{ route('pengeluaran.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="grid grid-cols-3 gap-4">
                         <div class="mb-3">
@@ -63,8 +64,7 @@
                         <div class="mb-3">
                             <label for="jenis_pengeluaran" class="text-gray-800 text-sm font-medium inline-block mb-2">
                                 Jenis Pengeluaran </label>
-                            <select id="jenis_pengeluaran" name="jenis_pengeluaran"
-                                class="selectize"
+                            <select id="jenis_pengeluaran" name="jenis_pengeluaran" class="selectize"
                                 onchange="togglePengeluaran()" required>
                                 <option value="" selected>-- Pilih Jenis Pengeluaran --</option>
                                 <option value="gaji_karyawan">Gaji Karyawan</option>
@@ -74,9 +74,7 @@
                         <div class="mb-3 hidden" id="div_nama_karyawan">
                             <label for="nama_karyawan" class="text-gray-800 text-sm font-medium inline-block mb-2"> Nama
                                 Karyawan </label>
-                            <select id="nama_karyawan" name="id_kontak"
-                                class="selectize-search"
-                                required>
+                            <select id="nama_karyawan" name="id_kontak" class="selectize-search" required>
                                 <option value="" selected>-- Pilih Nama Karyawan --</option>
                                 @foreach ($karyawanKontak as $karyawan)
                                     <option value="{{ $karyawan->id_kontak }}">{{ $karyawan->nama_kontak }}</option>
@@ -88,9 +86,7 @@
                         <div class="mb-3 hidden" id="div_nama_vendor">
                             <label for="nama_vendor" class="text-gray-800 text-sm font-medium inline-block mb-2"> Nama
                                 Vendor </label>
-                            <select id="nama_vendor" name="id_kontak"
-                                class="selectize-search"
-                                required>
+                            <select id="nama_vendor" name="id_kontak" class="selectize-search" required>
                                 <option value="" selected>-- Pilih Nama Vendor --</option>
                                 @foreach ($vendorKontak as $vendors)
                                     <option value="{{ $vendors->id_kontak }}">{{ $vendors->nama_kontak }}</option>
@@ -111,9 +107,7 @@
                         <div class="mb-3">
                             <label for="akun_pembayaran"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Dibayarkan dari akun</label>
-                            <select id="akun_pembayaran"
-                                class="selectize-search"
-                                name="akun_pembayaran" required>
+                            <select id="akun_pembayaran" class="selectize-search" name="akun_pembayaran" required>
                                 @foreach ($kas_bank as $a)
                                     <option value="{{ $a->kode_akun }}">
                                         <span class="flex justify-between w-full">
@@ -128,9 +122,7 @@
                         <div class="mb-3">
                             <label for="akun_pemasukan"
                                 class="text-gray-800 text-sm font-medium inline-block mb-2">Pengeluaran masuk akun</label>
-                            <select id="akun_pemasukan"
-                                class="selectize-search"
-                                name="akun_pemasukan" required>
+                            <select id="akun_pemasukan" class="selectize-search" name="akun_pemasukan" required>
                                 @foreach ($akun_pemasukan as $a)
                                     <option value="{{ $a->kode_akun }}">
                                         <span class="flex justify-between w-full">
@@ -240,7 +232,7 @@
                     <div class="flex justify-end items-center gap-4 p-4 border-t dark:border-slate-700">
                         <button
                             class="btn dark:text-gray-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-700 transition-all"
-                            onclick="window.history.back();" type="button">Close
+                            onclick="localStorage.clear(); window.history.back(); " type="button">Close
                         </button>
                         <button class="btn bg-[#307487] text-white" type="submit">Save</button>
                     </div>
@@ -248,7 +240,7 @@
             </div>
         </div>
     </div>
-    <x-modals.kontak.tambah-kontak />
+    <x-modals.kontak.tambah-kontak :reload="false" />
     <x-modals.kategori.tambah-kategori />
 @endsection
 
@@ -303,6 +295,72 @@
                 // Buka modal dan overlay
                 document.querySelector('[data-fc-target="tambahKontak"]').click();
             }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("pengeluaranForm");
+
+            if (!form) return; // Jika form tidak ditemukan, hentikan eksekusi
+
+            const inputs = form.querySelectorAll("input, select, textarea");
+            const currentPage = window.location.pathname; // Simpan URL halaman saat ini
+
+            // Simpan URL halaman ini agar bisa dibandingkan nanti
+            localStorage.setItem("last_page", currentPage);
+
+            // Muat data dari LocalStorage jika ada
+            inputs.forEach((input) => {
+                const storedValue = localStorage.getItem("pengeluaran_" + input.name);
+                if (storedValue) {
+                    if (input.type === "checkbox") {
+                        input.checked = storedValue === "true";
+
+                        const onchangeFunction = input.getAttribute("onchange");
+                        if (input.checked && onchangeFunction) {
+                            // Mengeksekusi fungsi dengan cara yang lebih aman
+                            try {
+                                new Function(onchangeFunction)();
+                            } catch (error) {
+                                console.error("Gagal menjalankan onchange:", error);
+                            }
+                        }
+                    } else if (input.tagName === "select") {
+                        // Pastikan opsi yang sesuai dipilih kembali
+                        input.value = storedValue;
+                        if (!input.value) {
+                            input.selectedIndex = 0; // Pilih opsi pertama jika data tidak valid
+                        }
+                    } else {
+                        input.value = storedValue;
+                    }
+                }
+            });
+
+            // Simpan data ke LocalStorage setiap ada perubahan
+            inputs.forEach((input) => {
+                input.addEventListener("input", function() {
+                    if (input.type === "checkbox") {
+                        localStorage.setItem("pengeluaran_" + input.name, input.checked);
+                    } else {
+                        localStorage.setItem("pengeluaran_" + input.name, input.value);
+                    }
+                });
+
+                if (input.tagName === "SELECT") {
+                    input.addEventListener("change", function() {
+                        localStorage.setItem("pengeluaran_" + input.name, input.value);
+                    });
+                }
+            });
+
+            // Hapus LocalStorage saat form disubmit
+            form.addEventListener("submit", function() {
+                inputs.forEach((input) => {
+                    localStorage.removeItem("pengeluaran_" + input.name);
+                });
+            });
         });
     </script>
 @endsection

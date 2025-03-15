@@ -1,9 +1,12 @@
 flatpickr("#datepicker-basic", {
     dateFormat: "d-m-Y",
-    defaultDate: "today"
+    defaultDate: "today",
 });
 
-if (document.getElementById("pagination-table") && typeof simpleDatatables.DataTable !== 'undefined') {
+if (
+    document.getElementById("pagination-table") &&
+    typeof simpleDatatables.DataTable !== "undefined"
+) {
     const dataTable = new simpleDatatables.DataTable("#pagination-table", {
         paging: true,
         perPage: 5,
@@ -12,16 +15,18 @@ if (document.getElementById("pagination-table") && typeof simpleDatatables.DataT
         labels: {
             perPage: "",
             noRows: "Tidak ada data",
-            info: "Menampilkan {start} sampai {end} dari {rows} entri"
-        }
+            info: "Menampilkan {start} sampai {end} dari {rows} entri",
+        },
     });
 }
 
 function filterByKategori() {
-    const selectedKategori = document.getElementById("filterKategori").value.toLowerCase();
+    const selectedKategori = document
+        .getElementById("filterKategori")
+        .value.toLowerCase();
     const rows = document.querySelectorAll("#pagination-table tbody tr");
 
-    rows.forEach(row => {
+    rows.forEach((row) => {
         const kategori = row.getAttribute("data-kategori").toLowerCase();
         if (selectedKategori === "" || kategori === selectedKategori) {
             row.style.display = ""; // Tampilkan row
@@ -31,7 +36,10 @@ function filterByKategori() {
     });
 }
 
-if (document.getElementById("detail-hutang") && typeof simpleDatatables.DataTable !== 'undefined') {
+if (
+    document.getElementById("detail-hutang") &&
+    typeof simpleDatatables.DataTable !== "undefined"
+) {
     const dataTable = new simpleDatatables.DataTable("#detail-hutang", {
         paging: true,
         perPage: 5,
@@ -40,12 +48,15 @@ if (document.getElementById("detail-hutang") && typeof simpleDatatables.DataTabl
         labels: {
             perPage: "",
             noRows: "Tidak ada data",
-            info: "Menampilkan {start} sampai {end} dari {rows} entri"
-        }
+            info: "Menampilkan {start} sampai {end} dari {rows} entri",
+        },
     });
 }
 
-if (document.getElementById("table-piutang") && typeof simpleDatatables.DataTable !== 'undefined') {
+if (
+    document.getElementById("table-piutang") &&
+    typeof simpleDatatables.DataTable !== "undefined"
+) {
     const dataTable = new simpleDatatables.DataTable("#table-piutang", {
         paging: true,
         perPage: 5,
@@ -54,12 +65,15 @@ if (document.getElementById("table-piutang") && typeof simpleDatatables.DataTabl
         labels: {
             perPage: "",
             noRows: "Tidak ada data",
-            info: "Menampilkan {start} sampai {end} dari {rows} entri"
-        }
+            info: "Menampilkan {start} sampai {end} dari {rows} entri",
+        },
     });
 }
 
-if (document.getElementById("riwayat-piutang") && typeof simpleDatatables.DataTable !== 'undefined') {
+if (
+    document.getElementById("riwayat-piutang") &&
+    typeof simpleDatatables.DataTable !== "undefined"
+) {
     const dataTable = new simpleDatatables.DataTable("#riwayat-piutang", {
         paging: true,
         perPage: 5,
@@ -68,26 +82,25 @@ if (document.getElementById("riwayat-piutang") && typeof simpleDatatables.DataTa
         labels: {
             perPage: "",
             noRows: "Tidak ada data",
-            info: "Menampilkan {start} sampai {end} dari {rows} entri"
-        }
+            info: "Menampilkan {start} sampai {end} dari {rows} entri",
+        },
     });
 }
 
-
 function openDetailHutang(button) {
-    const id_hutangpiutang = button.getAttribute('data-id-hutang');
+    const id_hutangpiutang = button.getAttribute("data-id-hutang");
     const modal = document.getElementById(`modalHutang${id_hutangpiutang}`);
-    const loader = modal.querySelector('.loading-spinner');
-    const tbody = modal.querySelector('tbody');
+    const loader = modal.querySelector(".loading-spinner");
+    const tbody = modal.querySelector("tbody");
 
     if (modal && loader) {
-        loader.classList.remove('hidden'); // Tampilkan loader
-        tbody.innerHTML = ''; // Kosongkan isi tabel sebelum menambah data baru
+        loader.classList.remove("hidden"); // Tampilkan loader
+        tbody.innerHTML = ""; // Kosongkan isi tabel sebelum menambah data baru
 
         fetch(`/hutangpiutang/detail/${id_hutangpiutang}`)
-            .then(response => response.json())
-            .then(data => {
-                loader.classList.add('hidden'); // Sembunyikan loader saat data selesai dimuat
+            .then((response) => response.json())
+            .then((data) => {
+                loader.classList.add("hidden"); // Sembunyikan loader saat data selesai dimuat
 
                 // Populate rows
                 if (data.length === 0) {
@@ -101,41 +114,58 @@ function openDetailHutang(button) {
                         const date = new Date(data.tanggal_pembayaran);
                         const row = `
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${index + 1}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat('id-ID').format(data.dibayarkan)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat('id-ID').format(data.sisa_pembayaran)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${data.catatan}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${data.masuk_akun}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${
+                                index + 1
+                            }</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${date.toLocaleDateString(
+                                "id-ID",
+                                {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                }
+                            )}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat(
+                                "id-ID"
+                            ).format(data.dibayarkan)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat(
+                                "id-ID"
+                            ).format(data.sisa_pembayaran)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${
+                                data.catatan
+                            }</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${
+                                data.masuk_akun
+                            }</td>
                         </tr>
                     `;
                         tbody.innerHTML += row;
                     });
                 }
                 // Tampilkan modal
-                modal.classList.remove('hidden');
+                modal.classList.remove("hidden");
             })
-            .catch(error => {
-                loader.classList.add('hidden'); // Sembunyikan loader jika terjadi error
-                console.error('Error:', error);
+            .catch((error) => {
+                loader.classList.add("hidden"); // Sembunyikan loader jika terjadi error
+                console.error("Error:", error);
             });
     }
 }
 
 function riwayatPiutang(button) {
-    const id_hutangpiutang = button.getAttribute('data-id-piutang');
+    const id_hutangpiutang = button.getAttribute("data-id-piutang");
     const modal = document.getElementById(`riwayatPiutang${id_hutangpiutang}`);
-    const loader = modal.querySelector('.loading-spinner');
-    const tbody = modal.querySelector('tbody');
+    const loader = modal.querySelector(".loading-spinner");
+    const tbody = modal.querySelector("tbody");
 
     if (modal && loader) {
-        loader.classList.remove('hidden'); // Tampilkan loader
-        tbody.innerHTML = ''; // Kosongkan isi tabel sebelum menambah data baru
+        loader.classList.remove("hidden"); // Tampilkan loader
+        tbody.innerHTML = ""; // Kosongkan isi tabel sebelum menambah data baru
 
         fetch(`/hutangpiutang/detail/${id_hutangpiutang}`)
-            .then(response => response.json())
-            .then(data => {
-                loader.classList.add('hidden'); // Sembunyikan loader saat data selesai dimuat
+            .then((response) => response.json())
+            .then((data) => {
+                loader.classList.add("hidden"); // Sembunyikan loader saat data selesai dimuat
 
                 // Populate rows
                 if (data.length === 0) {
@@ -149,38 +179,56 @@ function riwayatPiutang(button) {
                         const date = new Date(data.tanggal_pembayaran);
                         const row = `
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${index + 1}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat('id-ID').format(data.dibayarkan)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat('id-ID').format(data.sisa_pembayaran)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${data.catatan}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${data.masuk_akun}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${
+                                index + 1
+                            }</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${date.toLocaleDateString(
+                                "id-ID",
+                                {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                }
+                            )}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat(
+                                "id-ID"
+                            ).format(data.dibayarkan)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">Rp. ${new Intl.NumberFormat(
+                                "id-ID"
+                            ).format(data.sisa_pembayaran)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${
+                                data.catatan
+                            }</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">${
+                                data.masuk_akun
+                            }</td>
                         </tr>
                     `;
                         tbody.innerHTML += row;
                     });
                 }
                 // Tampilkan modal
-                modal.classList.remove('hidden');
+                modal.classList.remove("hidden");
             })
-            .catch(error => {
-                loader.classList.add('hidden'); // Sembunyikan loader jika terjadi error
-                console.error('Error:', error);
+            .catch((error) => {
+                loader.classList.add("hidden"); // Sembunyikan loader jika terjadi error
+                console.error("Error:", error);
             });
     }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const inputPembayaran = document.getElementById('dibayarkan');
-    const inputPembayaranPiutang = document.getElementById('piutang_dibayarkan');
+    const inputPembayaran = document.getElementById("dibayarkan");
+    const inputPembayaranPiutang =
+        document.getElementById("piutang_dibayarkan");
 
     // Format input sebagai rupiah saat mengetik
-    inputPembayaran.addEventListener('input', function (e) {
+    inputPembayaran.addEventListener("input", function (e) {
         let value = e.target.value.replace(/[^,\d]/g, "").toString();
         e.target.value = formatRupiah(value, "Rp ");
     });
 
-    inputPembayaranPiutang.addEventListener('input', function (e) {
+    inputPembayaranPiutang.addEventListener("input", function (e) {
         let value = e.target.value.replace(/[^,\d]/g, "").toString();
         e.target.value = formatRupiah(value, "Rp ");
     });
@@ -199,18 +247,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
-        return prefix == undefined ? rupiah : (rupiah ? "Rp " + rupiah : "");
+        return prefix == undefined ? rupiah : rupiah ? "Rp " + rupiah : "";
     }
 
     function parseRupiahToNumber(rupiah) {
         // Hapus karakter selain angka dan koma, serta awalan "Rp" jika ada
-        return parseFloat(rupiah.replace(/Rp\s?|[^,\d]/g, '').replace(',', '.')) || 0;
+        return (
+            parseFloat(rupiah.replace(/Rp\s?|[^,\d]/g, "").replace(",", ".")) ||
+            0
+        );
     }
 
     // Bersihkan format rupiah sebelum mengirim ke server
     function prepareForSubmit() {
-        const nominal = document.getElementById('dibayarkan');
-        const nominalPiutang = document.getElementById('piutang_dibayarkan');
+        const nominal = document.getElementById("dibayarkan");
+        const nominalPiutang = document.getElementById("piutang_dibayarkan");
 
         // Hapus format Rupiah dari kedua input
         if (nominal) {
@@ -224,5 +275,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Tambahkan event listener submit pada form untuk memanggil fungsi prepareForSubmit
-    document.querySelector('form').addEventListener('submit', prepareForSubmit);
+    document.querySelector("form").addEventListener("submit", prepareForSubmit);
 });
