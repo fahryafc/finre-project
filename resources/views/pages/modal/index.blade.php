@@ -219,7 +219,7 @@
                     <div>
                         <div id="masukAkunContainer" class="mb-3 hidden">
                             <label for="masuk_akun" class="text-gray-800 text-sm font-medium inline-block mb-2">Masuk Akun</label>
-                            <select id="masuk_akun" name="masuk_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select id="masuk_akun" name="masuk_akun" class="selectize-search">
                                 <option value="" selected>-- Pilih Akun --</option>
                                 @foreach ( $kas_bank as $a )
                                 <option value="{{ $a->kode_akun }}">
@@ -230,7 +230,7 @@
                         </div>
                         <div id="creditAkunContainer" class="mb-3 hidden">
                             <label for="credit_akun" class="text-gray-800 text-sm font-medium inline-block mb-2">Credit Dari Akun</label>
-                            <select id="credit_akun" name="credit_akun" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <select id="credit_akun" name="credit_akun" class="selectize-search">
                                 <option value="" selected>-- Pilih Akun --</option>
                                 @foreach ( $kas_bank as $a )
                                 <option value="{{ $a->kode_akun }}">

@@ -40,7 +40,7 @@ class ModalController extends Controller
         })
         ->where('user_id', $user_id)
         ->paginate(5);
-        $kasdanbank = DB::table('akun')->where('type', '=', 'Kas & Bank')->get();
+        $kasdanbank = DB::table('akun')->get();
         $pemodal = DB::table('kontak')->where('jenis_kontak', '=', 'investor')->get();
         $jml_modal_disetor = Modal::where('jns_transaksi', '=', 'Penyetoran Modal')->sum('nominal');
         $jml_penarikan_deviden = Modal::where('jns_transaksi', '=', 'Penarikan Dividen')->sum('nominal');
@@ -66,17 +66,18 @@ class ModalController extends Controller
     public function store(Request $request)
     {
         db::beginTransaction();
-        // try {
+        try {
             // Ambil nilai jenis transaksi dan nominal
             $jnsTransaksi = $request->input('jns_transaksi');
             $nominal = $this->parseRupiahToNumber($request->input('nominal'));
 
             // Tentukan kode akun berdasarkan jenis transaksi
-            $kodeAkun = $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : $request->input('credit_akun');
+            $kodeAkun = $jnsTransaksi === 'Penyetoran Modal' ? $request->masuk_akun : $request->credit_akun;
 
             // Validasi bahwa kode akun harus ada di tabel kas_bank
-            $akun = Akun::where('type','Kas & Bank')->where('kode_akun', $kodeAkun)->first();
+            $akun = Akun::where('kode_akun', $kodeAkun)->first();
             if (!$akun) {
+                Alert::warning('Penarikan Gagal!', 'Kode Akun Tidak Valid');
                 return redirect()->back()->with('error', 'Kode Akun tidak valid!');
             }
 
@@ -91,13 +92,13 @@ class ModalController extends Controller
 
             // Jika validasi lolos, buat record pada tabel modal
             $modal = Modal::create([
-                'tanggal' => Carbon::parse($request->input('tanggal')),
+                'tanggal' => Carbon::createFromFormat('d/m/Y', $request->tanggal)->format('Y-m-d'),
                 'jns_transaksi' => $jnsTransaksi,
-                'nama_badan' => $request->input('nama_badan'),
+                'nama_badan' => $request->nama_badan,
                 'nominal' => $nominal,
-                'masuk_akun' => $jnsTransaksi === 'Penyetoran Modal' ? $request->input('masuk_akun') : 0,
-                'credit_akun' => $jnsTransaksi === 'Penarikan Dividen' ? $request->input('credit_akun') : 0,
-                'keterangan' => $request->input('keterangan'),
+                'masuk_akun' => $jnsTransaksi === 'Penyetoran Modal' ? $request->masuk_akun : 0,
+                'credit_akun' => $jnsTransaksi === 'Penarikan Dividen' ? $request->credit_akun : 0,
+                'keterangan' => $request->keterangan,
                 'user_id' => 1, // Auth::user()->id,
             ]);
 // dd($request->all());
@@ -117,12 +118,12 @@ class ModalController extends Controller
             DB::commit();
             Alert::success('Data Added!', 'Data Created Successfully');
             return redirect()->route('modal.index');
-        // } catch (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
         //     dd($e);
         //     // Jika terjadi kesalahan, kembalikan ke halaman sebelumnya dengan pesan error
-        //     return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        // }
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function update(Request $request, Modal $modal)
